@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import codecs
 import doctest
 import collections
 import re
-
 
 
 class wordlist(collections.MutableMapping):
@@ -38,13 +38,13 @@ class wordlist(collections.MutableMapping):
             self.parseline(line)
 
     def load(self, filename):
-        with open(filename, "r", encoding="utf-8") as f:
+        with codecs.open(filename, "r", encoding="utf-8") as f:
             lines = f.readlines()
         for line in lines:
             self.parseline(line)
 
     def save(self, filename):
-        with open(filename, "w", encoding="utf-8") as f:
+        with codecs.open(filename, "w", encoding="utf-8") as f:
             for w in sorted(self.store.keys(), key=lambda s: s.lower()):
                 f.write(w + ' = ' + self.store[w] + "\n")
 
