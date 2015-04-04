@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import doctest
 import collections
 import re
