@@ -7,7 +7,7 @@ filenamebase = "Schildbürger"
 
 wlist = stiefo.wordlist()
 
-wlist.load("WortListen/wortliste.txt")
+wlist.load("wortlisten/wortliste.txt")
 if os.path.isfile(filenamebase+'.wrd'):
     wlist.load(filenamebase+'.wrd')
 
