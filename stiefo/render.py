@@ -129,9 +129,9 @@ class renderer:
                     res.append(('space', 5*self.h, None, 0))
                 elif word == '.':
                     res.append(('period', 0.5*self.h, None, -1))
-                elif word == '§§':
+                elif word == u'§§':
                     res.append(('page', 0, None, 0))
-                elif word == '§':
+                elif word == u'§':
                     res.append(('line', 0, None, 0))
                 else:
                     crv = symbols.stiefoWortZuKurve(word)
@@ -306,7 +306,7 @@ class BezierDrawer(QtGui.QWidget):
                     px = px + 2.5*h
                 elif (word == '.'):
                     px = px + 5*h
-                elif word == '§':
+                elif word == u'§':
                     px = 10
                     py += 4*h
                 else:

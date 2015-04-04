@@ -21,7 +21,7 @@ def splitText(text):
     >>> splitText('Jules Verne{!page!}yyy{"Original"}xxx')
     ['Jules', 'Verne', '{!page!}', 'yyy', '{"Original"}', 'xxx']
     """
-    return [x for x in re.split(r"(\{[!\"$].*?[!\"$]\})|((?=\D)\w+)|\s+", text) if x and x != '\ufeff']
+    return [x for x in re.split(r"(\{[!\"$].*?[!\"$]\})|((?=\D)\w+)|\s+", text) if x and x != u'\ufeff']
 
     # words = re.split(r"\s+|(\{[!\"$].*?[!\"$]\})", text)
 
@@ -35,7 +35,7 @@ regeln = [
 
     ('aa', 'a'),
     ('ah', 'a'),
-    ('äh', 'ä'),
+    (u'äh', u'ä'),
     #('bb', 'b'),
     #('dd', 'd'),
     ('ee', 'e'),
@@ -51,22 +51,22 @@ regeln = [
     ('nn', 'n'),
     ('oo', 'o'),
     ('oh', 'o'),
-    ('öh', 'ö'),
+    (u'öh', u'ö'),
     ('pp', 'p'),
     ('rr', 'r'),
     ('sst', 'sS'),
-    ('(?<=[aeiuoäöü])ss', 's'),
-    ('ß', 's'),
+    (u'(?<=[aeiuoäöü])ss', 's'),
+    (u'ß', 's'),
     ('tt', 't'),
     ('uh', 'u'),
-    ('üh', 'ü'),
+    (u'üh', u'ü'),
 
     ('ph', 'f'),
 
     ('st', 'S'),
     ('nt', 'N'),
 
-    ('(?<=[aeiuoäöü])tz', 'z'),
+    (u'(?<=[aeiuoäöü])tz', 'z'),
 
     ('nd', 'D'),
     ('ng', 'G'),
@@ -80,7 +80,7 @@ regeln = [
     ('ay', 'E'),
     ('ey', 'E'),
     ('eu', 'O'),
-    ('äu', 'O'),
+    (u'äu', 'O'),
     ('oy', 'O'),
 
     ('qu', 'q'),
@@ -98,7 +98,7 @@ regeln = [
 
     ("'", ''),
     (' ', ''),
-    ('\u00a0', ''),
+    (u'\u00a0', ''),
     ('H', 'h'),
 ]
 
@@ -123,14 +123,14 @@ def wortZuStiefo(w):
     # alles Kleinbuchstaben, gleich von Anfang an.
     s = w.lower()
     # ein 'h' zwischen zwei Vokalen soll behalten werden. Temporär in ein 'H' umwandeln.
-    s = re.sub(r"([aeiouöüä])h([aeiouöüä])", r"\1H\2", s)
+    s = re.sub(u"([aeiouöüä])h([aeiouöüä])", r"\1H\2", s)
     # Die Regeln der Reihe nach anwenden.
     for a, b in regeln:
         #s = s.replace(a,b)
         s = re.sub(a, b, s)
     # Zwei aufeinanderfolgende Vokale mit dem Vokalzeichen 'c' trennen.
     while True:
-        s2 = re.sub(r"([aeiouöüäOEU])([aeiouöüäOEU])", r"\1c\2", s)
+        s2 = re.sub(u"([aeiouöüäOEU])([aeiouöüäOEU])", r"\1c\2", s)
         if s2 == s:
             break
         s = s2
@@ -165,7 +165,7 @@ def convert_text(text, wordlists):
     pct = {
         '.': ['.', 'spc2'],
         ',': [',', 'spc2'],
-        '<br>': '§',
+        '<br>': u'§',
 
         '!': ['~!', 'spc2'],
         '?': ['~?', 'spc2'],
@@ -176,7 +176,7 @@ def convert_text(text, wordlists):
         '?,': ['~?', ',', 'spc2'],
     }
 
-    quotes = ['"', "'", '«', '‹', '<', '>', '›', '»']
+    quotes = ['"', "'", u'«', u'‹', '<', '>', u'›', u'»']
     for ch in quotes:
         pct['.'+ch] = ['.', '~'+ch, 'spc2']
         pct[','+ch] = ['~'+ch, ',', 'spc2']
@@ -241,11 +241,10 @@ def convert_text(text, wordlists):
                         else:
                             res.append('~' + w1)
                     fst = False
-
         return res
 
     # UTF-8 Kennung entfernen, falls vorhanden
-    if text.startswith('\ufeff'):
+    if text.startswith(u'\ufeff'):
         text = text[1:]
 
     # text aufteilen in Blöcke
@@ -261,7 +260,7 @@ def convert_text(text, wordlists):
             flg = False
             for ln in st.split('\n'):
                 if flg:
-                    words.append('§')
+                    words.append(u'§')
                 words.extend(re.split('\s\s+', ln))
                 flg = True
         else:
@@ -280,9 +279,9 @@ def list_to_text(l):
             lines.append(line)
             line = ""
         if line:
-            line += " \u00A0 "
+            line += u" \u00A0 "
         line += w
-        if w == "§":
+        if w == u'§':
             lines.append(line)
             line = ""
     if line:
@@ -292,7 +291,7 @@ def list_to_text(l):
 
 
 def text_to_list(txt):
-    return re.split(' \u00A0 |\n', txt)
+    return re.split(u' \u00A0 |\n', txt)
 
 
 # -----------------------------------------------
