@@ -3,7 +3,7 @@ import stiefo
 
 
 
-filenamebase = "Schildbürger"
+filenamebase = "Schildbuerger"
 
 wlist = stiefo.wordlist()
 
