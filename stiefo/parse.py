@@ -199,7 +199,7 @@ def convert_text(text, wordlists):
         return None
 
     def append_or_extend(lst, x):
-        if isinstance(x, str):
+        if (isinstance(x, str) or isinstance(x, unicode)):
             lst.append(x)
         else:
             lst.extend(x)
