@@ -217,7 +217,7 @@ def convert_text(text, wordlists):
                 append_or_extend(res, x)
             else:
                 # otherwise check if there is punctuation and separate that out
-                p = [x for x in re.split(r'(\w[\w\']*\w|\w)', w) if x]
+                p = [x for x in re.split(r"(\w[\w']*\w|\w)", w) if x]
                 # then check again with the dict
                 fst = True
                 for w1 in p:
@@ -261,7 +261,7 @@ def convert_text(text, wordlists):
             for ln in st.split('\n'):
                 if flg:
                     words.append(u'§')
-                words.extend(re.split('\s\s+', ln))
+                words.extend(re.split(r'\s\s+', ln))
                 flg = True
         else:
             words.extend(convert_blk(blk))
