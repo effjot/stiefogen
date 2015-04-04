@@ -8,6 +8,7 @@ __all__ = ['convert_text', 'wortZuStiefo', 'list_to_text', 'text_to_list']
 # ===================================================================================
 
 
+# FIXME: Wird diese Funktion überhaupt noch gebraucht???
 def splitText(text):
     """
     Zerlegt einen Text in Worte und interpunktion.
@@ -25,6 +26,9 @@ def splitText(text):
 
     # words = re.split(r"\s+|(\{[!\"$].*?[!\"$]\})", text)
 
+
+# FIXME: Könnte man das evtl. nicht einfacher mit \b machen?
+splitexprPunctuation = re.compile(ur"(\w[\w']*\w|\w)", re.IGNORECASE | re.UNICODE)
 
 regeln = [
     ('sch', 'Z'),
@@ -208,6 +212,7 @@ def convert_text(text, wordlists):
     def convert_blk(blk):
         text = blk.replace('\n', ' <br> ')  # Zeilenenden erhalten
         res = []
+
         # first split into words by spaces.
         words = [x for x in re.split(r"\s+", text) if x]
         for w in words:
@@ -217,7 +222,7 @@ def convert_text(text, wordlists):
                 append_or_extend(res, x)
             else:
                 # otherwise check if there is punctuation and separate that out
-                p = [x for x in re.split(r"(\w[\w']*\w|\w)", w) if x]
+                p = [x for x in re.split(splitexprPunctuation, w) if x]
                 # then check again with the dict
                 fst = True
                 for w1 in p:
