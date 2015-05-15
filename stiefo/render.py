@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
+import sys, math
 
 from PyQt4 import QtGui, QtCore
 from stiefo import symbols
@@ -217,27 +217,36 @@ class BezierDrawer(QtGui.QWidget):
         self.wh = 800
         self.setGeometry(100, 100, 1200, 800)
         self.setWindowTitle('Bezier Curves')
-        self.screenWords = ["e b e c e d e f e g e h e j e k e l e",
-                            "e m e n e p e r e s e t e w e z e",
-                            "e sch e ch e nd e ng e cht e st e sp e pf e"]
-        self.stiefoHeight =30
-        self.showLetterBorders = False
+        if 0:
+            self.screenWords = ["e b e c e d e f e g e h e j e k e l e",
+                                "e m e n e p e r e s e t e w e z e",
+                                "e sch e ch e nd e ng e cht e st e sp e pf e"]
+        else:
+            self.screenWords = stiefoWords
+
+        self.stiefoHeight = 60
+        self.showLetterBorders = True #False
 
         RenderPdf(stiefoWords, filename)
 
 
     def paintEvent(self, e):
-        self.close()
-        #qp = QtGui.QPainter()
-        #qp.begin(self)
-        #qp.setRenderHints(QtGui.QPainter.Antialiasing, True)
-        #self.doDrawing(qp)
-        #qp.end()
+        if 1:
+            # PDF erzeugen, Hauptfenster wird hierbei nicht benoetigt
+            self.close()
+        else:
+            # Zum Modellieren und Testen im Hauptfenster zeichnen
+            qp = QtGui.QPainter()
+            qp.begin(self)
+            qp.setRenderHints(QtGui.QPainter.Antialiasing, True)
+            self.doDrawing(qp)
+            qp.end()
 
     def doDrawing(self, qp):
         h = self.stiefoHeight
         sx = h*1
         sy = h
+        sl = math.sin( 15 * math.pi/180 )  # s.a. symbols.py
 
         x0 = 10
         y0 = 10 + 3 * h
@@ -256,52 +265,66 @@ class BezierDrawer(QtGui.QWidget):
             qp.drawLine(x0, y - 3 * h, x1, y - 3 * h)
 
         blackPen = QtGui.QPen(QtCore.Qt.black, 2)
-        redPen = QtGui.QPen(QtCore.Qt.red)
-        bluePen = QtGui.QPen(QtCore.Qt.blue, 2, join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
+        redPen   = QtGui.QPen(QtCore.Qt.red)
+        bluePen  = QtGui.QPen(QtCore.Qt.blue, 2, join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
         greenPen = QtGui.QPen(QtCore.Qt.darkGreen)
         redBrush = QtGui.QBrush(QtCore.Qt.red)
-        font = QtGui.QFont("Arial", h)
+        font     = QtGui.QFont("Arial", h)
 
         px,py = 10,10+3*h
         for word in self.screenWords:
 
-            if (word[0].isalpha()):
+            if symbols.isWord(word):
+			    # todo
+				# In c und p sind die Informationen um ein Wort in einem
+				# Strich zu zeichnen ohne den Stift "abzuheben". 
+				# Ein Wort kann aber aus mehreren Teilen bestehen, daher muss hier
+				# noch ein Mechanismus her, der damit umgehen kann...
                 for w,c,p in symbols.stiefoWortZuKurve(word):
-                    w=w*sx
+                    w = w * sx  # Wortlaenge
 
+                    # Zeilenumbruch
                     if px + w > 1200:
                         px = 10
                         py += 4*h
 
+                    # Kontrollpunkte (Bezier)
                     cc = [(10 + px + x * sx, py - y * sy) for x, y in c]
 
+                    # Glyphen-Positionen
                     pp = [(10 + px + x * sx, py - y * sy) for x, y in p]
 
-                    # qp.setPen(redPen)
-                    # qp.setBrush(redBrush)
-                    # for x,y in cc:
-                    # qp.drawEllipse(x - 1, y - 1, 2, 2)
-                    # qp.setBrush(QtCore.Qt.NoBrush)
-                    #
-                    # qp.setPen(greenPen)
-                    # o = None
-                    # for x,y in cc:
-                    #     if o:
-                    #         qp.drawLine(o[0], o[1], x,y)
-                    #     o=(x,y)
+                    # Kontrollpunkte einzeichnen
+                    qp.setPen(redPen)
+                    qp.setBrush(redBrush)
+                    for x,y in cc:
+                        qp.drawEllipse(x - 2, y - 2, 4, 4)
 
+                    # Kontrollpunkte mit Linien verbinden
+                    qp.setBrush(QtCore.Qt.NoBrush)
+                    qp.setPen(greenPen)
+                    o = None
+                    for x,y in cc:
+                        if o:
+                            qp.drawLine(o[0], o[1], x,y)
+                        o=(x,y)
+
+                    # Glypen-Grenzen zeichnen
                     if self.showLetterBorders:
                         qp.setPen(greenPen)
                         d = 10
-                        #for x,y in pp: qp.drawLine(x-d*sl, y+d, x+sl*(h+d),y-h-d)
+                        for x,y in pp: 
+                            qp.drawLine(x-d*sl, y+d, x+sl*(h+d),y-h-d)
 
+                    # Wort als Bezier-Kurvenpfad zeichnen
                     pp = QtGui.QPainterPath()
-                    pp.moveTo(*cc[0])
+                    pp.moveTo(*cc[0]) # "Unpacking Argument List"
                     for i in range(1, len(cc), 3):
-                        pp.cubicTo(*(cc[i] + cc[i + 1] + cc[i + 2]))
+                        pp.cubicTo(*(cc[i] + cc[i + 1] + cc[i + 2])) # Zwei Kontrollpunkte, gefolgt von Endpunkt
                     qp.setPen(bluePen)
                     qp.drawPath(pp)
 
+                    # Neue Zeichenposition berechnen
                     px = px + w + h
             else:
                 if (word == ','):
