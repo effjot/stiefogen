@@ -2,12 +2,11 @@ import os
 import stiefo
 
 
-
-filenamebase = "Schildbürger"
+filenamebase = "Schildbuerger"
 
 wlist = stiefo.wordlist()
 
-wlist.load("WortListen/wortliste.txt")
+wlist.load("Wortlisten/wortliste.txt")
 if os.path.isfile(filenamebase+'.wrd'):
     wlist.load(filenamebase+'.wrd')
 

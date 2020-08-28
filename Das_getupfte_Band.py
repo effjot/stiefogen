@@ -2,18 +2,16 @@ import os
 import stiefo
 
 
-
 filenamebase = "Das_getupfte_Band"
 
 wlist = stiefo.wordlist()
 
-wlist.load("WortListen/wortliste.txt")
+wlist.load("Wortlisten/wortliste.txt")
 if os.path.isfile(filenamebase+'.wrd'):
     wlist.load(filenamebase+'.wrd')
 
 with open(filenamebase+'.txt', "r", encoding="utf-8") as f:
     text = f.read()
-
 
 
 abk = stiefo.wordlist(

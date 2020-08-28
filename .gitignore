@@ -60,3 +60,7 @@ target/
 *~
 .\#*
 \#*\#
+
+# Stiefogen
+*.unk
+*.sti
