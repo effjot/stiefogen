@@ -2,11 +2,9 @@ import doctest
 from os import listdir
 from os.path import isfile, join
 import re
-
-from PyQt4 import QtGui, QtCore
-
-
+import sys
 import math
+from PyQt4 import QtGui, QtCore
 
 
 #===================================================================================
@@ -21,19 +19,27 @@ dkv = 0.6  # Konsonantenverbindung
 
 vokalAbstaende = {
     #     (DX, DY, eff. Abst)
-    'a' : (1,1, de),
-    'e' : (1,0, de),
-    'i' : (1,-1, di),
-    'o' : (2,-1, du),
-    'u' : (2,0, du),
-    'ö' : (1,2, de),
-    'ei' : (2,1, du),
-    'eu' : (2,2, du),
-    'oi' : (2,2, du),
-    'ä' : (1,0, de),
-    'ü' : (1,-1, di),
-    'au' : (2,0, du),
+    'a': (1, 1, de),
+    'e': (1, 0, de),
+    'i': (1, -1, di),
+    'o': (2, -1, du),
+    'u': (2, 0, du),
+    'ö': (1, 2, de),
+    'ei': (2, 1, du),
+    'eu': (2, 2, du),
+    'oi': (2, 2, du),
+    'ä': (1, 0, de),
+    'ü': (1, -1, di),
+    'au': (2, 0, du)
 }
+
+vorsilben = {
+    # (StartY, (DX, DY, eff. Abst))
+    'vor': (-1, (2, -1, du)),
+    'zu': (0, (2, 0, du)),
+    'ein': (1, (2, 1, du))
+}
+
 
 def SplitStiefoWord(st):
     """Zerlege das Wort w in Vokale und Konsonanten.
@@ -53,7 +59,7 @@ def SplitStiefoWord(st):
     w = []
     pv = False
     for z in (st.split(' ')):
-        v = z in vokalAbstaende
+        v = z in vokalAbstaende or z in vorsilben
         if pv and v:
             w.append('c')
         w.append(z)
@@ -66,19 +72,24 @@ def SplitStiefoWord(st):
                 x.append('_')
             x.append(vokalAbstaende[l])
             k = False
+        elif l in vorsilben:
+            if not x:
+                x.append('_' + str(vorsilben[l][0]))
+                x.append(vorsilben[l][1])
+                k = False
+            else:
+                sys.exit("Vorsilbe nicht am Wortanfang!")
         else:
             if k:
-                x.append((0,0,dkv))
+                x.append((0, 0, dkv))
             x.append(l)
             k = True
     if not k:
         x.append('-')
     return x
 
-# -----------------------------------------------
 
-
-
+### Glyph paths
 
 def shiftToPos(gl, dx, dy):
     return [(dx + x + y * sl, dy + y) for (x, y) in gl]
@@ -111,11 +122,13 @@ def untenRund(dr):
     e = [(0.5, 0)] if dr else [(0.25, 0), (0.35, 0.05), (0.35, 0.05)]
     return m + e
 
+
 def untenEingelegt(dr):
     m = [(0, 0.25),
          (0.0, 0.0), (-0.2, 0)]
     e = [(-0.5, 0.0)] if dr else []
     return m + e
+
 
 def obenGewoelbt(dl):
     b = [(-0.3, 0.95)] if dl else []
@@ -130,7 +143,6 @@ def scale(g, sx, sy, s=0):
 
 def shift(g, dx, dy=0):
     return [(x + dx, y + dy) for (x, y) in g]
-
 
 
 def glyph_d(dl, dr):
@@ -158,8 +170,8 @@ def glyph_r0(dl, dr):
 
 
 def glyph_r(dl, dr):
-    y1=0.5
-    y0=0.0
+    y1 = 0.5
+    y0 = 0.0
     b = [(-0.3, y1)] if dl else [(-0.2, y1), (-0.2, y1), (-0.1, y1)]
     m = [(-0.1, y1), (0.2, y1),
          (0.2, y0), (0.5, y0)]
@@ -172,7 +184,7 @@ def glyph_w(dl, dr):
     m = [(0, 1), (-0.4, 0.9),
          (-0.4, 0), (0, 0)]
     e = [(0.3, 0)] if dr else [(0.1, 0), (0.2, 0.1), (0.2, 0.1)]
-    return (0.3, shift(b + m + e,0.3))
+    return (0.3, shift(b + m + e, 0.3))
 
 
 def glyph_m(dl, dr):
@@ -180,7 +192,7 @@ def glyph_m(dl, dr):
     m = [(0, 1), (0.3, 1),
          (0.3, 0.0), (0, 0)]
     e = [(-0.4, 0.0)] if dr else []
-    return (0.3, shift(b + m + e,0.1))
+    return (0.3, shift(b + m + e, 0.1))
 
 
 def glyph_p(dl, dr):
@@ -199,17 +211,17 @@ def glyph_b(dl, dr):
 
 
 def glyph_j(dl, dr):
-    w,g = glyph_b(dl,dr)
+    w, g = glyph_b(dl, dr)
     return (0.8, scale(g, 1, 1, 0.8))
 
 
 def glyph_t(dl, dr):
-    w,g = glyph_b(dl,dr)
+    w, g = glyph_b(dl, dr)
     return (0, scale(g, 1, 0.5))
 
 
 def glyph_g(dl, dr):
-    w,g = glyph_b(dl,dr)
+    w, g = glyph_b(dl, dr)
     return (0.4, scale(g, 1, 0.5, 0.4))
 
 
@@ -221,7 +233,7 @@ def glyph_f(dl, dr):
 
 
 def glyph_pf(dl, dr):
-    w,g = glyph_f(dl,dr)
+    w, g = glyph_f(dl, dr)
     return (0.9, scale(g, 1, 1, 0.8))
 
 
@@ -229,38 +241,39 @@ def glyph_nd(dl, dr):
     b = obenRund(dl)
     m = [(0, 0.5)]
     e = untenSpitz(dr)
-    return (0.3, shift(b + m + e,0.3))
+    return (0.3, shift(b + m + e, 0.3))
 
 
 def glyph_ng(dl, dr):
-    w,g = glyph_nd(dl,dr)
-    return (1.0, shift(scale(g, 1, 1, 0.8),-0.1))
+    w, g = glyph_nd(dl, dr)
+    return (1.0, shift(scale(g, 1, 1, 0.8), -0.1))
 
 
 def glyph_k(dl, dr):
     b = obenRund(dl)
     m = [(0, 0.5)]
     e = untenRund(dr)
-    return (0.3, shift(b + m + e,0.15))
+    return (0.3, shift(b + m + e, 0.15))
 
 
 def glyph_zw(dl, dr):
-    w,g = glyph_z(dl,dr)
+    w, g = glyph_z(dl, dr)
     return (0.2, scale(g, 1, 0.5))
 
 def glyph_schw(dl, dr):
-    w,g = glyph_sch(dl,dr)
+    w, g = glyph_sch(dl, dr)
     return (0.4, scale(g, 1, 0.5))
 
 
 def glyph_qu(dl, dr):
-    w,g = glyph_f(dl,dr)
+    w, g = glyph_f(dl, dr)
     return (0.2, scale(g, 1, 0.5))
 
 
 def glyph_cht(dl, dr):
-    w,g = glyph_k(dl,dr)
+    w, g = glyph_k(dl, dr)
     return (1.1, scale(g, 1, 1, 0.8))
+
 
 def glyph_h(dl, dr):
     b = obenSpitz(dl)
@@ -270,12 +283,12 @@ def glyph_h(dl, dr):
 
 
 def glyph_th(dl, dr):
-    w,g = glyph_h(dl,dr)
+    w, g = glyph_h(dl, dr)
     return (0.2, scale(g, 1, 0.5))
 
 
 def glyph_tsch(dl, dr):
-    w,g = glyph_nd(dl,dr)
+    w, g = glyph_nd(dl, dr)
     return (0.3, scale(g, 1, 0.5))
 
 
@@ -395,11 +408,15 @@ glyphs = {
     'c': glyph_c,
     '_': lambda dx, dy: (0, [(0, 0), (0, 0)]),
     '-': lambda dx, dy: (0, [(0, 0.5), (0, 0.5)]),
+    '_-1': lambda dx, dy: (0, [(0, -0.5), (0, -0.5)]),
+    '_0': lambda dx, dy: (0, [(0, 0), (0, 0)]),
+    '_1': lambda dx, dy: (0, [(0, +0.5), (0, +0.5)])
 }
 
 
 
 def stiefoWortZuKurve(w):
+    print("wortzukurve ", w)
     sc = 1.5
     ll = [None] + SplitStiefoWord(w) + [None]
     x = 0
@@ -409,6 +426,7 @@ def stiefoWortZuKurve(w):
     for i in range(0, len(ll) - 2, 2):
         dl = ll[i]
         k = ll[i + 1]
+        print("  ",k)
         dr = ll[i + 2]
         if not k in glyphs:
             print("error, unknown glyph: ["+k+"]", w)
@@ -428,11 +446,7 @@ def stiefoWortZuKurve(w):
     return [(x,c,xpos)]
 
 
-
 # -----------------------------------------------
 
 if __name__ == '__main__':
-
     print(doctest.testmod())
-
-
