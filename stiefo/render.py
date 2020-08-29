@@ -10,10 +10,13 @@ from stiefo import symbols
 
 
 def render_pdf(words, filename):
+    print("render_pdf start")
     app = QtGui.QApplication(sys.argv)
     ex = BezierDrawer(words, filename)
+    print("render_pdf vor show")
     ex.show()
     app.exec_()
+    print("render_pdf nach show")
 
 
 class renderer:
@@ -189,18 +192,23 @@ class renderer:
 
 
 def RenderPdf(words, filename):
+    print("RenderPdf")
     printer = QtGui.QPrinter()
     printer.setOutputFileName(filename)
     printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
     printer.setResolution(300)
-
+    print("RenderPdf nach printer")
+    
     painter = QtGui.QPainter()
     painter.begin(printer)
-
+    print("RenderPdf nach begin")
+    
     ctx = renderer(printer, painter)
 
     cmds = ctx.prepare(words)
+    print("RenderPdf nach cmds=")
     ctx.render(cmds)
+    print("RenderPdf vor end()")
     painter.end()
 
 

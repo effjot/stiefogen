@@ -26,9 +26,13 @@ def splitText(text):
 
     # FIXME: sinnvolle Codierung Präfixe; z.Zt. müssen Codes genau 1 Buchstaben lang sein
 regeln = [
-    ('vor', '1'),
-    ('zu', '2'),
-    ('ein', '3'),
+    ('\\bmit', '1'),
+    ('\\ber', '2'),
+    ('\\ban', '3'),
+    ('\\bvor', '4'),
+    ('\\bzu', '5'),
+    ('\\bein', '6'),
+    ('\\baus', '7'),
 
     ('sch', 'Z'),
     ('cht', 'X'),
@@ -138,9 +142,13 @@ def wortZuStiefo(w):
             break
         s = s2
     print("parse: ", s)
-    v = {'1': 'vor',
-         '2': 'zu',
-         '3': 'ein',
+    v = {'1': 'mit',
+         '2': 'er',
+         '3': 'an',
+         '4': 'vor',
+         '5': 'zu',
+         '6': 'ein',
+         '7': 'aus',
          'Z': 'sch',
          'C': 'ch',
          'D': 'nd',

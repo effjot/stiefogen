@@ -10,7 +10,7 @@ from PyQt4 import QtGui, QtCore
 #===================================================================================
 
 
-sl = math.sin( 15 * math.pi/180)
+sl = math.sin(15 * math.pi/180)
 
 di = 0.6
 de = 1.3
@@ -34,10 +34,15 @@ vokalAbstaende = {
 }
 
 vorsilben = {
-    # (StartY, (DX, DY, eff. Abst))
-    'vor': (-1, (2, -1, du)),
-    'zu': (0, (2, 0, du)),
-    'ein': (1, (2, 1, du))
+    # (Typ, StartY, (DX, DY, eff. Abst))
+    # Typ: _ normaler Anstrich, = waager. Anstrich
+    'mit': ("_", -1, (1, -1, di)),
+    'er': ("_", 0, (1, 0, dkv)), # Vergleich mit Stiefo-Materialien sieht kürzer aus als E
+    'an': ("_", 1, (1, 1, di)),
+    'vor': ("_", -1, (2, -1, du)),
+    'zu': ("_", 0, (2, 0, du)),
+    'ein': ("_", 1, (2, 1, du)),
+    'aus': ("=", 0, (2, 0, du))
 }
 
 
@@ -74,11 +79,11 @@ def SplitStiefoWord(st):
             k = False
         elif l in vorsilben:
             if not x:
-                x.append('_' + str(vorsilben[l][0]))
-                x.append(vorsilben[l][1])
+                x.append(vorsilben[l][0] + str(vorsilben[l][1]))
+                x.append(vorsilben[l][2])
                 k = False
             else:
-                sys.exit("Vorsilbe nicht am Wortanfang!")
+                sys.exit("Vorsilbe nicht am Wortanfang! {} {} {}".format(w, l, x))
         else:
             if k:
                 x.append((0, 0, dkv))
@@ -410,7 +415,8 @@ glyphs = {
     '-': lambda dx, dy: (0, [(0, 0.5), (0, 0.5)]),
     '_-1': lambda dx, dy: (0, [(0, -0.5), (0, -0.5)]),
     '_0': lambda dx, dy: (0, [(0, 0), (0, 0)]),
-    '_1': lambda dx, dy: (0, [(0, +0.5), (0, +0.5)])
+    '_1': lambda dx, dy: (0, [(0, +0.5), (0, +0.5)]),
+    '=0': lambda dx, dy: (0, [(0, +0.5), (0, 0.5)])
 }
 
 
@@ -422,28 +428,28 @@ def stiefoWortZuKurve(w):
     x = 0
     y = 0
     c = []
-    xpos = [(0,0)]
+    xpos = [(0, 0)]
     for i in range(0, len(ll) - 2, 2):
         dl = ll[i]
         k = ll[i + 1]
-        print("  ",k)
+        print("  ", k)
         dr = ll[i + 2]
         if not k in glyphs:
-            print("error, unknown glyph: ["+k+"]", w)
+            print("error, unknown glyph: [" + k + "]", w)
         glFunc = glyphs[k]
         w, g = glFunc(dl, dr)
         w *= sc
-        g = scale(g,sc,1)
+        g = scale(g, sc, 1)
         if dl:
             dx, dy, ea = dl
             x += ea
             y += dy * 0.5
-            xpos.append((x,y))
+            xpos.append((x, y))
         gs = shiftToPos(g, x, y)
         x += w
-        xpos.append((x,y))
+        xpos.append((x, y))
         for t in gs: c.append(t)
-    return [(x,c,xpos)]
+    return [(x, c, xpos)]
 
 
 # -----------------------------------------------
