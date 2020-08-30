@@ -12,11 +12,11 @@ import math
 #===================================================================================
 
 
-sl = math.sin( 15 * math.pi/180)
+sl = math.sin(15 * math.pi/180)
 
-di = 0.4
-di_extra = 0.3
-de = 1.3
+di = 0.2
+di_extra = 0.5
+de = 1.2
 du = 3
 dkv = 0.6  # Konsonantenverbindung
 
@@ -26,6 +26,7 @@ vokalAbstaende = {
     'e' : (1,0, de),
     'i' : (1,-1, di),
     'I': (1, -1, di + di_extra),
+    'ii': (1, -1, 0.3*di),
     'o' : (2,-1, du),
     'u' : (2,0, du),
     'ö' : (1,2, de + 0.3),
@@ -62,8 +63,11 @@ def SplitStiefoWord(st):
             z = 'I'
         if pv and v:
             w.append('c')
-        if pz in ('i', 'ü') and z in ('b', 'f', 'k', 'm', 'p', 'z', 'cht', 'ng', 'nk'):
+        if pz in ('i', 'ü') and z in ('b', 'f', 'k', 'm', 'p', 'r', 'z',
+                                      'cht', 'ng', 'nk', 'st'):
             w[-1] = 'I'
+        if pz in ('i', 'ü') and z in ('ch'):  # evtl. 'sp'
+            w[-1] = 'ii'
         w.append(z)
         pz = z
         pv = v
