@@ -91,7 +91,6 @@ def SplitStiefoWord(st):
 
 
 
-
 def shiftToPos(gl, dx, dy):
     return [(dx + x + y * sl, dy + y) for (x, y) in gl]
 
@@ -170,12 +169,12 @@ def glyph_r0(dl, dr):
 
 
 def glyph_r(dl, dr):
-    y1=0.5
-    y0=0.0
+    y1 = 0.5
+    y0 = 0.0
     b = [(-0.3, y1)] if dl else [(-0.2, y1), (-0.2, y1), (-0.1, y1)]
     m = [(-0.1, y1), (0.2, y1),
          (0.2, y0), (0.5, y0)]
-    e = [(0.7, y0)] if dr else [(0.5, y0), (0.6, y0), (0.6, y0)]
+    e = [(0.7, y0)] if dr else [(0.5, y0), (0.6, y0 + 0.1), (0.6, y0 + 0.1)]
     return (0.4, b + m + e)
 
 
