@@ -17,7 +17,7 @@ sl = math.sin(15 * math.pi/180)
 di = 0.2
 di_extra = 0.5
 de = 1.2
-du = 3
+du = 2.6
 dkv = 0.6  # Konsonantenverbindung
 
 vokalAbstaende = {
@@ -64,7 +64,7 @@ def SplitStiefoWord(st):
         if pv and v:
             w.append('c')
         if pz in ('i', 'ü') and z in ('b', 'f', 'k', 'm', 'p', 'r', 'z',
-                                      'cht', 'ng', 'nk', 'st'):
+                                      'cht', 'nd', 'nt', 'ng', 'nk', 'st'):
             w[-1] = 'I'
         if pz in ('i', 'ü') and z in ('ch'):  # evtl. 'sp'
             w[-1] = 'ii'
