@@ -58,7 +58,7 @@ def SplitStiefoWord(st):
     pv = False
     for z in (st.split(' ')):
         v = z in vokalAbstaende
-        if first and v in ('i', 'ü'):
+        if first and z in ('i', 'ü'):
             z = 'I'
         if pv and v:
             w.append('c')
