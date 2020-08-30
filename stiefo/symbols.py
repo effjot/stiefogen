@@ -63,7 +63,7 @@ def SplitStiefoWord(st):
             z = 'I'
         if pv and v:
             w.append('c')
-        if pz in ('i', 'ü') and z in ('b', 'f', 'k', 'm', 'p', 'r', 'z',
+        if pz in ('i', 'ü') and z in ('b', 'f', 'g', 'k', 'm', 'p', 'r', 'z',
                                       'cht', 'nd', 'nt', 'ng', 'nk', 'st'):
             w[-1] = 'I'
         if pz in ('i', 'ü') and z in ('ch'):  # evtl. 'sp'
