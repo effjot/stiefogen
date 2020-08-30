@@ -216,8 +216,8 @@ def glyph_b(dl, dr):
 
 
 def glyph_j(dl, dr):
-    w,g = glyph_b(dl,dr)
-    return (0.8, scale(g, 1, 1, 0.8))
+    w, g = glyph_b(dl, dr)
+    return (0.7, scale(g, 1, 1, 0.7))
 
 
 def glyph_t(dl, dr):
@@ -250,8 +250,8 @@ def glyph_nd(dl, dr):
 
 
 def glyph_ng(dl, dr):
-    w,g = glyph_nd(dl,dr)
-    return (1.0, shift(scale(g, 1, 1, 0.8),-0.1))
+    w, g = glyph_nd(dl, dr)
+    return (0.8, shift(scale(g, 1, 1, 0.6), -0.1))
 
 
 def glyph_k(dl, dr, runder = True):
