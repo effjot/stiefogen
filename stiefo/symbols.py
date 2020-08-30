@@ -116,11 +116,17 @@ def obenRund(dl):
     return b + m
 
 
-def untenRund(dr):
-    m = [(0, 0.25),
-         (0, 0), (0.2, 0)]
-    e = [(0.5, 0)] if dr else [(0.25, 0), (0.35, 0.05), (0.35, 0.05)]
+def untenRund(dr, runder = True):
+    if runder:
+        m = [(0, 0.4),
+             (0, 0), (0.3, 0)]
+        e = [(0.5, 0)] if dr else [(0.35, 0), (0.45, 0.1), (0.45, 0.1)]
+    else:
+        m = [(0, 0.25),
+             (0, 0), (0.2, 0)]
+        e = [(0.5, 0)] if dr else [(0.25, 0), (0.4, 0.1), (0.4, 0.1)]
     return m + e
+
 
 def untenEingelegt(dr):
     m = [(0, 0.25),
@@ -224,16 +230,16 @@ def glyph_g(dl, dr):
     return (0.4, scale(g, 1, 0.5, 0.4))
 
 
-def glyph_f(dl, dr):
+def glyph_f(dl, dr, runder = True):
     b = obenSpitz(dl)
     m = [(0.0, 0.5)]
-    e = untenRund(dr)
+    e = untenRund(dr, runder = runder)
     return (0.2, b + m + e)
 
 
 def glyph_pf(dl, dr):
-    w,g = glyph_f(dl,dr)
-    return (0.9, scale(g, 1, 1, 0.8))
+    w, g = glyph_f(dl, dr, runder = False)
+    return (0.8, scale(g, 1, 1, 0.7))
 
 
 def glyph_nd(dl, dr):
@@ -248,11 +254,11 @@ def glyph_ng(dl, dr):
     return (1.0, shift(scale(g, 1, 1, 0.8),-0.1))
 
 
-def glyph_k(dl, dr):
+def glyph_k(dl, dr, runder = True):
     b = obenRund(dl)
     m = [(0, 0.5)]
-    e = untenRund(dr)
-    return (0.3, shift(b + m + e,0.15))
+    e = untenRund(dr, runder = runder)
+    return (0.3, shift(b + m + e, 0.15))
 
 
 def glyph_zw(dl, dr):
@@ -270,8 +276,9 @@ def glyph_qu(dl, dr):
 
 
 def glyph_cht(dl, dr):
-    w,g = glyph_k(dl,dr)
-    return (1.1, scale(g, 1, 1, 0.8))
+    w,g = glyph_k(dl, dr, runder = False)
+    return (0.8, scale(g, 1, 1, 0.5))
+
 
 def glyph_h(dl, dr):
     b = obenSpitz(dl)
