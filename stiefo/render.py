@@ -9,9 +9,11 @@ from stiefo import symbols
 #-----------------------------------------------------
 
 
-def render_pdf(words, filename):
+
+
+def render_pdf(words, filename, papersize = QtGui.QPrinter.A4):
     app = QtGui.QApplication(sys.argv)
-    ex = BezierDrawer(words, filename)
+    ex = BezierDrawer(words, filename, papersize)
     ex.show()
     app.exec_()
 
@@ -188,10 +190,11 @@ class renderer:
 
 
 
-def RenderPdf(words, filename):
+def RenderPdf(words, filename, papersize):
     printer = QtGui.QPrinter()
     printer.setOutputFileName(filename)
     printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
+    printer.setPaperSize(papersize)
     printer.setResolution(300)
 
     painter = QtGui.QPainter()
@@ -208,7 +211,7 @@ def RenderPdf(words, filename):
 
 class BezierDrawer(QtGui.QWidget):
 
-    def __init__(self, stiefoWords, filename):
+    def __init__(self, stiefoWords, filename, papersize):
         super(BezierDrawer, self).__init__()
 
         self.ww = 1200
@@ -221,7 +224,7 @@ class BezierDrawer(QtGui.QWidget):
         self.stiefoHeight =30
         self.showLetterBorders = False
 
-        RenderPdf(stiefoWords, filename)
+        RenderPdf(stiefoWords, filename, papersize)
 
 
     def paintEvent(self, e):
