@@ -6,14 +6,12 @@ import sys
 from PyQt4 import QtGui, QtCore
 from stiefo import symbols
 
-#-----------------------------------------------------
-
 
 def render_pdf(words, filename):
     app = QtGui.QApplication(sys.argv)
     ex = BezierDrawer(words, filename)
     ex.show()
-    app.exec_()
+    sys.exit(app.exec_())
 
 
 class renderer:
@@ -24,20 +22,20 @@ class renderer:
         self.h = 30
         self.x0 = int(self.pageRect.left())
         self.y0 = int(self.pageRect.top() + 3 * self.h)
-        self.x1 = int(self.pageRect.right()-200)
-        self.y1 = int(self.pageRect.bottom()-200)
+        self.x1 = int(self.pageRect.right() - 200)
+        self.y1 = int(self.pageRect.bottom() - 200)
         self.l1Pen = QtGui.QPen(QtGui.QColor(100, 100, 100))
         self.l2Pen = QtGui.QPen(QtGui.QColor(180, 180, 180))
         self.bluePen = QtGui.QPen(QtCore.Qt.black, 4, join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
-        self.font = QtGui.QFont("AHo", self.h*72/300 *1.6)
+        self.font = QtGui.QFont("Times", self.h*72/300 * 1.6)
         self.pgNr = 1
         self.sx = self.h
         self.sy = self.h
-        self.px,self.py = self.x0,self.y0
+        self.px,self.py = self.x0, self.y0
         self.lineatur(self.pgNr)
 
     def lineatur(self, pgnr = None):
-        for y in range(self.y0, self.y1+2*self.h, 4 * self.h):
+        for y in range(self.y0, self.y1 + 2*self.h, 4 * self.h):
             self.painter.setPen(self.l1Pen)
             self.painter.drawLine(self.x0, y, self.x1, y)
             self.painter.setPen(self.l2Pen)
@@ -47,27 +45,27 @@ class renderer:
         if pgnr:
             self.painter.setPen(self.bluePen)
             self.painter.setFont(self.font)
-            self.painter.drawText((self.x1-self.x0)/2,self.y1+100,str(pgnr))
+            self.painter.drawText((self.x1 - self.x0)/2, self.y1 + 100, str(pgnr))
 
     def line_break(self):
         self.px = self.x0
         self.py += 4*self.h
 
     def new_page(self):
-        self.px,self.py = self.x0,self.y0
+        self.px, self.py = self.x0, self.y0
         self.printer.newPage()
-        self.pgNr+=1
+        self.pgNr += 1
         self.lineatur(self.pgNr)
 
     def measure_str(self, word):
         fontMetrics = self.painter.fontMetrics()
-        return fontMetrics.width(word+" ")
+        return fontMetrics.width(word + " ")
 
     def draw_text(self, word):
         self.painter.setPen(self.bluePen)
-        self.painter.drawText(self.px, self.py,""+word+" ")
+        self.painter.drawText(self.px, self.py, "" + word + " ")
         fontMetrics = self.painter.fontMetrics()
-        w = fontMetrics.width(word+" ")
+        w = fontMetrics.width(word + " ")
         self.px += w
 
     def draw_dot_cross(self):
@@ -136,30 +134,30 @@ class renderer:
                 else:
                     crv = symbols.stiefoWortZuKurve(word)
                     w = 0
-                    for dw,_,_ in crv:
+                    for dw, _, _ in crv:
                         w += dw
                     res.append(('curve', w*self.sx, crv, 0))
 
-        spcreq = [w for _,w,_,_ in res]
+        spcreq = [w for _, w, _, _ in res]
         d = 0
-        for i in range(len(res)-1,-1,-1):
-            _,w,_,z = res[i]
+        for i in range(len(res) - 1, -1, -1):
+            _, w, _, z = res[i]
             if z == 0:
                 spcreq[i] += d
                 d = 0
-            elif z ==-1:
+            elif z == -1:
                 spcreq[i] += d
                 d += w
             elif z == 1:
-                spcreq[i] += spcreq[i+1]
+                spcreq[i] += spcreq[i + 1]
                 d = 0
 
-        res = [(t,w,d,r) for ((t,w,d,_),r) in zip(res, spcreq)]
+        res = [(t, w, d, r) for ((t, w, d, _), r) in zip(res, spcreq)]
         return res
 
     def render(self, cmds):
         flag = False
-        for cmd,w,data,spc in cmds:
+        for cmd, w, data, spc in cmds:
             if (cmd == 'curve' or cmd == 'period') and flag:
                 if self.px > self.x0: self.advance(self.h*0.5)
 
@@ -187,7 +185,6 @@ class renderer:
         pass
 
 
-
 def RenderPdf(words, filename):
     printer = QtGui.QPrinter()
     printer.setOutputFileName(filename)
@@ -201,9 +198,8 @@ def RenderPdf(words, filename):
 
     cmds = ctx.prepare(words)
     ctx.render(cmds)
+
     painter.end()
-
-
 
 
 class BezierDrawer(QtGui.QWidget):
@@ -218,11 +214,10 @@ class BezierDrawer(QtGui.QWidget):
         self.screenWords = ["e b e c e d e f e g e h e j e k e l e",
                             "e m e n e p e r e s e t e w e z e",
                             "e sch e ch e nd e ng e cht e st e sp e pf e"]
-        self.stiefoHeight =30
+        self.stiefoHeight = 30
         self.showLetterBorders = False
 
         RenderPdf(stiefoWords, filename)
-
 
     def paintEvent(self, e):
         self.close()
@@ -258,14 +253,14 @@ class BezierDrawer(QtGui.QWidget):
         bluePen = QtGui.QPen(QtCore.Qt.blue, 2, join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
         greenPen = QtGui.QPen(QtCore.Qt.darkGreen)
         redBrush = QtGui.QBrush(QtCore.Qt.red)
-        font = QtGui.QFont("Arial", h)
+        font = QtGui.QFont("Times", h)
 
-        px,py = 10,10+3*h
+        px, py = 10, 10 + 3*h
         for word in self.screenWords:
 
             if (word[0].isalpha()):
-                for w,c,p in symbols.stiefoWortZuKurve(word):
-                    w=w*sx
+                for w, c, p in symbols.stiefoWortZuKurve(word):
+                    w = w * sx
 
                     if px + w > 1200:
                         px = 10
@@ -312,7 +307,6 @@ class BezierDrawer(QtGui.QWidget):
                 else:
                     qp.setFont(font)
                     fontMetrics = qp.fontMetrics()
-                    qp.drawText(px,py,word)
+                    qp.drawText(px, py, word)
                     w = fontMetrics.width(word)
                     px += w
-
