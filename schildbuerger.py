@@ -7,10 +7,10 @@ filenamebase = "Schildbuerger"
 wlist = stiefo.wordlist()
 
 wlist.load("Wortlisten/wortliste.txt")
-if os.path.isfile(filenamebase+'.wrd'):
-    wlist.load(filenamebase+'.wrd')
+if os.path.isfile(filenamebase + '.wrd'):
+    wlist.load(filenamebase + '.wrd')
 
-with open(filenamebase+'.txt', "r", encoding="utf-8") as f:
+with open(filenamebase + '.txt', "r", encoding="utf-8") as f:
     text = f.read()
 
 
@@ -21,7 +21,7 @@ unk.save(filenamebase + '.unk')
 print(unknown)
 
 st = stiefo.list_to_text(stiefoWords)
-with open(filenamebase+'.sti', "w", encoding="utf-8") as f:
+with open(filenamebase + '.sti', "w", encoding="utf-8") as f:
     f.write(st)
 
 stiefo.render_pdf(stiefoWords, filenamebase + ".pdf")

@@ -211,26 +211,37 @@ class BezierDrawer(QtGui.QWidget):
         self.wh = 800
         self.setGeometry(100, 100, 1200, 800)
         self.setWindowTitle('Bezier Curves')
-        self.screenWords = ["e b e c e d e f e g e h e j e k e l e",
-                            "e m e n e p e r e s e t e w e z e",
-                            "e sch e ch e nd e ng e cht e st e sp e pf e"]
+        if True:
+            self.screenWords = ["e b e c e d e f e g e h e j e k e l e",
+                                "e m e n e p e r e s e t e w e z e",
+                                "e sch e ch e nd e ng e cht e st e sp e pf e"]
+        else:
+            self.screenWords = stiefoWords
+
         self.stiefoHeight = 30
+
+        self.drawOnScreen = False  # Zum Modellieren und Testen im Hauptfenster zeichnen
+        self.showBezierPoints = False
         self.showLetterBorders = False
 
         RenderPdf(stiefoWords, filename)
 
     def paintEvent(self, e):
-        self.close()
-        #qp = QtGui.QPainter()
-        #qp.begin(self)
-        #qp.setRenderHints(QtGui.QPainter.Antialiasing, True)
-        #self.doDrawing(qp)
-        #qp.end()
+        if not self.drawOnScreen:
+            # PDF erzeugen, Hauptfenster wird hierbei nicht benoetigt
+            self.close()
+        else:
+            qp = QtGui.QPainter()
+            qp.begin(self)
+            qp.setRenderHints(QtGui.QPainter.Antialiasing, True)
+            self.doDrawing(qp)
+            qp.end()
 
     def doDrawing(self, qp):
         h = self.stiefoHeight
         sx = h*1
         sy = h
+        sl = symbols.slant
 
         x0 = 10
         y0 = 10 + 3 * h
@@ -266,32 +277,41 @@ class BezierDrawer(QtGui.QWidget):
                         px = 10
                         py += 4*h
 
+                    # Bezier-Punkte
                     cc = [(10 + px + x * sx, py - y * sy) for x, y in c]
 
+                    # Glyph-Positionen
                     pp = [(10 + px + x * sx, py - y * sy) for x, y in p]
 
-                    # qp.setPen(redPen)
-                    # qp.setBrush(redBrush)
-                    # for x,y in cc:
-                    # qp.drawEllipse(x - 1, y - 1, 2, 2)
-                    # qp.setBrush(QtCore.Qt.NoBrush)
-                    #
-                    # qp.setPen(greenPen)
-                    # o = None
-                    # for x,y in cc:
-                    #     if o:
-                    #         qp.drawLine(o[0], o[1], x,y)
-                    #     o=(x,y)
+                    # Bezier-Punkte einzeichnen
+                    if self.showBezierPoints:
+                        qp.setPen(redPen)
+                        qp.setBrush(redBrush)
+                        for x, y in cc:
+                            qp.drawEllipse(x - 1, y - 1, 2, 2)
 
+                        # Punkte mit Linien verbinden
+                        qp.setBrush(QtCore.Qt.NoBrush)
+                        qp.setPen(greenPen)
+                        o = None
+                        for x, y in cc:
+                            if o:
+                                qp.drawLine(o[0], o[1], x,y)
+                            o = (x, y)
+
+                    # Glyph-Grenzen zeichnen
                     if self.showLetterBorders:
                         qp.setPen(greenPen)
                         d = 10
-                        #for x,y in pp: qp.drawLine(x-d*sl, y+d, x+sl*(h+d),y-h-d)
+                        for x, y in pp:
+                            qp.drawLine(x - d*sl, y + d, x + sl*(h + d), y - h - d)
 
+                    # Wort als Bezier-Pfad zeichnen
                     pp = QtGui.QPainterPath()
-                    pp.moveTo(*cc[0])
+                    pp.moveTo(*cc[0])  # "unpacking argument list"
                     for i in range(1, len(cc), 3):
-                        pp.cubicTo(*(cc[i] + cc[i + 1] + cc[i + 2]))
+                        pp.cubicTo(*(cc[i] + cc[i + 1] + cc[i + 2]))  # 2 Kontrollpunkte,
+                                                         # gefolgt von 1 Endpunkt
                     qp.setPen(bluePen)
                     qp.drawPath(pp)
 
