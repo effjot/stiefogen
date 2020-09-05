@@ -227,11 +227,7 @@ class BezierDrawer(QtGui.QMainWindow):
         self.ui.setupUi(self)
 
         QtCore.QObject.connect(self.ui.button_update, QtCore.SIGNAL("clicked()"),
-                               self.update_stiefo)
-
-        self.ww = 1200
-        self.wh = 800
-        self.stiefoHeight = 40
+                               self.update_text)
 
         if stiefoWords:
             self.screenWords = stiefoWords
@@ -241,28 +237,35 @@ class BezierDrawer(QtGui.QMainWindow):
                                 "e sch e ch e nd e ng e cht e st e sp e pf e"]
         if not filename:
             self.drawOnScreen = True  # Zum Modellieren und Testen im Hauptfenster zeichnen
-            self.showBezierPoints = True
-            self.showLetterBorders = True
+            self.ui.drawing_area.update_text(self.screenWords)
         else:  # PDF erzeugen
-            self.drawOnScreen = False
-            self.showBezierPoints = False
-            self.showLetterBorders = False
             RenderPdf(stiefoWords, filename)
 
-    def update_stiefo(self):
+    def update_text(self):
         self.screenWords = stiefo.text_to_list(self.ui.text_entry.toPlainText())
+        self.ui.drawing_area.update_text(self.screenWords)
+
+
+class DrawingArea(QtGui.QFrame):
+    def __init__(self, parent):
+        super(DrawingArea, self).__init__()
+        self.screenWords = []
+        self.ww = 1200
+        self.wh = 800
+        self.stiefoHeight = 40
+        self.showBezierPoints = True
+        self.showLetterBorders = True
+
+    def update_text(self, text):
+        self.screenWords = text
         self.update()
 
     def paintEvent(self, e):
-        if not self.drawOnScreen:
-            # PDF erzeugen, Hauptfenster wird hierbei nicht benötigt
-            self.close()
-        else:
-            qp = QtGui.QPainter()
-            qp.begin(self)
-            qp.setRenderHints(QtGui.QPainter.Antialiasing, True)
-            self.doDrawing(qp)
-            qp.end()
+        qp = QtGui.QPainter()
+        qp.begin(self)
+        qp.setRenderHints(QtGui.QPainter.Antialiasing, True)
+        self.doDrawing(qp)
+        qp.end()
 
     def doDrawing(self, qp):
         h = self.stiefoHeight
@@ -351,6 +354,7 @@ class BezierDrawer(QtGui.QMainWindow):
                     px = 10
                     py += 4*h
                 else:
+                    qp.setPen(blackPen)
                     qp.setFont(font)
                     fontMetrics = qp.fontMetrics()
                     qp.drawText(px, py, word)
