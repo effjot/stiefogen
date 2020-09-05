@@ -10,6 +10,7 @@ import stiefo
 stiefoHeightPrint = 30
 stiefoHeightScreen = 50
 
+zeichneHilfslinien = False
 
 def render_pdf(words, filename):
     app = QtGui.QApplication(sys.argv)
@@ -51,10 +52,11 @@ class print_renderer:
         for y in range(self.y0, self.y1 + 2*self.h, 4 * self.h):
             self.painter.setPen(self.l1Pen)
             self.painter.drawLine(self.x0, y, self.x1, y)
-            self.painter.setPen(self.l2Pen)
-            self.painter.drawLine(self.x0, y - self.h, self.x1, y - self.h)
-            self.painter.drawLine(self.x0, y - 2 * self.h, self.x1, y - 2 * self.h)
-            self.painter.drawLine(self.x0, y - 3 * self.h, self.x1, y - 3 * self.h)
+            if (zeichneHilfslinien):
+                self.painter.setPen(self.l2Pen)
+                self.painter.drawLine(self.x0, y - self.h, self.x1, y - self.h)
+                self.painter.drawLine(self.x0, y - 2 * self.h, self.x1, y - 2 * self.h)
+                self.painter.drawLine(self.x0, y - 3 * self.h, self.x1, y - 3 * self.h)
         if pgnr:
             self.painter.setPen(self.blackPen)
             self.painter.setFont(self.font)
