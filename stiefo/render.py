@@ -4,7 +4,9 @@
 import sys
 
 from PyQt4 import QtGui, QtCore
-from stiefo import symbols
+#from stiefo import symbols, Ui_stiefo_curves
+import stiefo
+#import stiefo.stiefo_curves_interactive
 
 
 def render_pdf(words, filename):
@@ -217,15 +219,17 @@ def RenderPdf(words, filename):
     painter.end()
 
 
-class BezierDrawer(QtGui.QWidget):
-
-    def __init__(self, stiefoWords, filename):
+class BezierDrawer(QtGui.QMainWindow):
+    def __init__(self, stiefoWords, filename, parent=None):
         super(BezierDrawer, self).__init__()
+        QtGui.QWidget.__init__(self, parent)
+        self.ui = stiefo.Ui_stiefo_curves()
+        self.ui.setupUi(self)
 
         self.ww = 1200
         self.wh = 800
-        self.setGeometry(100, 100, 1200, 800)
-        self.setWindowTitle('Stiefogen Bezier Curves')
+        # self.setGeometry(100, 100, 1200, 800)
+        # self.setWindowTitle('Stiefogen Bezier Curves')
 
         self.stiefoHeight = 60
 
@@ -260,7 +264,7 @@ class BezierDrawer(QtGui.QWidget):
         h = self.stiefoHeight
         sx = h*1
         sy = h
-        sl = symbols.slant
+        sl = stiefo.slant
 
         x0 = 10
         y0 = 10 + 3 * h
@@ -288,7 +292,7 @@ class BezierDrawer(QtGui.QWidget):
         px, py = 10, 10 + 3*h
         for word in self.screenWords:
             if (word[0].isalpha()):
-                for w, c, p in symbols.stiefoWortZuKurve(word):
+                for w, c, p in stiefo.stiefoWortZuKurve(word):
                     w = w * sx
 
                     if px + w > 1200:
