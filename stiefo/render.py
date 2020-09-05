@@ -250,8 +250,6 @@ class DrawingArea(QtGui.QFrame):
     def __init__(self, parent):
         super(DrawingArea, self).__init__()
         self.screenWords = []
-        self.ww = 1200
-        self.wh = 800
         self.stiefoHeight = 40
         self.showBezierPoints = True
         self.showLetterBorders = True
@@ -261,22 +259,26 @@ class DrawingArea(QtGui.QFrame):
         self.update()
 
     def paintEvent(self, e):
+        ww = self.frameRect().width()
+        wh = self.frameRect().height()
         qp = QtGui.QPainter()
         qp.begin(self)
         qp.setRenderHints(QtGui.QPainter.Antialiasing, True)
-        self.doDrawing(qp)
+        self.doDrawing(qp, ww, wh)
         qp.end()
 
-    def doDrawing(self, qp):
+    def doDrawing(self, qp, ww, wh):
         h = self.stiefoHeight
+        sl = stiefo.slant
+        hmargin = 8
+        vmargin = 4
         sx = h*1
         sy = h
-        sl = stiefo.slant
 
-        x0 = 10
-        y0 = 10 + 3 * h
-        x1 = self.ww
-        y1 = self.wh
+        x0 = hmargin
+        y0 = vmargin + 3*h
+        x1 = ww - hmargin
+        y1 = wh - vmargin
 
         # Lineatur
         l1Pen = QtGui.QPen(QtGui.QColor(190, 190, 190))
@@ -291,19 +293,20 @@ class DrawingArea(QtGui.QFrame):
 
         blackPen = QtGui.QPen(QtCore.Qt.black, 2)
         redPen = QtGui.QPen(QtCore.Qt.red)
-        bluePen = QtGui.QPen(QtCore.Qt.blue, 2, join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
+        bluePen = QtGui.QPen(QtCore.Qt.blue, 2,
+                             join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
         greenPen = QtGui.QPen(QtCore.Qt.darkGreen)
         redBrush = QtGui.QBrush(QtCore.Qt.red)
         font = QtGui.QFont("Times", h)
 
-        px, py = 10, 10 + 3*h
+        px, py = hmargin, vmargin + 3*h  # start position for drawing
         for word in self.screenWords:
             if (word[0].isalpha()):
                 for w, c, p in stiefo.stiefoWortZuKurve(word):
                     w = w * sx
 
-                    if px + w > 1200:
-                        px = 10
+                    if px + w > ww:
+                        px = hmargin
                         py += 4*h
 
                     # Bezier-Punkte
@@ -325,13 +328,13 @@ class DrawingArea(QtGui.QFrame):
                         o = None
                         for x, y in cc:
                             if o:
-                                qp.drawLine(o[0], o[1], x,y)
+                                qp.drawLine(o[0], o[1], x, y)
                             o = (x, y)
 
                     # Glyph-Grenzen zeichnen
                     if self.showLetterBorders:
                         qp.setPen(greenPen)
-                        d = 10
+                        d = 10  # overshoot
                         for x, y in pp:
                             qp.drawLine(x - d*sl, y + d, x + sl*(h + d), y - h - d)
 
