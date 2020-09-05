@@ -14,24 +14,39 @@ def render_pdf(words, filename):
     sys.exit(app.exec_())
 
 
+def render_screen(words):
+    app = QtGui.QApplication(sys.argv)
+    window = BezierDrawer(words, [])
+    window.show()
+    sys.exit(app.exec_())
+
+
 class renderer:
     def __init__(self, printer, painter):
-        self.printer = printer
-        self.pageRect = printer.pageRect(QtGui.QPrinter.DevicePixel)
-        self.painter = painter
         self.h = 30
-        self.x0 = int(self.pageRect.left())
-        self.y0 = int(self.pageRect.top() + 3 * self.h)
-        self.x1 = int(self.pageRect.right() - 200)
-        self.y1 = int(self.pageRect.bottom() - 200)
+        self.printer = printer
+        self.painter = painter
+        if self.printer:
+            self.pageRect = printer.pageRect(QtGui.QPrinter.DevicePixel)
+            self.x0 = int(self.pageRect.left())
+            self.y0 = int(self.pageRect.top() + 3 * self.h)
+            self.x1 = int(self.pageRect.right() - 200)
+            self.y1 = int(self.pageRect.bottom() - 200)
+        else:
+            self.x0 = 10
+            self.y0 = 10
+            self.x1 = 800
+            self.y1 = 800
+
         self.l1Pen = QtGui.QPen(QtGui.QColor(100, 100, 100))
         self.l2Pen = QtGui.QPen(QtGui.QColor(180, 180, 180))
-        self.bluePen = QtGui.QPen(QtCore.Qt.black, 4, join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
-        self.font = QtGui.QFont("Times", self.h*72/300 * 1.6)
+        self.bluePen = QtGui.QPen(QtCore.Qt.black, 4,
+                                  join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
+        self.font = QtGui.QFont("Times", self.h * 72/300 * 1.6)
         self.pgNr = 1
         self.sx = self.h
         self.sy = self.h
-        self.px,self.py = self.x0, self.y0
+        self.px, self.py = self.x0, self.y0
         self.lineatur(self.pgNr)
 
     def lineatur(self, pgnr = None):
@@ -210,25 +225,29 @@ class BezierDrawer(QtGui.QWidget):
         self.ww = 1200
         self.wh = 800
         self.setGeometry(100, 100, 1200, 800)
-        self.setWindowTitle('Bezier Curves')
-        if True:
+        self.setWindowTitle('Stiefogen Bezier Curves')
+
+        self.stiefoHeight = 60
+
+        if stiefoWords:
+            self.screenWords = stiefoWords
+        else:
             self.screenWords = ["e b e c e d e f e g e h e j e k e l e",
                                 "e m e n e p e r e s e t e w e z e",
                                 "e sch e ch e nd e ng e cht e st e sp e pf e"]
-        else:
-            self.screenWords = stiefoWords
-
-        self.stiefoHeight = 30
-
-        self.drawOnScreen = False  # Zum Modellieren und Testen im Hauptfenster zeichnen
-        self.showBezierPoints = False
-        self.showLetterBorders = False
-
-        RenderPdf(stiefoWords, filename)
+        if not filename:
+            self.drawOnScreen = True  # Zum Modellieren und Testen im Hauptfenster zeichnen
+            self.showBezierPoints = True
+            self.showLetterBorders = True
+        else:  # PDF erzeugen
+            self.drawOnScreen = False
+            self.showBezierPoints = False
+            self.showLetterBorders = False
+            RenderPdf(stiefoWords, filename)
 
     def paintEvent(self, e):
         if not self.drawOnScreen:
-            # PDF erzeugen, Hauptfenster wird hierbei nicht benoetigt
+            # PDF erzeugen, Hauptfenster wird hierbei nicht benötigt
             self.close()
         else:
             qp = QtGui.QPainter()
@@ -268,7 +287,6 @@ class BezierDrawer(QtGui.QWidget):
 
         px, py = 10, 10 + 3*h
         for word in self.screenWords:
-
             if (word[0].isalpha()):
                 for w, c, p in symbols.stiefoWortZuKurve(word):
                     w = w * sx
