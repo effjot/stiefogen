@@ -2,12 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import sys
-
-#from PyQt4 import QtGui, QtCore
-#from PyQt5.QtWidgets import QApplication, QWidget
-from PyQt5 import QtCore, QtGui, QtWidgets, uic
+from PyQt5 import QtCore, QtGui, QtWidgets, QtPrintSupport
 from PyQt5.QtCore import Qt
-
 
 import stiefo
 
@@ -36,7 +32,7 @@ class print_renderer:
         self.h = stiefoHeightPrint
         self.printer = printer
         self.painter = painter
-        self.pageRect = printer.pageRect(QtGui.QPrinter.DevicePixel)
+        self.pageRect = printer.pageRect(QtPrintSupport.QPrinter.DevicePixel)
         self.x0 = int(self.pageRect.left())
         self.y0 = int(self.pageRect.top() + 3 * self.h)
         self.x1 = int(self.pageRect.right() - 200)
@@ -230,9 +226,9 @@ class BezierDrawer(QtWidgets.QMainWindow):
         if (self.drawOnScreen):
             pass
         else:
-            printer = QtGui.QPrinter()
+            printer = QtPrintSupport.QPrinter()
             printer.setOutputFileName(self.filename)
-            printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
+            printer.setOutputFormat(QtPrintSupport.QPrinter.PdfFormat)
             printer.setResolution(300)
 
             painter = QtGui.QPainter()
