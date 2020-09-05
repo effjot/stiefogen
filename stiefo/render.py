@@ -4,9 +4,7 @@
 import sys
 
 from PyQt4 import QtGui, QtCore
-#from stiefo import symbols, Ui_stiefo_curves
 import stiefo
-#import stiefo.stiefo_curves_interactive
 
 
 def render_pdf(words, filename):
@@ -23,7 +21,7 @@ def render_screen(words):
     sys.exit(app.exec_())
 
 
-class renderer:
+class print_renderer:
     def __init__(self, printer, painter):
         self.h = 30
         self.printer = printer
@@ -149,7 +147,7 @@ class renderer:
                 elif word == '§':
                     res.append(('line', 0, None, 0))
                 else:
-                    crv = symbols.stiefoWortZuKurve(word)
+                    crv = stiefo.stiefoWortZuKurve(word)
                     w = 0
                     for dw, _, _ in crv:
                         w += dw
@@ -202,23 +200,6 @@ class renderer:
         pass
 
 
-def RenderPdf(words, filename):
-    printer = QtGui.QPrinter()
-    printer.setOutputFileName(filename)
-    printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
-    printer.setResolution(300)
-
-    painter = QtGui.QPainter()
-    painter.begin(printer)
-
-    ctx = renderer(printer, painter)
-
-    cmds = ctx.prepare(words)
-    ctx.render(cmds)
-
-    painter.end()
-
-
 class BezierDrawer(QtGui.QMainWindow):
     def __init__(self, stiefoWords, filename, parent=None):
         super(BezierDrawer, self).__init__()
@@ -238,8 +219,27 @@ class BezierDrawer(QtGui.QMainWindow):
         if not filename:
             self.drawOnScreen = True  # Zum Modellieren und Testen im Hauptfenster zeichnen
             self.ui.drawing_area.update_text(self.screenWords)
-        else:  # PDF erzeugen
-            RenderPdf(stiefoWords, filename)
+        else:  # PDF erzeugen (passiert in paintEvent)
+            self.filename = filename
+            self.drawOnScreen = False
+
+    def paintEvent(self, e):
+        if (self.drawOnScreen):
+            pass
+        else:
+            printer = QtGui.QPrinter()
+            printer.setOutputFileName(self.filename)
+            printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
+            printer.setResolution(300)
+
+            painter = QtGui.QPainter()
+            painter.begin(printer)
+            ctx = print_renderer(printer, painter)
+            cmds = ctx.prepare(self.screenWords)
+            ctx.render(cmds)
+            painter.end()
+
+            self.close()
 
     def update_text(self):
         self.screenWords = stiefo.text_to_list(self.ui.text_entry.toPlainText())
