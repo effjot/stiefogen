@@ -2,7 +2,7 @@
 
 Python-Programm, das mithilfe von QT Textdateien in Stiefo-Grundschrift als PDF übersetzt.
 
-Entwickelt von Andreas Hofer, mit Beiträgen von Andreas Martin (@AndreasMartin72) und Florian Jenn (@effjot)
+Entwickelt von Andreas Hofer, mit Beiträgen von [Andreas Martin](https://github.com/AndreasMartin72) und [Florian Jenn](https://github.com/effjot)
 
 nächste Ziele:
 
@@ -15,4 +15,4 @@ nächste Ziele:
 
 Python program that uses QT to transcribe plain text into Stiefo Grundschrift (as PDF).
 
-Developed by Andreas Hofer, with additions by Andreas Martin (@AndreasMartin72) and Florian Jenn (@effjot)
+Developed by Andreas Hofer, with additions by Andreas Martin [Andreas Martin](https://github.com/AndreasMartin72) and [Florian Jenn](https://github.com/effjot)
