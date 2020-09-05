@@ -7,10 +7,14 @@ from PyQt4 import QtGui, QtCore
 import stiefo
 
 
+stiefoHeightPrint = 30
+stiefoHeightScreen = 50
+
+
 def render_pdf(words, filename):
     app = QtGui.QApplication(sys.argv)
-    ex = BezierDrawer(words, filename)
-    ex.show()
+    window = BezierDrawer(words, filename)
+    window.show()
     sys.exit(app.exec_())
 
 
@@ -23,24 +27,18 @@ def render_screen(words):
 
 class print_renderer:
     def __init__(self, printer, painter):
-        self.h = 30
+        self.h = stiefoHeightPrint
         self.printer = printer
         self.painter = painter
-        if self.printer:
-            self.pageRect = printer.pageRect(QtGui.QPrinter.DevicePixel)
-            self.x0 = int(self.pageRect.left())
-            self.y0 = int(self.pageRect.top() + 3 * self.h)
-            self.x1 = int(self.pageRect.right() - 200)
-            self.y1 = int(self.pageRect.bottom() - 200)
-        else:
-            self.x0 = 10
-            self.y0 = 10
-            self.x1 = 800
-            self.y1 = 800
+        self.pageRect = printer.pageRect(QtGui.QPrinter.DevicePixel)
+        self.x0 = int(self.pageRect.left())
+        self.y0 = int(self.pageRect.top() + 3 * self.h)
+        self.x1 = int(self.pageRect.right() - 200)
+        self.y1 = int(self.pageRect.bottom() - 200)
 
         self.l1Pen = QtGui.QPen(QtGui.QColor(100, 100, 100))
         self.l2Pen = QtGui.QPen(QtGui.QColor(180, 180, 180))
-        self.bluePen = QtGui.QPen(QtCore.Qt.black, 4,
+        self.blackPen = QtGui.QPen(QtCore.Qt.black, 4,
                                   join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
         self.font = QtGui.QFont("Times", self.h * 72/300 * 1.6)
         self.pgNr = 1
@@ -58,7 +56,7 @@ class print_renderer:
             self.painter.drawLine(self.x0, y - 2 * self.h, self.x1, y - 2 * self.h)
             self.painter.drawLine(self.x0, y - 3 * self.h, self.x1, y - 3 * self.h)
         if pgnr:
-            self.painter.setPen(self.bluePen)
+            self.painter.setPen(self.blackPen)
             self.painter.setFont(self.font)
             self.painter.drawText((self.x1 - self.x0)/2, self.y1 + 100, str(pgnr))
 
@@ -77,14 +75,14 @@ class print_renderer:
         return fontMetrics.width(word + " ")
 
     def draw_text(self, word):
-        self.painter.setPen(self.bluePen)
+        self.painter.setPen(self.blackPen)
         self.painter.drawText(self.px, self.py, "" + word + " ")
         fontMetrics = self.painter.fontMetrics()
         w = fontMetrics.width(word + " ")
         self.px += w
 
     def draw_dot_cross(self):
-        self.painter.setPen(self.bluePen)
+        self.painter.setPen(self.blackPen)
         c = 0.2*self.h
         self.painter.drawLine(self.px - c, self.py - c, self.px + c, self.py + c)
         self.painter.drawLine(self.px - c, self.py + c, self.px + c, self.py - c)
@@ -97,7 +95,7 @@ class print_renderer:
             pp.moveTo(*cc[0])
             for i in range(1, len(cc), 3):
                 pp.cubicTo(*(cc[i] + cc[i + 1] + cc[i + 2]))
-            self.painter.setPen(self.bluePen)
+            self.painter.setPen(self.blackPen)
             self.painter.drawPath(pp)
             self.px = self.px + w*self.sx + self.h
 
@@ -250,9 +248,11 @@ class DrawingArea(QtGui.QFrame):
     def __init__(self, parent):
         super(DrawingArea, self).__init__()
         self.screenWords = []
-        self.stiefoHeight = 40
+        self.stiefoHeight = stiefoHeightScreen
         self.showBezierPoints = True
+        self.points_radius = 2
         self.showLetterBorders = True
+        self.border_overshoot = 10
 
     def update_text(self, text):
         self.screenWords = text
@@ -292,6 +292,7 @@ class DrawingArea(QtGui.QFrame):
             qp.drawLine(x0, y - 3 * h, x1, y - 3 * h)
 
         blackPen = QtGui.QPen(QtCore.Qt.black, 2)
+        grayPen = QtGui.QPen(QtCore.Qt.gray)
         redPen = QtGui.QPen(QtCore.Qt.red)
         bluePen = QtGui.QPen(QtCore.Qt.blue, 2,
                              join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
@@ -320,9 +321,10 @@ class DrawingArea(QtGui.QFrame):
                         qp.setPen(redPen)
                         qp.setBrush(redBrush)
                         for x, y in cc:
-                            qp.drawEllipse(x - 1, y - 1, 2, 2)
+                            qp.drawEllipse(QtCore.QPointF(x, y),
+                                           self.points_radius, self.points_radius)
 
-                        # Punkte mit Linien verbinden
+                        # Bezier-Punkte mit Linien verbinden
                         qp.setBrush(QtCore.Qt.NoBrush)
                         qp.setPen(greenPen)
                         o = None
@@ -333,8 +335,8 @@ class DrawingArea(QtGui.QFrame):
 
                     # Glyph-Grenzen zeichnen
                     if self.showLetterBorders:
-                        qp.setPen(greenPen)
-                        d = 10  # overshoot
+                        qp.setPen(grayPen)
+                        d = self.border_overshoot
                         for x, y in pp:
                             qp.drawLine(x - d*sl, y + d, x + sl*(h + d), y - h - d)
 
