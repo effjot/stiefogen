@@ -290,7 +290,7 @@ def list_to_text(l):
 
 
 def text_to_list(txt):
-    return re.split(' \u00A0 |\n', txt)
+    return re.split(' \u00A0 |\n|  +| *\\| *', txt)
 
 
 # -----------------------------------------------

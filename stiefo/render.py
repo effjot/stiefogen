@@ -226,12 +226,12 @@ class BezierDrawer(QtGui.QMainWindow):
         self.ui = stiefo.Ui_stiefo_curves()
         self.ui.setupUi(self)
 
+        QtCore.QObject.connect(self.ui.button_update, QtCore.SIGNAL("clicked()"),
+                               self.update_stiefo)
+
         self.ww = 1200
         self.wh = 800
-        # self.setGeometry(100, 100, 1200, 800)
-        # self.setWindowTitle('Stiefogen Bezier Curves')
-
-        self.stiefoHeight = 60
+        self.stiefoHeight = 40
 
         if stiefoWords:
             self.screenWords = stiefoWords
@@ -248,6 +248,10 @@ class BezierDrawer(QtGui.QMainWindow):
             self.showBezierPoints = False
             self.showLetterBorders = False
             RenderPdf(stiefoWords, filename)
+
+    def update_stiefo(self):
+        self.screenWords = stiefo.text_to_list(self.ui.text_entry.toPlainText())
+        self.update()
 
     def paintEvent(self, e):
         if not self.drawOnScreen:
