@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys
+import sys, math
 
 from PyQt4 import QtGui, QtCore
 import stiefo
@@ -41,7 +41,7 @@ class print_renderer:
         self.l2Pen = QtGui.QPen(QtGui.QColor(180, 180, 180))
         self.blackPen = QtGui.QPen(QtCore.Qt.black, 4,
                                   join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
-        self.font = QtGui.QFont("Times", self.h * 72/300 * 1.6)
+        self.font = QtGui.QFont("Arial", self.h * 72/300 * 1.6)
         self.pgNr = 1
         self.sx = self.h
         self.sy = self.h
@@ -276,6 +276,7 @@ class DrawingArea(QtGui.QFrame):
         vmargin = 4
         sx = h*1
         sy = h
+        sl = math.sin( 15 * math.pi/180 )  # s.a. symbols.py
 
         x0 = hmargin
         y0 = vmargin + 3*h
@@ -300,14 +301,21 @@ class DrawingArea(QtGui.QFrame):
                              join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
         greenPen = QtGui.QPen(QtCore.Qt.darkGreen)
         redBrush = QtGui.QBrush(QtCore.Qt.red)
-        font = QtGui.QFont("Times", h)
+        font     = QtGui.QFont("Arial", h)
 
         px, py = hmargin, vmargin + 3*h  # start position for drawing
         for word in self.screenWords:
-            if (word[0].isalpha()):
-                for w, c, p in stiefo.stiefoWortZuKurve(word):
-                    w = w * sx
 
+            if stiefo.isword(word):
+	        # TODO
+		# In c und p sind die Informationen um ein Wort in einem
+		# Strich zu zeichnen ohne den Stift "abzuheben".
+		# Ein Wort kann aber aus mehreren Teilen bestehen, daher muss hier
+		# noch ein Mechanismus her, der damit umgehen kann...
+                for w, c, p in stiefo.stiefoWortZuKurve(word):
+                    w = w * sx  # Wortlänge
+
+                    # Zeilenumbruch
                     if px + w > ww:
                         px = hmargin
                         py += 4*h
@@ -351,6 +359,7 @@ class DrawingArea(QtGui.QFrame):
                     qp.setPen(bluePen)
                     qp.drawPath(pp)
 
+                    # Neue Zeichenposition berechnen
                     px = px + w + h
             else:
                 if (word == ','):
