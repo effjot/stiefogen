@@ -8,7 +8,7 @@ import stiefo
 
 
 stiefoHeightPrint = 30
-stiefoHeightScreen = 50
+stiefoHeightScreen = 30
 
 zeichneHilfslinien = True
 text_y_offset = 0.1 * stiefoHeightPrint
@@ -307,7 +307,7 @@ class DrawingArea(QtGui.QFrame):
 
         px, py = hmargin, vmargin + 3*h  # start position for drawing
         for word in self.screenWords:
-            if stiefo.isword(word):
+            if stiefo.isword(word) and word not in (',', '.'):
 	        # TODO
 		# In c und p sind die Informationen um ein Wort in einem
 		# Strich zu zeichnen ohne den Stift "abzuheben".
