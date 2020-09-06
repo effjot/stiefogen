@@ -7,7 +7,8 @@ import math
 
 #### Einstellungen zum Schriftstil
 
-slant = math.sin(15 * math.pi/180)  # Schrägstellung (s.a. render.py)
+## Schrägstellung (s.a. render.py)
+slant = math.sin(15 * math.pi/180)
 
 ## Effektive Abstände (horizontale) für Vokaltypen
 di = 0.2  # i, ü
@@ -26,9 +27,9 @@ vokalAbstaende = {
     'I': (1, -1, di + di_extra),
     'ischmal': (1, -2, di),  # war 'ii' in effjot/master
     'o'      : (2, -1, du), 
-    'vor'    : (2, -1, du), 
+#    'vor'    : (2, -1, du), 
     'u'      : (2,  0, du), 
-    'ein'    : (2,  0, du), 
+#    'ein'    : (2,  0, du), 
     'ö'      : (1,  2, de + 0.3),   # deprecated, siehe 'oe'
     'oe'     : (1,  2, de + 0.3),
     'ei'     : (2,  1, du), 
@@ -47,6 +48,18 @@ vokalAbstaende = {
     'be'     : (1,  2, de*1.2),   # Nur in Verbindung mit ,,,, "un-gleich"=",,,,un be g l ei ch"
     'auf'    : (2,  2, du),   # Nur in Verbindung mit ,,,,
     'aufa'   : (2,  3, du),   # Nur in Verbindung mit ,,,,
+}
+
+vorsilben = {
+    # (Typ, StartY, (DX, DY, eff. Abst))
+    # Typ: _ normaler Anstrich, = waager. Anstrich
+    'mit': ("_", -1, (1, -1, di)),
+    'er': ("_", 0, (1, 0, dkv)), # Vergleich mit Stiefo-Materialien sieht kürzer aus als E
+    'an': ("_", 1, (1, 1, di)),
+    'vor': ("_", -1, (2, -1, du)),
+    'zu': ("_", 0, (2, 0, du)),
+    'ein': ("_", 1, (2, 1, du)),
+    'aus': ("=", 0, (2, 0, du))
 }
 
 
@@ -347,6 +360,7 @@ def glyph_cht(dl, dr):
     return (0.8, scale(g, 1, 1, 0.5))
 
 
+
 def glyph_h(dl, dr):
     b = obenSpitz(dl)
     m = [(0, 0.5)]
@@ -376,6 +390,7 @@ def glyph_st(dl, dr):
 
 
 def glyph_l(dl, dr):
+    #print("glyph_l: dl=",dl)
     b = kopfSchleife(dl)
     m = [(0, 0.5)]
     e = untenRund(dr)
@@ -748,7 +763,7 @@ glyphs = {
     'als':      glyph_es,      # ":,als"
     'ander':    glyph_ander,   # ".ander"
     'auch':     glyph_ander,   # ";auch"
-    'aus':      glyph_so,      # ";aus"
+#    'aus':      glyph_so,      # ";aus"
     'bei':      glyph_so,      # ":,bei"
     'bin':      glyph_b,       # ",,bin"
     'bund':     glyph_bund,    # "bund"
@@ -773,7 +788,7 @@ glyphs = {
     'fuer':     glyph_ver,     # ",fuer"
     'galt':     glyph_l,       # ".galt"
     'ganz':     glyph_g,       # ".ganz"
-    'ge':       glyph_es,      # "ge"
+ #   'ge':       glyph_es,      # "ge"
     'gegen':    glyph_gegen,   # "gegen"
     'gelt':     glyph_l,       # "gelt"
     'gilt':     glyph_l,       # ",,gilt"
@@ -801,7 +816,7 @@ glyphs = {
     'nur':      glyph_nur,     # "nur"
     'ober':     glyph_bund,    # ",,bund"
     'rueck':    glyph_klein,   # ",,rueck"
-    'so':       glyph_so,      # ",so"
+ #   'so':       glyph_so,      # ",so"
     'sie':      glyph_es,      # ",es"
     'sind':     glyph_nd,      # ",,sind"
     'selbst':   glyph_selbst,  # "selbst"
@@ -830,7 +845,11 @@ glyphs = {
     'zer':      glyph_zer,     # "zer"
     'zwar':     glyph_ca,      # ":,zwar"
     '_':        lambda dx, dy: (0, [(0, 0), (0, 0)]),
-    '-':        lambda dx, dy: (0, [(0, 0.5), (0, 0.5)])
+    '-':        lambda dx, dy: (0, [(0, 0.5), (0, 0.5)]),
+    '_-1': lambda dx, dy: (0, [(0, -0.5), (0, -0.5)]),
+    '_0': lambda dx, dy: (0, [(0, 0), (0, 0)]),
+    '_1': lambda dx, dy: (0, [(0, +0.5), (0, +0.5)]),
+    '=0': lambda dx, dy: (0, [(0, +0.5), (0, 0.5)])
 }
 
 
@@ -865,7 +884,7 @@ def SplitStiefoWord(st):
     pz = False  # vorhergehendes Zeichen
     pv = False  # vorhergehender Vokal
     for z in (st.split(' ')):
-        v = z in vokalAbstaende
+        v = z in vokalAbstaende or z in vorsilben
         if first and z in ('i', 'ü'):
             z = 'I'
         if pv and v:
@@ -889,6 +908,11 @@ def SplitStiefoWord(st):
                 x.append('_')
             # Vokale durch Abstands-Tupel ersetzen
             x.append(vokalAbstaende[l])
+            k = False
+        elif l in vorsilben:
+            assert not x, "Vorsilbe nicht am Wortanfang! w={} l={} x={}".format(w, l, x)
+            x.append(vorsilben[l][0] + str(vorsilben[l][1]))
+            x.append(vorsilben[l][2])
             k = False
         else:
             # Bei 2 Konsonanten besonderen Abstands-Tupel anfuegen
