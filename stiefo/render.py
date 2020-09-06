@@ -10,7 +10,9 @@ import stiefo
 stiefoHeightPrint = 30
 stiefoHeightScreen = 50
 
-zeichneHilfslinien = False
+zeichneHilfslinien = True
+text_y_offset = 0.1 * stiefoHeightPrint
+
 
 def render_pdf(words, filename):
     app = QtGui.QApplication(sys.argv)
@@ -78,7 +80,7 @@ class print_renderer:
 
     def draw_text(self, word):
         self.painter.setPen(self.blackPen)
-        self.painter.drawText(self.px, self.py, "" + word + " ")
+        self.painter.drawText(self.px, self.py - text_y_offset, "" + word + " ")
         fontMetrics = self.painter.fontMetrics()
         w = fontMetrics.width(word + " ")
         self.px += w
@@ -134,7 +136,7 @@ class print_renderer:
                 else:
                     res.append(('text', w, word, 0))
             else:
-                if word == ',':
+                if word == ',' or word == '':
                     pass
                 elif word == 'spc1':
                     res.append(('space', 10.7*self.h, None, 0))
@@ -276,7 +278,7 @@ class DrawingArea(QtGui.QFrame):
         vmargin = 4
         sx = h*1
         sy = h
-        sl = math.sin( 15 * math.pi/180 )  # s.a. symbols.py
+        sl = stiefo.slant
 
         x0 = hmargin
         y0 = vmargin + 3*h
@@ -305,7 +307,6 @@ class DrawingArea(QtGui.QFrame):
 
         px, py = hmargin, vmargin + 3*h  # start position for drawing
         for word in self.screenWords:
-
             if stiefo.isword(word):
 	        # TODO
 		# In c und p sind die Informationen um ein Wort in einem
@@ -373,6 +374,6 @@ class DrawingArea(QtGui.QFrame):
                     qp.setPen(blackPen)
                     qp.setFont(font)
                     fontMetrics = qp.fontMetrics()
-                    qp.drawText(px, py, word)
+                    qp.drawText(px, py - text_y_offset, word)
                     w = fontMetrics.width(word)
                     px += w

@@ -886,7 +886,8 @@ glyphs = {
 
 
 def isword(word):
-    return word[0].isalpha() or word[0] in wordOffsets
+    return isinstance(word, str) and word != '' \
+        and (word[0].isalpha() or word[0] in wordOffsets)
 
 
 def SplitStiefoWord(st):

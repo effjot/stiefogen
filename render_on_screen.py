@@ -3,4 +3,4 @@
 
 import stiefo
 
-stiefo.render_screen(["t e st", "h a l o", "f l o r i a n"])
+stiefo.render_screen(["t e st", "h a l o", "", "f l o r i a n"])
