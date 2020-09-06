@@ -16,29 +16,10 @@ de = 1.2  # e, ä, a, ö
 du = 2.8  # u, au, o, ei, ai, eu, äu, oi
 dkv = 0.6  # direkte Konsonantenverbindung ohne Vokal
 
-## Horizontale und vertikale Abstände für Vokale
-# vokalAbstaende = {  # effjot/master
-#     #    (dx, dy, eff. Abst)
-#     'a': (1, 1, de),
-#     'e': (1, 0, de),
-#     'i': (1, -1, di),
-#     'I': (1, -1, di + di_extra),
-#     'ii': (1, -1, 0.3*di),
-#     'o': (2, -1, du),
-#     'u': (2, 0, du),
-#     'ö': (1, 2, de + 0.3),
-#     'ei': (2, 1, du),
-#     'eu': (2, 2, du),
-#     'oi': (2, 2, du),
-#     'ä': (1, 0, de),
-#     'ü': (1, -1, di),
-#     'au': (2, 0, du),
-# }
-
 vokalAbstaende = {
     #    (dx, dy, eff. Abst)
     'a'      : (1,  1, de), 
-    'schaft' : (0.6,  1, de*0.6), 
+    'schaft' : (0.6, 1, de*0.6), 
     'sam'    : (1,  1, de*1.2), 
     'e'      : (1,  0, de), 
     'i'      : (1, -1, di),
@@ -136,7 +117,7 @@ def rotate_ccw(g, r):
 
 
 ### Teilelemente der Glyphen
-
+### bei obenSpitz und untenSpitz erläutern Kommentare das Prinzip der Bezier-Punkte
 def obenSpitz(dl):
     b = [(0, 1)] if dl else []   # [P2]
     m = [(0, 1), (0, 1),         # (P3/Q0), [Q1], [Q2]
@@ -159,16 +140,9 @@ def untenSpitz2(dr):
     return m + e
 
 
-def untenSpitz2(dr):
-    m = [(0.0, 0.3),
-         (0.4, 0), (0.4, 0)]
-    e = [(0.4, 0)] if dr else []
-    return m + e
-
-
 def obenRund(dl):
     b = [(-0.5, 1)] if dl else [(-0.35, 0.9), (-0.35, 0.9), (-0.25, 1)]
-    m = [(-0.2, 1), (0, 1), 
+    m = [(-0.2, 1), (0, 1),
          (0.0, 0.75)]
     return b + m
 
@@ -218,14 +192,12 @@ def kopfSchleife(dl):
     return b + m
 
 
-# Neue Hilfsfunktionen für Aufbauschriften
-
 def kreis_auf(dl, dr):
     # (Startpunkt ist nicht definiert)
-    m  = [(0.25, 0),    (0.5, 0.25),  (0.5, 0.5),   # [Q1], [Q2], (Q3/R0)
-          (0.5, 0.75),  (0.25, 1),    (0, 1),       # [R1], [R2], (R3/S0)
-          (-0.25, 1),   (-0.5, 0.75), (-0.5, 0.5),  # [S1], [S2], (S3/T0)
-          (-0.5, 0.25), (-0.25, 0),   (0, 0)]       # [T1], [T2], (T3/U0)
+    m = [(0.25, 0),    (0.5, 0.25),  (0.5, 0.5),   # [Q1], [Q2], (Q3/R0)
+         (0.5, 0.75),  (0.25, 1),    (0, 1),       # [R1], [R2], (R3/S0)
+         (-0.25, 1),   (-0.5, 0.75), (-0.5, 0.5),  # [S1], [S2], (S3/T0)
+         (-0.5, 0.25), (-0.25, 0),   (0, 0)]       # [T1], [T2], (T3/U0)
     return m
 
 
@@ -237,7 +209,6 @@ def welle_auf(dl, dr):
     b = []
     m = [(0.25, 0.3), (0.5, 0), (0.75, -0.3)]  # [Q2], (Q3/R0), [R1]
     e = []
-
     return b + m + e
 
 
@@ -248,10 +219,9 @@ def welle_ab(dl, dr):
 def bogen_auf(dl, dr):
     h = 0.6
     l = 0.3
-    b = [(0, 0), (0, 0)]     # Start immer spitz [P2], (P3/Q0)
-    m = [(l, h), (1 - l, h)]   # [Q1], [Q2]
-    e = [(1, 0), (1, 0)]     # Ende immer spitz (Q3/R0)
-
+    b = [(0, 0), (0, 0)]      # Start immer spitz [P2], (P3/Q0)
+    m = [(l, h), (1 - l, h)]  # [Q1], [Q2]
+    e = [(1, 0), (1, 0)]      # Ende immer spitz (Q3/R0)
     return b + m + e
 
 
@@ -474,7 +444,6 @@ def glyph_tsch(dl, dr):
     return (0.3, scale(g, 1, 0.5))
 
 
-# Neue Glyphen
 def glyph_selbst(dl, dr):
     assert not dl, "Glyph 'selbst' darf nur am Wortanfang stehen!"
     b = [(0, 0)]  # (P0)
@@ -486,6 +455,7 @@ def glyph_selbst(dl, dr):
 def glyph_gegen(dl, dr):
     # Immer in Kombination mit Wortabsenkung verwenden!
     assert not dl, "Glyphen 'gegen/will/all usw.' duerfen nur am Wortanfang stehen!"
+    # FIXME: "dagegen" ermöglichen
     b = [(0, 0)] # (P0)
     m = kreis_auf(dl, dr)
     e = [(0.75, 0), (1, 0.5), (1, 0.5)] if not dr else [(0.75, 0)]
@@ -507,8 +477,8 @@ def glyph_uns(dl, dr):
 
 
 def glyph_doch(dl, dr):
-    w,m = glyph_uns(dl, dr)
-    return [w, scale(m,1,-1)]
+    w, m = glyph_uns(dl, dr)
+    return [w, scale(m, 1, -1)]
 
 
 def glyph_den(dl, dr):
@@ -523,16 +493,15 @@ def glyph_ent(dl, dr):
     b = obenRund(True)
     m = [(0, 0.5)]
     e = untenSpitz(dr)
-
-    return (0.41, scale([(0, 0)]*2 + shift( b + m + e, 0.8), 0.5, 0.5))
+    return (0.41, scale([(0, 0)]*2 + shift(b + m + e, 0.8), 0.5, 0.5))
 
 
 def glyph_ander(dl, dr):
     assert not dl, "Glyph 'ander' darf nur am Wortanfang stehen!"
+    # FIXME: "einander" ermöglichen
     b = [(0, 0)]
-    m = shift( scale( kreis_auf(dl, dr), 0.15, 0.2 ), 0.5, 0 ) 
+    m = shift(scale(kreis_auf(dl, dr), 0.15, 0.2), 0.5, 0)
     e = [(0.5, 0)]*3 if not dr else [(0.55, 0)]
-
     return [0.5, (b + m + e)]
 
 
@@ -541,24 +510,22 @@ def glyph_ver(dl, dr):
     b = [(0, 0)] if not dl else [(0, 0), (0, 0)]
     m = scale(kreis_auf(dl, dr), 0.15, 0.2)
     e = [(0.3, -0.1), (0.4, 0.2), (0.4, 0.2)] if not dr else [(0.5, -0.1)]
-
     return [0.3, (b + m + e)]
 
 
 def glyph_dir(dl, dr):
-    w,m = glyph_ver(dr, dl)  # dl und dr vertauscht!
-    m = reversed(scale( m, -1, 1 ) )
-
+    w, m = glyph_ver(dr, dl)  # dl und dr vertauscht!
+    m = reversed(scale(m, -1, 1))
     return w, m
+
 
 def glyph_lich(dl, dr):
     _, m = glyph_ver(None, None)
-    m = shift(reversed(rotate_ccw(m, math.pi) ), 0, 0.2)
+    m = shift(reversed(rotate_ccw(m, math.pi)), 0, 0.2)
     if dl:
         m = m[2:]
     if dr:
         m = m[:-2]
-
     return [0.4, m]
 
 
@@ -573,20 +540,18 @@ def glyph_los(dl, dr):
 def glyph_sonder(dl, dr):
     l = 1.8
     m = scale(kreis_auf(dl, dr), 0.4, 0.4)
-    b = [(0, 0)] if not dl else [m[0]]*2 
+    b = [(0, 0)] if not dl else [m[0]]*2
     e = [(0, 0), (l, 0), (l, 0)] if not dr else [(l, 0)]
     return [l, (b + m + e)]
 
 
-
 def glyph_un(dl, dr):
-    w,m = glyph_d(dl, dr)
-
+    w, m = glyph_d(dl, dr)
     return [0.5*w, scale(m, 0.7, 0.5)]
 
 
 def glyph_voll(dl, dr):
-
+    # TODO
     return [1.3, (b + m + e)]
 
 
@@ -598,49 +563,45 @@ def glyph_jetzt(dl, dr):
 def glyph_der(dl, dr):
     assert not dl and not dr
     b = [(0, 0)]
-    m = scale( kreis_auf(dl, dr), 0.1, 0.1 )
+    m = scale(kreis_auf(dl, dr), 0.1, 0.1)
     e = []
-
-    return (0.1, shift(b + m + e, 0, 0.1) )
+    return (0.1, shift(b + m + e, 0, 0.1))
 
 
 def glyph_es1(dl, dr, l):
     b = [] if dl else [(0, 0)]*2
     m = [(0,0), (l, 0), (l, 0)]
     e = [] if dr else [(l,0)]*2
-
-    return (l, (b + m + e) )
+    return (l, (b + m + e))
 
 
 def glyph_werend(dl, dr):
     assert not dl and not dr, "Glyph darf nur allein stehen"
-    m = [(0.6, 2), 
-         (0.6, 1.5), (0, 1.5), (0, 0.45), 
-         (0, -0.14), (0.6, -0.1), (0.6, 0.24), 
+    m = [(0.6, 2),
+         (0.6, 1.5), (0, 1.5), (0, 0.45),
+         (0, -0.14), (0.6, -0.1), (0.6, 0.24),
          (0.6, 0.5),(0.1, 0.17), (0.1, 0.17)]
 
-    return (0.5, scale( m, 1, 1) )
+    return (0.5, scale(m, 1, 1))
 
 
 def glyph_werts(dl, dr):
     assert not dl and not dr, "Glyph darf nur allein stehen"
-    m = [(0.6, 2), 
+    # FIXME "rückwärts", "vorwärts" ermöglichen
+    m = [(0.6, 2),
          (-0.2, 1), (-0.2, 1), (0.6, 0)]
-
-    return (0.5, scale( m, 0.6, 1) )
+    return (0.5, scale(m, 0.6, 1))
 
 
 def glyph_es(dl, dr):
     l = 0.6
     w, m = glyph_es1(dl, dr, l)
-
     return (w*l, scale(m, l, 1))
 
 
 def glyph_so(dl, dr):
     l = 1.3
     w, m = glyph_es1(dl, dr, l)
-
     return (w*l, scale(m, l, 1))
 
 
@@ -648,7 +609,6 @@ def glyph_viel(dl, dr):
     sx = 1.5
     sy = 2
     w, m = glyph_f(dl, dr)
-
     return (w*sx, scale(m, sx, sy))
 
 
@@ -656,7 +616,6 @@ def glyph_klein(dl, dr):
     sx = 1.5
     sy = 2
     w, m = glyph_k(dl, dr)
-
     return (w*sx, scale(m, sx, sy))
 
 
@@ -664,7 +623,6 @@ def glyph_gleich(dl, dr):
     sx = 1.5
     sy = 2
     w, m = glyph_ch(dl, dr)
-
     return (w*sx, scale(m, sx, sy))
 
 
@@ -672,7 +630,6 @@ def glyph_letzt(dl, dr):
     sx = 1.5
     sy = 2
     w, m = glyph_l(dl, dr)
-
     return (w*sx, scale(m, sx, sy))
 
 
@@ -680,7 +637,6 @@ def glyph_bund(dl, dr):
     sx = 1.5
     sy = 2
     w, m = glyph_b(dl, dr)
-
     return (w*sx, scale(m, sx, sy))
 
 
@@ -688,7 +644,6 @@ def glyph_wesen(dl, dr):
     sx = 1.5
     sy = 2
     w, m = glyph_w(dl, dr)
-
     return (w*sx, scale(m, sx, sy))
 
 
@@ -696,7 +651,6 @@ def glyph_zer(dl, dr):
     sx = 1.5
     sy = 2
     w, m = glyph_z(dl, dr)
-
     return (w*sx, scale(m, sx, sy))
 
 
@@ -704,7 +658,6 @@ def glyph_jed(dl, dr):
     sx = 1.5
     sy = 2
     w, m = glyph_j(dl, dr)
-
     return (w*sx, scale(m, sx, sy))
 
 
@@ -712,7 +665,6 @@ def glyph_nur(dl, dr):
     sx = 3
     sy = 1
     w, m = glyph_ca(dl, dr)
-
     return (w*sx, scale(m, sx, sy))
 
 
@@ -721,35 +673,32 @@ def glyph_chen(dl, dr):
     sy = 0.5
     w,m = glyph_ch(dl,dr)
     m = scale(m, sx, sy)
-    m = shift( m, -0.2, -0.25)
-
+    m = shift(m, -0.2, -0.25)
     return (w*sx, m)
 
 
 def glyph_x(dl, dr):
-    w,m = glyph_k(dl, dr)
-
+    w, m = glyph_k(dl, dr)
     return (w * 0.5, scale(m, 0.5, 0.5))
 
 
 def glyph_muss(dl, dr):
     b = [(-0.2, 0.7), (0.3, 0.9)] if not dl else []
-    m = [(0.8, 1), (1.1, 1), (1.7, 1), 
+    m = [(0.8, 1), (1.1, 1), (1.7, 1),
          (1.4, 0.0), (1.1, 0)]
     e = [(0.8, 0.0)] if dr else []
-
     return (1.5, (b + m + e))
 
 
 def glyph_um(dl, dr):
     b = [(-0.5, 1)] if dl else []
-    m = [(0, 1.6), (0.35, 2.1), (1.85, 2.4), 
+    m = [(0, 1.6), (0.35, 2.1), (1.85, 2.4),
          (0.65, 0.25), (0.65, 0.25), (0.5, 0), (0.3, 0)]
     e = [(0, 0)] if dr else []
-
     return (1.2, (b + m + e))
 
 
+### Lookup Konsonanten -> Glyph-Funktionen
 
 glyphs = {
     'b':        glyph_b, 
@@ -959,32 +908,32 @@ def stiefoWortZuKurve(w):
     Buchstaben"""
 
     sc = 1.5  # Skalierung in x-Richtung für Glyphen und Zwischenräume
-    conv_y_step  = 0.5  # Umrechnung vertikaler Versatz (dy der Vokale zählt halbe, ganze Stufe als 1, 2)
+    conv_y_step  = 0.5  # Umrechnung vertikaler Versatz
+                        # (dy der Vokale zählt halbe, ganze Stufe als 1, 2)
     x = 0  # aktuelle Stiftposition
     y = 0  # aktuelle Stiftposition
     c = []  # Bezier-Punkte des Worts
     xpos = [(0, 0)]  # Stift-Endpositionen hinter Vokalen und Konsonanten
 
-    ll, wrdOffsY   = SplitStiefoWord(w)
+    ll, wrdOffsY = SplitStiefoWord(w)
     ll = [None] + ll + [None]
 
     for i in range(0, len(ll) - 2, 2):
         dl = ll[i]      # Vokal vor dem aktuellen Konsonant
         k = ll[i + 1]   # aktueller Konsonant (Glyph)
         dr = ll[i + 2]  # Vokal nach Konsonant
-        if not k in glyphs:
-            print("error, unknown glyph: [" + k + "]", w)
+        assert k in glyphs, "error, unknown glyph: [" + k + "]"
         glFunc = glyphs[k]
         w, g = glFunc(dl, dr)  # w = x-Abstand hinter Glyph, g = Bezier-Punkte des Glyphen
         w *= sc  # in x-Richtung skalieren
         g = scale(g, sc, 1)  # in x-Richtung skalieren
         if dl:
             dx, dy, ea = dl  # Vokalabstände (siehe SplitStiefoWord)
-            x += ea  # Delta x des Stifts wird von eff. Abst. des linken Vokals bestimmt
-            y += dy * conv_y_step  # Delta y des Stifts vom Delta y des linken Vokals * 0.5
-                           # (weil dy Vokal halbe, ganze Stufe als 1, 2 zählt)
+            x += ea  # Delta x des Stifts ist eff. Abst. des linken Vokals
+            y += dy * conv_y_step  # Delta y des Stifts ist dy des linken Vokals
             xpos.append((x, y))
-        gs = shiftToPos(g, x, y + wrdOffsY * conv_y_step, slant)  # Bezier-Punkte an die Stiftposition verschieben
+        gs = shiftToPos(g, x, y + wrdOffsY * conv_y_step, slant)  # Bezier-Punkte
+                            # an die Stiftposition verschieben
         x += w  # Stift hinter Glyph setzen
         xpos.append((x, y))
         for t in gs:
