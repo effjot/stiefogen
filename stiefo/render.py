@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys, math
+import sys
+import math
 from PyQt5 import QtCore, QtGui, QtWidgets, QtPrintSupport
 from PyQt5.QtCore import Qt
 
@@ -13,9 +14,10 @@ stiefoHeightScreen = 50
 
 zeichneHilfslinien = False
 
-def render_pdf(words, filename):
+
+def render_pdf(words, filename, papersize = QtPrintSupport.QPrinter.A4):
     app = QtWidgets.QApplication(sys.argv)
-    window = BezierDrawer(words, filename)
+    window = BezierDrawer(words, filename, papersize)
     window.show()
     sys.exit(app.exec_())
 
@@ -41,7 +43,7 @@ class print_renderer:
         self.l1Pen = QtGui.QPen(QtGui.QColor(100, 100, 100))
         self.l2Pen = QtGui.QPen(QtGui.QColor(180, 180, 180))
         self.blackPen = QtGui.QPen(QtCore.Qt.black, 4,
-                                  join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
+                                   join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
         self.font = QtGui.QFont("Arial", self.h * 72/300 * 1.6)
         self.pgNr = 1
         self.sx = self.h
@@ -202,7 +204,7 @@ class print_renderer:
 
 
 class BezierDrawer(QtWidgets.QMainWindow):
-    def __init__(self, stiefoWords, filename):
+    def __init__(self, stiefoWords, filename, papersize=None):
         super().__init__()
         self.ui = stiefo.Ui_stiefo_curves()
         self.ui.setupUi(self)
@@ -220,6 +222,7 @@ class BezierDrawer(QtWidgets.QMainWindow):
             self.ui.drawing_area.update_text(self.screenWords)
         else:  # PDF erzeugen (passiert in paintEvent)
             self.filename = filename
+            self.papersize = papersize
             self.drawOnScreen = False
 
     def paintEvent(self, e):
@@ -229,6 +232,7 @@ class BezierDrawer(QtWidgets.QMainWindow):
             printer = QtPrintSupport.QPrinter()
             printer.setOutputFileName(self.filename)
             printer.setOutputFormat(QtPrintSupport.QPrinter.PdfFormat)
+            printer.setPaperSize(self.papersize)
             printer.setResolution(300)
 
             painter = QtGui.QPainter()

@@ -1,6 +1,8 @@
 import os
 import stiefo
 
+from PyQt5 import QtPrintSupport  # for papersizes
+
 
 filenamebase = "Schildbuerger"
 
@@ -20,8 +22,10 @@ unk.save(filenamebase + '.unk')
 
 print(unknown)
 
+
 st = stiefo.list_to_text(stiefoWords)
 with open(filenamebase + '.sti', "w", encoding="utf-8") as f:
     f.write(st)
 
-stiefo.render_pdf(stiefoWords, filenamebase + ".pdf")
+stiefo.render_pdf(stiefoWords, filenamebase + ".pdf",
+                  papersize = QtPrintSupport.QPrinter.A4)
