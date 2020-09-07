@@ -16,50 +16,31 @@ de = 1.2  # e, ä, a, ö
 du = 2.8  # u, au, o, ei, ai, eu, äu, oi
 dkv = 0.6  # direkte Konsonantenverbindung ohne Vokal
 
-## Horizontale und vertikale Abstände für Vokale
-# vokalAbstaende = {  # effjot/master
-#     #    (dx, dy, eff. Abst)
-#     'a': (1, 1, de),
-#     'e': (1, 0, de),
-#     'i': (1, -1, di),
-#     'I': (1, -1, di + di_extra),
-#     'ii': (1, -1, 0.3*di),
-#     'o': (2, -1, du),
-#     'u': (2, 0, du),
-#     'ö': (1, 2, de + 0.3),
-#     'ei': (2, 1, du),
-#     'eu': (2, 2, du),
-#     'oi': (2, 2, du),
-#     'ä': (1, 0, de),
-#     'ü': (1, -1, di),
-#     'au': (2, 0, du),
-# }
-
 vokalAbstaende = {
     #    (dx, dy, eff. Abst)
-    'a'      : (1,  1, de), 
-    'schaft' : (0.6,  1, de*0.6), 
-    'sam'    : (1,  1, de*1.2), 
-    'e'      : (1,  0, de), 
+    'a'      : (1,  1, de),
+    'schaft' : (0.6,  1, de*0.6),
+    'sam'    : (1,  1, de*1.2),
+    'e'      : (1,  0, de),
     'i'      : (1, -1, di),
     'I': (1, -1, di + di_extra),
-    'ischmal': (1, -2, di),  # war 'ii' in effjot/master
-    'o'      : (2, -1, du), 
-    'vor'    : (2, -1, du), 
-    'u'      : (2,  0, du), 
-    'ein'    : (2,  0, du), 
+    'ischmal': (1, -2, di),
+    'o'      : (2, -1, du),
+    'vor'    : (2, -1, du),
+    'u'      : (2,  0, du),
+    'ein'    : (2,  0, du),
     'ö'      : (1,  2, de + 0.3),   # deprecated, siehe 'oe'
     'oe'     : (1,  2, de + 0.3),
-    'ei'     : (2,  1, du), 
-    'eu'     : (2,  2, du), 
-    'oi'     : (2,  2, du), 
+    'ei'     : (2,  1, du),
+    'eu'     : (2,  2, du),
+    'oi'     : (2,  2, du),
     'ä'      : (1,  0, de),   # deprecated, siehe 'ae'
-    'ae'     : (1,  0, de), 
+    'ae'     : (1,  0, de),
     'ü'      : (1, -1, di),   # deprecated, siehe 'ue'
-    'ue'     : (1, -1, di),   
-    'au'     : (2,  0, du), 
-    'zu'     : (2,  0, du), 
-    'ung'    : (2,  0, du), 
+    'ue'     : (1, -1, di),
+    'au'     : (2,  0, du),
+    'zu'     : (2,  0, du),
+    'ung'    : (2,  0, du),
     'er'     : (1,  0, dkv),
     'ek'     : (1*0.2,  0, dkv*0.2),
     'e2'     : (1,  0, 1),    # Alle W-lich Verbindungen
