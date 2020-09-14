@@ -354,7 +354,9 @@ class DrawingArea(QtGui.QFrame):
                     # Wort als Bezier-Pfad zeichnen
                     pp = QtGui.QPainterPath()
                     pp.moveTo(*cc[0])  # "unpacking argument list"
+                    #print("cubic start: cc=", cc)
                     for i in range(1, len(cc), 3):
+                        #print("cubic: i={} -> {} {} {}".format(i, cc[i], cc[i + 1], cc[i + 2]))
                         pp.cubicTo(*(cc[i] + cc[i + 1] + cc[i + 2]))  # 2 Kontrollpunkte,
                                                          # gefolgt von 1 Endpunkt
                     qp.setPen(bluePen)

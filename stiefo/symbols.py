@@ -69,12 +69,13 @@ praefix_formen = {
     '1__': ("_", 1, (2, 0, du)),
     '2__': ("_", 2, (2, 0, du)),  # identisch zu U
     '3__': ("_", 3, (2, 0, du)),
-    '1-': ("-", 1, (1, 0, di + di_extra)),
-    '2-': ("-", 2, (1, 0, dkv)),
-    '3-': ("-", 3, (1, 0, di + di_extra)),
-    '1--': ("-", 1, (2, 0, du)),
-    '2--': ("-", 2, (2, 0, du)),
-    '3--': ("-", 3, (2, 0, du)),
+    '0-': ('-', 0, (1, 0, 0)),
+    '1-': ("-", 1, (1, 0, 0)), # di + di_extra)),
+    '2-': ("-", 2, (1, 0, 0)), #dkv)),
+    '3-': ("-", 3, (1, 0, 0)), #di + di_extra)),
+    '1--': ("-", 1, (2, 0, 0)), #du)),
+    '2--': ("-", 2, (2, 0, 0)),
+    '3--': ("-", 3, (2, 0, 0)),
     '0/': ("/", 0, (1, 2, de)),
     '0//': ("/", 0, (2, 2, du))
 }
@@ -85,20 +86,6 @@ praefix_formen = {
   * für Vokaldefinition und Versatzzeichen im Stiefo-Code: 1 Einheit = 1/2 Stufe"""
 conv_y_step = 0.5  # Umrechnung vertikale Position (Versatz Vorsilben und Kürzel)
 y_baseline = 2     # y-Pos. der Grundlinie in Versatz-Zählung
-
-
-# Aufbauschriften: Wort in Y verschieben
-# Muss am Wortanfang stehen! Z.B: ". u sch l a  g" => "Vorschlag"
-# Leerzeichen nach , . : ist optional
-# Spaeter koennte "vor" zu ".zu" geparst werden
-# Fuer "-fach", "-bar" muessen wir uns noch was anderes ueberlegen...
-wordOffsets = {
-    ','      : -0.5,
-    ';'      :  0.5,
-    '.'      :  1, 
-    ':'      :  2, 
-    ' '      :  0,
-}
 
 
 #### Stift-Pfade für Glyphen (Konsonanten)
@@ -145,7 +132,7 @@ def scale(g, sx, sy, s=0):
 def shiftToPos(g, dx, dy, s = slant):
     """Punkte im Pfad/Glyph g um dx und dy verschieben, dabei
     Scherung s berücksichtigen"""
-    return [(dx + x + y * s, dy + y) for (x, y) in g]
+    return [(dx + x + y * s + dy * s, dy + y) for (x, y) in g]
 
 
 def rotate_ccw(g, r):
@@ -205,7 +192,14 @@ def untenEingelegt(dr):
 
 
 def obenGewoelbt(dl):
-    b = [(-0.3, 0.95)] if dl else []
+    if not dl:
+        b = []
+    else:
+        dx, dy, ea = dl
+        if (dy == 0 and ea == 0):  #waagr. Anstrich
+            b = [(0, 1)]
+        else:
+            b = [(-0.3, 0.95)]
     m = [(0.2, 1), (0, 1),
          (0.0, 0.75)]
     return b + m
@@ -217,7 +211,7 @@ def kopfSchleife(dl):
     else:
         dx, dy, ea = dl
         #print("kopfSchleife dx, dy, ea", dx, dy, ea)
-        if dy == -1:
+        if dy == -1 or (dy == 0 and ea == 0):  # i-Position oder waagr. Anstrich
             b = [(-0.2, 0.5), (0.0, 0.5), (0.18, 0.5),
                  (0.3, 1), ]
         elif dy < 1 or dx > 1:
@@ -279,6 +273,7 @@ def glyph_d(dl, dr):
 
 
 def glyph_n(dl, dr):
+    #print("glyph_n: dl=", dl)
     b = [(-0.3, 0.5)] if dl else [(-0.2, 0.45), (-0.2, 0.45), (-0.1, 0.5)]
     m = [(-0.1, 0.5), (0.2, 0.5),
          (0.4, 0), (0.4, 0)]
@@ -305,7 +300,14 @@ def glyph_r(dl, dr):
 
 
 def glyph_w(dl, dr):
-    b = [(-0.4, 0.9)] if dl else []
+    if not dl:
+        b = []
+    else:
+        dx, dy, ea = dl
+        if (dy == 0 and ea == 0):  #waagr. Anstrich
+            b = [(0, 1)]
+        else:
+            b = [(-0.4, 0.9)]
     m = [(0, 1), (-0.4, 0.9),
          (-0.4, 0), (0, 0)]
     e = [(0.3, 0)] if dr else [(0.1, 0), (0.2, 0.1), (0.2, 0.1)]
@@ -738,17 +740,26 @@ def glyph_um(dl, dr):
     return (1.2, (b + m + e))
 
 
-def glyph_waagr_strich(naechster_kons):
-#    print("nachster k:", naechster_kons)
-    if naechster_kons[0].isdigit():  # Zahl vor Konsonant = vert. Versatz
-#        dy = int(naechster_kons[0])  # TODO: Zahl nach Konsonant (Größe)
-        naechster_kons = naechster_kons[1:]
-    if naechster_kons in ('b', 'f', 'h', 'j', 'k', 'm', 'p', 'w', 'z',
-                          'cht', 'nt', 'ng', 'pf'):
-        y0 = 1
+def glyph_waagr_strich(l, naechster_kons):
+#    print("waagr_strich l={}, nk={}.".format(l, naechster_kons))
+    if not naechster_kons:
+        y0 = 0
+        #e = [(l, y0), (l, y0)]
+        e = []
     else:
-        y0 = 0.5
-    return (0, [(0, y0), (0, y0)])
+        if naechster_kons[0].isdigit():  # Zahl vor Konsonant = vert. Versatz
+            # dy = int(naechster_kons[0])  # TODO: Zahl nach Konsonant (Größe)
+            naechster_kons = naechster_kons[1:]
+        if naechster_kons in ('b', 'f', 'h', 'j', 'k', 'm', 'p', 'w', 'z',
+                              'cht', 'nd', 'nt', 'ng', 'pf', 'sch'):
+            y0 = 1
+        else:
+            y0 = 0.5
+        e = [(l, y0)]
+    b = [(0, y0), (0, y0)]
+    m = [(l, y0), (l, y0)]
+ #   print("waagr strich ergebnis {}".format(b+m+e))
+    return (l, (b + m + e))
 
 
 ### Lookup Konsonanten -> Glyph-Funktionen
@@ -903,16 +914,16 @@ def SplitStiefoWord(st):
     dy die Werte -1, 0, +1, +2 haben kann für i, e, a, ö Stufen.
     dx hat die Werte 0, 1, 2 für Konsonantenverbindung, e, u.
     ea ist der effektive Abstand horizontal, der für diesen Vokal verwendet wird.
-    '_' und '-' werden am Anfang und Ende angefügt, wenn das
+    '_' und '=' werden am Anfang und Ende angefügt, wenn das
     Wort mit einem Vokal anfängt oder aufhört.
     >>> SplitStiefoWord("b e r n")
     ['b', (1, 0, 1.2), 'r', (0, 0, 0.6), 'n']
     >>> SplitStiefoWord("e r d e")
-    ['_', (1, 0, 1.2), 'r', (0, 0, 0.6), 'd', (1, 0, 1.2), '-']
+    ['_', (1, 0, 1.2), 'r', (0, 0, 0.6), 'd', (1, 0, 1.2), '=']
     >>> SplitStiefoWord("n a t i o n")
     ['n', (1, 1, 1.2), 't', (1, -1, 0.2), 'c', (2, -1, 3), 'n']
     """
-    wrdOffsY = 2  # vertikaler Versatz des Worts (2 = Grundlinie)
+    wrdOffsY = y_baseline  # vertikaler Versatz des Worts (auf Grundlinie beginnen)
 
     # Wort-Offset nur in Kombination mit weiteren Zeichen erlaubt
 #    while len(st) > 1 and st[0] in wordOffsets:
@@ -957,12 +968,12 @@ def SplitStiefoWord(st):
             wrdOffsY = praefix_formen[l][1]  # Vorsilbe bestimmt vert. Versatz
             k = False
         else:
-            # Bei 2 Konsonanten besonderen Abstands-Tupel anfuegen
+            # Bei 2 Konsonanten besonderen Abstands-Tupel anfügen
             if k:
                 x.append((0, 0, dkv))
             x.append(l)
             k = True
-    if not k:
+    if not k and l not in praefix_formen:
         x.append('=')
     return (x, wrdOffsY)
 
@@ -981,11 +992,13 @@ def stiefoWortZuKurve(w):
 
     ll, wrdOffsY = SplitStiefoWord(w)
     ll = [None] + ll + [None]
-
+    print("ll: {}".format(ll))
     for i in range(0, len(ll) - 2, 2):
         dl = ll[i]      # Vokal vor dem aktuellen Konsonant
         k = ll[i + 1]   # aktueller Konsonant (Glyph)
         dr = ll[i + 2]  # Vokal nach Konsonant
+        print("wortzukurve k =", k, " i=", i)
+        print("  dl, dr = ", dl, dr)
 
         if k[0].isdigit():  # Zahl vor Konsonant = vert. Versatz
             wrdOffsY += int(k[0]) - y_baseline
@@ -996,7 +1009,16 @@ def stiefoWortZuKurve(w):
         if k != '-':
             w, g = glFunc(dl, dr)  # w = x-Abstand hinter Glyph, g = Bezier-Punkte des Glyphen
         else:
-            w, g = glFunc(ll[i + 3])  # waagr. Strich braucht nächsten Konsonant
+            # waagr. Strich: Länge aus Vokaltupel; Glyph braucht nächsten Konsonant
+            strich_l = dr[0]
+#            print("i={}, len={}".format(i, len(ll)))
+            if i + 3 < len(ll):
+                strich_nkons = ll[i + 3]
+            else:
+                strich_nkons = None
+            print("l, nkons", strich_l, strich_nkons)
+            w, g = glFunc(strich_l, strich_nkons)
+#            ll[i + 2] = None
 #            print("w,g", w, g)
 #            print("dr", dr)
 
