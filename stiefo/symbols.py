@@ -51,11 +51,11 @@ vokalAbstaende = {
 }
 
 
-vorsilben_und_vorsilbenartige_kuerzel = {
+vorsilben_und_vorsilbenartige_kuerzel = {  # TODO: in ist nur Vorsilbe; sie, es nur Kürzel
     'mit': '1_', 'er': '2_', 'an': '3_',
     'vor': '1__', 'zu': '2__', 'ein': '3__',
-    'in': '1-', 'ge': '2-', 'trans': '3-',
-    'pro': '1--', 'aus': '2--', 'bei': '3--',
+    'in': '1-', 'sie': '-2-', 'es': '+2-', 'ge': '2-', 'trans': '3-',
+    'pro': '1--', 'aus': '+2--', 'so': '-2--', 'bei': '3--',
     'be': '0//', 'auf': '0//'
 }
 
@@ -86,6 +86,8 @@ praefix_formen = {
   * für Vokaldefinition und Versatzzeichen im Stiefo-Code: 1 Einheit = 1/2 Stufe"""
 conv_y_step = 0.5  # Umrechnung vertikale Position (Versatz Vorsilben und Kürzel)
 y_baseline = 2     # y-Pos. der Grundlinie in Versatz-Zählung
+
+y_smallstep = 0.25  # ein wenig über/unter Grundlinie setzen (aus, so, es, sie)
 
 
 #### Stift-Pfade für Glyphen (Konsonanten)
@@ -905,7 +907,7 @@ glyphs = {
 
 def isword(word):
     return isinstance(word, str) and word != '' \
-        and (word[0].isalpha() or word[0].isdigit())  # in wordOffsets)
+        and (word[0].isalpha() or word[0].isdigit())
 
 
 def SplitStiefoWord(st):
@@ -940,6 +942,13 @@ def SplitStiefoWord(st):
     for z in (st.split(' ')):
         if z in vorsilben_und_vorsilbenartige_kuerzel:
             z = vorsilben_und_vorsilbenartige_kuerzel[z]
+            z_adjust = z[0]
+            if z_adjust == '+':
+                wrdOffsY += y_smallstep
+                z = z[1:]
+            elif z_adjust == '-':
+                wrdOffsY -= y_smallstep
+                z = z[1:]
         v = z in vokalAbstaende or z in praefix_formen
         if first and z in ('i', 'ü'):
             z = 'I'
@@ -970,7 +979,7 @@ def SplitStiefoWord(st):
             assert not x, "Praefix nicht am Wortanfang! w={} l={} x={}".format(w, l, x)
             x.append(praefix_formen[l][0])  # Typ (Anstrich, waagr. Strich, Aufstrich)
             x.append(praefix_formen[l][2])  # Vokaltupel
-            wrdOffsY = praefix_formen[l][1]  # Vorsilbe bestimmt vert. Versatz
+            wrdOffsY += praefix_formen[l][1] - y_baseline  # Vorsilbe bestimmt vert. Versatz
             k = False
         else:
             # Bei 2 Konsonanten besonderen Abstands-Tupel anfügen
