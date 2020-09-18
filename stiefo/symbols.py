@@ -51,7 +51,7 @@ vokalAbstaende = {
 }
 
 
-vorsilben = {
+vorsilben_und_vorsilbenartige_kuerzel = {
     'mit': '1_', 'er': '2_', 'an': '3_',
     'vor': '1__', 'zu': '2__', 'ein': '3__',
     'in': '1-', 'ge': '2-', 'trans': '3-',
@@ -70,12 +70,12 @@ praefix_formen = {
     '2__': ("_", 2, (2, 0, du)),  # identisch zu U
     '3__': ("_", 3, (2, 0, du)),
     '0-': ('-', 0, (1, 0, 0)),
-    '1-': ("-", 1, (1, 0, 0)), # di + di_extra)),
-    '2-': ("-", 2, (1, 0, 0)), #dkv)),
-    '3-': ("-", 3, (1, 0, 0)), #di + di_extra)),
-    '1--': ("-", 1, (2, 0, 0)), #du)),
-    '2--': ("-", 2, (2, 0, 0)),
-    '3--': ("-", 3, (2, 0, 0)),
+    '1-': ("-", 1, (1, 0, -(di + di_extra))),
+    '2-': ("-", 2, (1, 0, -dkv)),
+    '3-': ("-", 3, (1, 0, -(di + di_extra))),
+    '1--': ("-", 1, (2, 0, -du)),
+    '2--': ("-", 2, (2, 0, -du)),
+    '3--': ("-", 3, (2, 0, -du)),
     '0/': ("/", 0, (1, 2, de)),
     '0//': ("/", 0, (2, 2, du))
 }
@@ -143,6 +143,13 @@ def rotate_ccw(g, r):
 ### Teilelemente der Glyphen
 ### bei obenSpitz und untenSpitz erläutern Kommentare das Prinzip der Bezier-Punkte
 
+def ist_vokal_waagr_strich(dl):
+    """Waagerechter Strich anhand Vokaltupel erkennen"""
+    print("ist_vokal_waagr_strich: ", dl)
+    dx, dy, ea = dl
+    return (dy == 0 and ea <= 0)
+
+
 def obenSpitz(dl):
     b = [(0, 1)] if dl else []   # [P2]
     m = [(0, 1), (0, 1),         # (P3/Q0), [Q1], [Q2]
@@ -195,8 +202,7 @@ def obenGewoelbt(dl):
     if not dl:
         b = []
     else:
-        dx, dy, ea = dl
-        if (dy == 0 and ea == 0):  #waagr. Anstrich
+        if ist_vokal_waagr_strich(dl):
             b = [(0, 1)]
         else:
             b = [(-0.3, 0.95)]
@@ -211,7 +217,7 @@ def kopfSchleife(dl):
     else:
         dx, dy, ea = dl
         #print("kopfSchleife dx, dy, ea", dx, dy, ea)
-        if dy == -1 or (dy == 0 and ea == 0):  # i-Position oder waagr. Anstrich
+        if dy == -1 or ist_vokal_waagr_strich(dl):  # i-Position oder waagr. Anstrich
             b = [(-0.2, 0.5), (0.0, 0.5), (0.18, 0.5),
                  (0.3, 1), ]
         elif dy < 1 or dx > 1:
@@ -304,7 +310,7 @@ def glyph_w(dl, dr):
         b = []
     else:
         dx, dy, ea = dl
-        if (dy == 0 and ea == 0):  #waagr. Anstrich
+        if ist_vokal_waagr_strich(dl):
             b = [(0, 1)]
         else:
             b = [(-0.4, 0.9)]
@@ -893,13 +899,9 @@ glyphs = {
     'woll':     glyph_gegen,   # ",,woll"
     'zer':      glyph_zer,     # "zer"
     'zwar':     glyph_ca,      # ":,zwar"
-    '_': lambda dx, dy: (0, [(0, 0), (0, 0)]),  # 1. Punkt Anstrich
-    '-': glyph_waagr_strich,  #lambda dx, dy: (0, [(0, +0.5), (0, 0.5)]),  # 1. Punkt waagr. Strich
+    '-': glyph_waagr_strich,
+    '_': lambda dx, dy: (0, [(0, 0), (0, 0)]),  # Startpunkt normaler Anstrich
     '=': lambda dx, dy: (0, [(0, 0.5), (0, 0.5)])  # Vokal am Wortende
-#    '_-1': lambda dx, dy: (0, [(0, -0.5), (0, -0.5)]),
-#    '_0': lambda dx, dy: (0, [(0, 0), (0, 0)]),
-#    '_1': lambda dx, dy: (0, [(0, +0.5), (0, +0.5)]),
-
 }
 
 
@@ -974,7 +976,7 @@ def SplitStiefoWord(st):
             x.append(l)
             k = True
     if not k and l not in praefix_formen:
-        x.append('=')
+        x.append('=')  # Wort endet mit Vokal
     return (x, wrdOffsY)
 
 
@@ -1010,23 +1012,20 @@ def stiefoWortZuKurve(w):
             w, g = glFunc(dl, dr)  # w = x-Abstand hinter Glyph, g = Bezier-Punkte des Glyphen
         else:
             # waagr. Strich: Länge aus Vokaltupel; Glyph braucht nächsten Konsonant
-            strich_l = dr[0]
-#            print("i={}, len={}".format(i, len(ll)))
-            if i + 3 < len(ll):
+            strich_l = abs(dr[2]) / sc  # waagr. Strich durch neg. ea markiert
+            if i + 3 < len(ll):  # es gibt noch einen nächsten Konsonant
                 strich_nkons = ll[i + 3]
             else:
                 strich_nkons = None
             print("l, nkons", strich_l, strich_nkons)
             w, g = glFunc(strich_l, strich_nkons)
-#            ll[i + 2] = None
-#            print("w,g", w, g)
-#            print("dr", dr)
 
         w *= sc  # in x-Richtung skalieren
         g = scale(g, sc, 1)  # in x-Richtung skalieren
         if dl:
             dx, dy, ea = dl  # Vokalabstände (siehe SplitStiefoWord)
-            x += ea  # Delta x des Stifts ist eff. Abst. des linken Vokals
+            x += ea if ea > 0 else 0  # Delta x des Stifts ist eff. Abst. des linken Vokals
+                          # waagr. Strich (mit neg. ea markiert): kein weiterer Abstand
             y += dy * conv_y_step  # Delta y des Stifts ist dy des linken Vokals
             xpos.append((x, y))
         gs = shiftToPos(g, x, y + (wrdOffsY - y_baseline) * conv_y_step, slant)  # Bezier-Punkte
