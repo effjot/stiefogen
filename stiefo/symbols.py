@@ -11,9 +11,9 @@ import math
 slant = math.sin(15 * math.pi/180)
 
 ## Effektive Abstände (horizontale) für Vokaltypen
+de = 1.2  # e, ä, a, ö
 di = 0.2  # i, ü
 di_extra = 0.5  # etwas weitere Verbindung für bestimmte Konsonanten
-de = 1.2  # e, ä, a, ö
 du = 2.8  # u, au, o, ei, ai, eu, äu, oi
 dkv = 0.6  # direkte Konsonantenverbindung ohne Vokal
 
@@ -70,8 +70,8 @@ praefix_formen = {
     '2__': ("_", 2, (2, 0, du)),  # identisch zu U
     '3__': ("_", 3, (2, 0, du)),
     '0-': ('-', 0, (1, 0, 0)),
-    '1-': ("-", 1, (1, 0, -(di + di_extra))),
-    '2-': ("-", 2, (1, 0, -dkv)),
+    '1-': ("-", 1, (1, 0, -0.75 * de)),
+    '2-': ("-", 2, (1, 0, -0.75 * de)),
     '3-': ("-", 3, (1, 0, -(di + di_extra))),
     '1--': ("-", 1, (2, 0, -du)),
     '2--': ("-", 2, (2, 0, -du)),
@@ -748,9 +748,8 @@ def glyph_um(dl, dr):
 
 def glyph_waagr_strich(l, naechster_kons):
 #    print("waagr_strich l={}, nk={}.".format(l, naechster_kons))
-    if not naechster_kons:
+    if not naechster_kons or naechster_kons == '=':
         y0 = 0
-        #e = [(l, y0), (l, y0)]
         e = []
     else:
         if naechster_kons[0].isdigit():  # Zahl vor Konsonant = vert. Versatz
@@ -764,7 +763,6 @@ def glyph_waagr_strich(l, naechster_kons):
         e = [(l, y0)]
     b = [(0, y0), (0, y0)]
     m = [(l, y0), (l, y0)]
- #   print("waagr strich ergebnis {}".format(b+m+e))
     return (l, (b + m + e))
 
 
@@ -927,6 +925,9 @@ def SplitStiefoWord(st):
     """
     wrdOffsY = y_baseline  # vertikaler Versatz des Worts (auf Grundlinie beginnen)
 
+    # Diese Praefixformen brauchen das Endezeichen (=) wenn sie als einzelnes Wort stehen
+    praefix_formen_allein_ohne_endezeichen = {k: v for k, v in praefix_formen.items()
+                                                       if v[0] == '-'}
     # Wort-Offset nur in Kombination mit weiteren Zeichen erlaubt
 #    while len(st) > 1 and st[0] in wordOffsets:
 #        wrdOffsY += wordOffsets[st[0]]
@@ -937,6 +938,8 @@ def SplitStiefoWord(st):
     pz = False  # vorhergehendes Zeichen
     pv = False  # vorhergehender Vokal
     for z in (st.split(' ')):
+        if z in vorsilben_und_vorsilbenartige_kuerzel:
+            z = vorsilben_und_vorsilbenartige_kuerzel[z]
         v = z in vokalAbstaende or z in praefix_formen
         if first and z in ('i', 'ü'):
             z = 'I'
@@ -975,7 +978,7 @@ def SplitStiefoWord(st):
                 x.append((0, 0, dkv))
             x.append(l)
             k = True
-    if not k and l not in praefix_formen:
+    if not k and l not in praefix_formen_allein_ohne_endezeichen:
         x.append('=')  # Wort endet mit Vokal
     return (x, wrdOffsY)
 
