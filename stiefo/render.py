@@ -10,7 +10,7 @@ import stiefo
 stiefoHeightPrint = 30
 stiefoHeightScreen = 75
 
-zeichneHilfslinien = True
+zeichneHilfslinien = False #True
 text_y_offset = 0.1 * stiefoHeightPrint
 
 
@@ -93,7 +93,7 @@ class print_renderer:
         self.px = self.px + 0.5*self.h
 
     def draw_curve(self, crv):
-        for w,c,_ in crv:
+        for w, c, _ in crv:
             cc = [(self.px + x * self.sx, self.py - y * self.sy) for x, y in c]
             pp = QtGui.QPainterPath()
             pp.moveTo(*cc[0])
@@ -136,14 +136,17 @@ class print_renderer:
                 else:
                     res.append(('text', w, word, 0))
             else:
-                if word == ',' or word == '':
+                if word == '':
                     pass
+                elif word == '&':
+                    res.append(('space', -0.4*self.h, None, 0))
                 elif word == 'spc1':
                     res.append(('space', 10.7*self.h, None, 0))
-                elif word == 'spc2':
+                elif word == ',' or word == 'spc2':
                     res.append(('space', 5*self.h, None, 0))
-                elif word == '.':
+                elif word == '..':
                     res.append(('period', 0.5*self.h, None, -1))
+                    res.append(('space', 5*self.h, None, 0))
                 elif word == '§§':
                     res.append(('page', 0, None, 0))
                 elif word == '§':
