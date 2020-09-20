@@ -8,7 +8,7 @@ import math
 #### Einstellungen zum Schriftstil
 
 ## Schrägstellung (s.a. render.py)
-slant = math.sin(15 * math.pi/180)
+slant = math.sin(20 * math.pi/180)
 
 ## Effektive Abstände (horizontale) für Vokaltypen
 de = 1.2  # e, ä, a, ö
@@ -17,11 +17,12 @@ di_extra = 0.5  # etwas weitere Verbindung für bestimmte Konsonanten
 du = 2.8  # u, au, o, ei, ai, eu, äu, oi
 dkv = 0.6  # direkte Konsonantenverbindung ohne Vokal
 
+
 vokalAbstaende = {
     #    (dx, dy, eff. Abst)
     'a'      : (1,  1, de), 
     'schaft' : (0.6, 1, de*0.6), 
-    'sam'    : (1,  1, de*1.2), 
+#    'sam'    : (1,  1, de*1.2), 
     'e'      : (1,  0, de), 
     'i'      : (1, -1, di),
     'I': (1, -1, di + di_extra),
@@ -30,33 +31,41 @@ vokalAbstaende = {
 #    'vor'    : (2, -1, du), 
     'u'      : (2,  0, du), 
 #    'ein'    : (2,  0, du), 
-    'ö'      : (1,  2, de + 0.3),   # deprecated, siehe 'oe'
+    'ö'      : (1,  2, de + 0.3),
     'oe'     : (1,  2, de + 0.3),
-    'ei'     : (2,  1, du), 
-    'eu'     : (2,  2, du), 
-    'oi'     : (2,  2, du), 
-    'ä'      : (1,  0, de),   # deprecated, siehe 'ae'
-    'ae'     : (1,  0, de), 
-    'ü'      : (1, -1, di),   # deprecated, siehe 'ue'
-    'ue'     : (1, -1, di),   
-    'au'     : (2,  0, du), 
-    'zu'     : (2,  0, du), 
+    'ei'     : (2,  1, du),
+    'eu'     : (2,  2, du),
+    'oi'     : (2,  2, du),
+    'ä'      : (1,  0, de),
+    'ae'     : (1,  0, de),
+    'ü'      : (1, -1, di),
+    'ue'     : (1, -1, di),
+    'au'     : (2,  0, du),
+#    'zu'     : (2,  0, du),
     'ung'    : (2,  0, du), 
-    'er'     : (1,  0, dkv),
+#    'er'     : (1,  0, dkv),
     'ek'     : (1*0.2,  0, dkv*0.2),
     'e2'     : (1,  0, 1),    # Alle W-lich Verbindungen
-    'be'     : (1,  2, de*1.2),   # Nur in Verbindung mit ,,,, "un-gleich"=",,,,un be g l ei ch"
-    'auf'    : (2,  2, du),   # Nur in Verbindung mit ,,,,
-    'aufa'   : (2,  3, du),   # Nur in Verbindung mit ,,,,
+#    'be'     : (1,  2, de*1.2),   # Nur in Verbindung mit ,,,, "un-gleich"=",,,,un be g l ei ch"
+#    'auf'    : (2,  2, du),   # Nur in Verbindung mit ,,,,
+#    'aufa'   : (2,  3, du),   # Nur in Verbindung mit ,,,,
 }
 
 
-vorsilben_und_vorsilbenartige_kuerzel = {  # TODO: in ist nur Vorsilbe; sie, es nur Kürzel
+kuerzel = {
+    'in': 'i n',  # Wort „in“ wird normal geschrieben, waagr. Strich nur für Vorsilbe
+    'sie': '-2-', 'es': '+2-', 'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
+    'pro': '2--', 'aus': '+2--', 'so': '-2--', 'bei': '4--',
+    'der': '.', 'die': '-2.', 'das': '3.'
+}
+
+
+vorsilben = {
     'mit': '1_', 'er': '2_', 'an': '3_',
     'vor': '1__', 'zu': '2__', 'ein': '3__',
-    'in': '1-', 'sie': '-2-', 'es': '+2-', 'ge': '2-', 'trans': '3-',
-    'pro': '1--', 'aus': '+2--', 'so': '-2--', 'bei': '3--',
-    'be': '0//', 'auf': '0//'
+    'in': '1-', 'inter': '1-', 'ge': '2-', 'trans': '3-',
+    'pro': '1--', 'aus': '2--', 'bei': '3--',
+    'be': '0//', 'auf': '0//',
 }
 
 
@@ -73,9 +82,11 @@ praefix_formen = {
     '1-': ("-", 1, (1, 0, -0.75 * de)),
     '2-': ("-", 2, (1, 0, -0.75 * de)),
     '3-': ("-", 3, (1, 0, -(di + di_extra))),
+    '4-': ("-", 4, (1, 0, -(di + di_extra))),
     '1--': ("-", 1, (2, 0, -du)),
     '2--': ("-", 2, (2, 0, -du)),
     '3--': ("-", 3, (2, 0, -du)),
+    '4--': ("-", 4, (2, 0, -du)),
     '0/': ("/", 0, (1, 2, de)),
     '0//': ("/", 0, (2, 2, du))
 }
@@ -147,7 +158,6 @@ def rotate_ccw(g, r):
 
 def ist_vokal_waagr_strich(dl):
     """Waagerechter Strich anhand Vokaltupel erkennen"""
-    print("ist_vokal_waagr_strich: ", dl)
     dx, dy, ea = dl
     return (dy == 0 and ea <= 0)
 
@@ -311,7 +321,6 @@ def glyph_w(dl, dr):
     if not dl:
         b = []
     else:
-        dx, dy, ea = dl
         if ist_vokal_waagr_strich(dl):
             b = [(0, 1)]
         else:
@@ -439,8 +448,15 @@ def glyph_ch(dl, dr):
     return (0.4, shift(b + m + e, 0.2))
 
 
-def glyph_c(dl, dr):  # Vokalzeichen
-    b = [(-0.4, 0.5)] if dl else []
+def glyph_c(dl, dr):
+    """Vokalzeichen"""
+    if not dl:
+        b = []
+    else:
+        if ist_vokal_waagr_strich(dl):
+            b = [(0, 0.5)]
+        else:
+            b = [(-0.4, 0.5)]
     m = [(0, 0.5), (-0.3, 0.45),
          (-0.3, 0), (0, 0)]
     e = [(0.3, 0)] if dr else [(0.1, 0), (0.2, 0.05), (0.2, 0.05)]
