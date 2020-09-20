@@ -3,6 +3,7 @@
 
 import doctest
 import math
+import re
 
 
 #### Einstellungen zum Schriftstil
@@ -56,7 +57,7 @@ kuerzel = {
     'in': 'i n',  # Wort „in“ wird normal geschrieben, waagr. Strich nur für Vorsilbe
     'sie': '-2-', 'es': '+2-', 'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
     'pro': '2--', 'aus': '+2--', 'so': '-2--', 'bei': '4--',
-    'der': '.', 'die': '-2.', 'das': '3.'
+    'der': '+2.', 'die': '--2.', 'das': '+3.'
 }
 
 
@@ -98,7 +99,7 @@ praefix_formen = {
 conv_y_step = 0.5  # Umrechnung vertikale Position (Versatz Vorsilben und Kürzel)
 y_baseline = 2     # y-Pos. der Grundlinie in Versatz-Zählung
 
-y_smallstep = 0.35  # ein wenig über/unter Grundlinie setzen (aus, so, es, sie)
+y_smallstep = 0.25  # ein wenig über/unter Grundlinie setzen (aus, so, es, sie)
 
 
 #### Stift-Pfade für Glyphen (Konsonanten)
@@ -940,7 +941,28 @@ def isword(word):
         else:
             second = word[1]
         return(first.isalpha() or first.isdigit() or
-               (first in ('+', '-') and second.isdigit()))
+               (first in ('+', '-') and (second.isdigit() or second in ('+', '-'))))
+
+
+def get_y_adjust(s):
+    """Hilfsfunktion: Anweisung zur Feinanpassung vert. Versatz extrahieren"""
+    assert isinstance(s, str)
+    y_adjust = 0
+
+    if re.match(r'([+]*|[-]*)\d', s):
+        if s.startswith('++'):
+            y_adjust = 2*y_smallstep
+            s = s[2:]
+        elif s.startswith('+'):
+            y_adjust = y_smallstep
+            s = s[1:]
+        elif s.startswith('--'):
+            y_adjust = -2*y_smallstep
+            s = s[2:]
+        elif s.startswith('-'):
+            y_adjust = -y_smallstep
+            s = s[1:]
+    return(s, y_adjust)
 
 
 def SplitStiefoWord(st):
@@ -960,7 +982,7 @@ def SplitStiefoWord(st):
     """
 
     # vertikaler Versatz des Worts (auf Grundlinie beginnen)
-    wrdOffsY = y_baseline
+    y_offset = y_baseline
 
     # Diese Praefixformen brauchen das Endezeichen (=) wenn sie als einzelnes Wort stehen
     praefix_formen_allein_ohne_endezeichen = {k: v for k, v in praefix_formen.items()
@@ -971,30 +993,18 @@ def SplitStiefoWord(st):
     ## Wort durch Kürzel ersetzen
     if (st in kuerzel):
         st = kuerzel[st]
-#        print("st neu:",st)
-        y_adjust = st[0]
-        if y_adjust == '+':
-            wrdOffsY += y_smallstep
-            st = st[1:]
-        elif y_adjust == '-':
-            wrdOffsY -= y_smallstep
-            st = st[1:]
+        st, y_adj = get_y_adjust(st)
+        y_offset += y_adj
 
     ## Buchstabenkette auswerten
     first = True
     pz = False  # vorhergehendes Zeichen
     pv = False  # vorhergehender Vokal
     for z in (st.split(' ')):
- #       print("z=",z)
         if z in vorsilben:
             z = vorsilben[z]
-            z_adjust = z[0]
-            if z_adjust == '+':
-                wrdOffsY += y_smallstep
-                z = z[1:]
-            elif z_adjust == '-':
-                wrdOffsY -= y_smallstep
-                z = z[1:]
+            z, y_adj = get_y_adjust(z)
+            y_offset += y_adj
         v = z in vokalAbstaende or z in praefix_formen
         if first and z in ('i', 'ü'):
             z = 'I'
@@ -1026,7 +1036,7 @@ def SplitStiefoWord(st):
             assert not x, "Praefix nicht am Wortanfang! w={} l={} x={}".format(w, l, x)
             x.append(praefix_formen[l][0])  # Typ (Anstrich, waagr. Strich, Aufstrich)
             x.append(praefix_formen[l][2])  # Vokaltupel
-            wrdOffsY += praefix_formen[l][1] - y_baseline  # Vorsilbe bestimmt vert. Versatz
+            y_offset += praefix_formen[l][1] - y_baseline  # Vorsilbe bestimmt vert. Versatz
             k = False
         else:
             # Bei 2 Konsonanten besonderen Abstands-Tupel anfügen
@@ -1036,7 +1046,7 @@ def SplitStiefoWord(st):
             k = True
     if not k and l not in praefix_formen_allein_ohne_endezeichen:
         x.append('=')  # Wort endet mit Vokal
-    return (x, wrdOffsY)
+    return (x, y_offset)
 
 
 def stiefoWortZuKurve(w):
@@ -1051,34 +1061,21 @@ def stiefoWortZuKurve(w):
     c = []  # Bezier-Punkte des Worts
     xpos = [(0, 0)]  # Stift-Endpositionen hinter Vokalen und Konsonanten
 
-    ll, wrdOffsY = SplitStiefoWord(w)
+    ll, y_offset = SplitStiefoWord(w)
     #print("stiefoWortZuKurve: w={}, ll={}".format(w, ll))
     ll = [None] + ll + [None]
     for i in range(0, len(ll) - 2, 2):
         dl = ll[i]      # Vokal vor dem aktuellen Konsonant
         k = ll[i + 1]   # aktueller Konsonant (Glyph)
         dr = ll[i + 2]  # Vokal nach Konsonant
- #       print("wortzukurve k =", k, " i =", i)
- #       print("  dl, dr = ", dl, dr)
 
         # vert. Versatz Konsonant
         k_level = y_baseline
-        k_adjust = 0
+        k, k_adj = get_y_adjust(k)
         if k[0].isdigit():
             k_level = int(k[0])
             k = k[1:]
-#            print("k0 = ", k_level)
-        if len(k) > 2 and k[0] in ('+', '-') and k[1].isdigit():
-            k_adjust = k[0]
-            k_level = int(k[1])
-            if k_adjust == '+':
-                k_level += y_smallstep
-            elif k_adjust == '-':
-                k_level -= y_smallstep
-            k = k[2:]
- #           print("k0 = ", k_adjust, "k1=",k_level)
-        wrdOffsY += k_level - y_baseline
- #       print("wrdOffsY=", wrdOffsY)
+        y_offset += k_level - y_baseline + k_adj
 
         assert k in glyphs, "error, unknown glyph: [" + k + "]"
         glFunc = glyphs[k]
@@ -1102,7 +1099,7 @@ def stiefoWortZuKurve(w):
                           # waagr. Strich (mit neg. ea markiert): kein weiterer Abstand
             y += dy * conv_y_step  # Delta y des Stifts ist dy des linken Vokals
             xpos.append((x, y))
-        gs = shiftToPos(g, x, y + (wrdOffsY - y_baseline) * conv_y_step, slant)  # Bezier-Punkte
+        gs = shiftToPos(g, x, y + (y_offset - y_baseline) * conv_y_step, slant)  # Bezier-Punkte
                             # an die Stiftposition verschieben
         x += w  # Stift hinter Glyph setzen
         xpos.append((x, y))
