@@ -307,7 +307,7 @@ class DrawingArea(QtGui.QFrame):
 
         px, py = hmargin, vmargin + 3*h  # start position for drawing
         for word in self.screenWords:
-            if stiefo.isword(word) and word not in (',', '.'):
+            if stiefo.isword(word) and word not in (',', '..'):
 	        # TODO
 		# In c und p sind die Informationen um ein Wort in einem
 		# Strich zu zeichnen ohne den Stift "abzuheben".
@@ -367,7 +367,7 @@ class DrawingArea(QtGui.QFrame):
             else:
                 if (word == ','):
                     px = px + 2.5*h
-                elif (word == '.'):
+                elif (word == '..'):
                     px = px + 5*h
                 elif word == '§':
                     px = 10
