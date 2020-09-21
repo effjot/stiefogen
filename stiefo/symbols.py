@@ -9,7 +9,7 @@ import re
 #### Einstellungen zum Schriftstil
 
 ## Schrägstellung (s.a. render.py)
-slant = math.sin(20 * math.pi/180)
+slant = math.sin(15 * math.pi/180)
 
 ## Effektive Abstände (horizontale) für Vokaltypen
 de = 1.2  # e, ä, a, ö
@@ -56,8 +56,8 @@ vokalAbstaende = {
 kuerzel = {
     'in': 'i n',  # Wort „in“ wird normal geschrieben, waagr. Strich nur für Vorsilbe
     'sie': '-2-', 'es': '+2-', 'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
-    'pro': '2--', 'aus': '+2--', 'so': '-2--', 'bei': '4--',
-    'der': '+2.', 'die': '--2.', 'das': '+3.'
+    'pro': '2--', 'aus': '++2--', 'so': '--2--', 'bei': '4--',
+    'der': '+2.', 'die': '--2.', 'das': '++3.'
 }
 
 
@@ -829,36 +829,21 @@ glyphs = {
     'schw':     glyph_schw, 
     'q':        glyph_qu, 
     'c':        glyph_c, 
-    # mit: ",,ek"
-    # er:  "ek"
-    # an:  ".ek"
-    # vor: ",u"
-    # zu:  "u"
-    # ein: ".u"
-    # auf: ",,,,ei"
-    # be-: ",,,,be"
     'ab':       glyph_b,       # ".ab"
     'aber':     glyph_b,       # ".aber ek"
     'all':      glyph_gegen,   # ".all"
-    'als':      glyph_es,      # ":,als"
     'ander':    glyph_ander,   # ".ander"
     'auch':     glyph_ander,   # ";auch"
-#    'aus':      glyph_so,      # ";aus"
-    'bei':      glyph_so,      # ":,bei"
     'bin':      glyph_b,       # ",,bin"
     'bund':     glyph_bund,    # "bund"
     'ca':       glyph_ca,      # ";ca"
     'chen':     glyph_chen,    # ",chen"
     'da':       glyph_d,       # ".da"
-    'der':      glyph_der,     # "der"
-    'die':      glyph_der,     # ",die"
-    'das':      glyph_der,     # ":,das"
     'dir':      glyph_dir,     # ",dir"
     'den':      glyph_den,     # "den"
     'deutsch':  glyph_doch,    # ":.deutsch"
     'doch':     glyph_doch,    # "doch"
     'durch':    glyph_doch,    # ".durch"
-    'es':       glyph_es,      # ";es"
     'ent':      glyph_ent,     # "ent"
     'euer':     glyph_ca,      # ":euer"
     'euro':     glyph_nur,     # ":euro"
@@ -868,7 +853,6 @@ glyphs = {
     'fuer':     glyph_ver,     # ",fuer"
     'galt':     glyph_l,       # ".galt"
     'ganz':     glyph_g,       # ".ganz"
- #   'ge':       glyph_es,      # "ge"
     'gegen':    glyph_gegen,   # "gegen"
     'gelt':     glyph_l,       # "gelt"
     'gilt':     glyph_l,       # ",,gilt"
@@ -896,8 +880,6 @@ glyphs = {
     'nur':      glyph_nur,     # "nur"
     'ober':     glyph_bund,    # ",,bund"
     'rueck':    glyph_klein,   # ",,rueck"
- #   'so':       glyph_so,      # ",so"
-    'sie':      glyph_es,      # ",es"
     'sind':     glyph_nd,      # ",,sind"
     'selbst':   glyph_selbst,  # "selbst"
     'sonder':   glyph_sonder,  # "sonder"

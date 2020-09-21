@@ -10,7 +10,7 @@ import stiefo
 stiefoHeightPrint = 30
 stiefoHeightScreen = 75
 
-zeichneHilfslinien = False #True
+zeichneHilfslinien = True
 text_y_offset = 0.1 * stiefoHeightPrint
 
 
