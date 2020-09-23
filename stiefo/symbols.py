@@ -9,14 +9,14 @@ import re
 #### Einstellungen zum Schriftstil
 
 ## Schrägstellung (s.a. render.py)
-slant = math.sin(15 * math.pi/180)
+slant = math.sin(20 * math.pi/180)
 
 ## Effektive Abstände (horizontale) für Vokaltypen
-de = 1.2  # e, ä, a, ö
+de = 1.1  # e, ä, a, ö
 di = 0.2  # i, ü
-di_extra = 0.5  # etwas weitere Verbindung für bestimmte Konsonanten
+di_extra = 0.5  # Zuschlagg für etwas weitere Verbindung für bestimmte Konsonanten
 du = 2.8  # u, au, o, ei, ai, eu, äu, oi
-dkv = 0.6  # direkte Konsonantenverbindung ohne Vokal
+dkv = 0.5  # direkte Konsonantenverbindung ohne Vokal
 
 
 vokalAbstaende = {
@@ -27,7 +27,7 @@ vokalAbstaende = {
     'e'      : (1,  0, de), 
     'i'      : (1, -1, di),
     'I': (1, -1, di + di_extra),
-    'ischmal': (1, -2, di),  # war 'ii' in effjot/master
+    'ischmal': (1, -1, 0.25 * di),  # war 'ii' in effjot/master
     'o'      : (2, -1, du), 
 #    'vor'    : (2, -1, du), 
     'u'      : (2,  0, du), 
@@ -42,6 +42,8 @@ vokalAbstaende = {
     'ü'      : (1, -1, di),
     'ue'     : (1, -1, di),
     'au'     : (2,  0, du),
+    '/': (1, 2, de - 0.2), # + di_extra),
+    '//': (2, 2, du - 0.4),
 #    'zu'     : (2,  0, du),
     'ung'    : (2,  0, du), 
 #    'er'     : (1,  0, dkv),
@@ -57,7 +59,8 @@ kuerzel = {
     'in': 'i n',  # Wort „in“ wird normal geschrieben, waagr. Strich nur für Vorsilbe
     'sie': '-2-', 'es': '+2-', 'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
     'pro': '2--', 'aus': '++2--', 'so': '--2--', 'bei': '4--',
-    'der': '+2.', 'die': '--2.', 'das': '++3.'
+    'der': '+2.', 'die': '--2.', 'das': '++3.',
+    'darauf': '0d //'
 }
 
 
@@ -66,7 +69,7 @@ vorsilben = {
     'vor': '1__', 'zu': '2__', 'ein': '3__',
     'in': '1-', 'inter': '1-', 'ge': '2-', 'trans': '3-',
     'pro': '1--', 'aus': '2--', 'bei': '3--',
-    'be': '0//', 'auf': '0//',
+    'be': '0/', 'auf': '0//', 'un': '0d /', 'darauf': '0d //'
 }
 
 
@@ -74,7 +77,7 @@ praefix_formen = {
     # (Typ, vert. Pos. in Halbstufen, Vokal-Tupel (DX, DY, eff. Abst))
     # Typ: _ normaler Anstrich, - waager. Anstrich, / Aufstrich
     '1_': ("_", 1, (1, 0, di_extra)),
-    '2_': ("_", 2, (1, 0, dkv)),  # Vergleich mit Stiefo-Materialien sieht kürzer aus als E
+    '2_': ("_", 2, (1, 0, 0.75 * de)),  # Vergleich mit Stiefo-Materialien sieht kürzer aus als E
     '3_': ("_", 3, (1, 0, di_extra)),
     '1__': ("_", 1, (2, 0, du)),
     '2__': ("_", 2, (2, 0, du)),  # identisch zu U
@@ -88,8 +91,8 @@ praefix_formen = {
     '2--': ("-", 2, (2, 0, -du)),
     '3--': ("-", 3, (2, 0, -du)),
     '4--': ("-", 4, (2, 0, -du)),
-    '0/': ("/", 0, (1, 2, de)),
-    '0//': ("/", 0, (2, 2, du))
+    '0/': ("/", 0, vokalAbstaende['/']),
+    '0//': ("/", 0, vokalAbstaende['//'])
 }
 
 
@@ -909,6 +912,7 @@ glyphs = {
     '.': glyph_punkt,
     '-': glyph_waagr_strich,
     '_': lambda dx, dy: (0, [(0, 0), (0, 0)]),  # Startpunkt normaler Anstrich
+    '/': lambda dx, dy: (0, [(0, 0), (0, 0)]),  # Startpunkt Aufstrich
     '=': lambda dx, dy: (0, [(0, 0.5), (0, 0.5)])  # Vokal am Wortende
 }
 
@@ -964,7 +968,7 @@ def SplitStiefoWord(st):
     """
 
     # vertikaler Versatz des Worts (auf Grundlinie beginnen)
-    y_offset = y_baseline
+    y_word_offset = y_baseline
 
     # Diese Praefixformen brauchen das Endezeichen (=) wenn sie als einzelnes Wort stehen
     praefix_formen_allein_ohne_endezeichen = {k: v for k, v in praefix_formen.items()
@@ -976,19 +980,32 @@ def SplitStiefoWord(st):
     if (st in kuerzel):
         st = kuerzel[st]
         st, y_adj = get_y_adjust(st)
-        y_offset += y_adj
+        y_word_offset += y_adj
 
     ## Buchstabenkette auswerten
-    first = True
+    first_token = True
     pz = False  # vorhergehendes Zeichen
     pv = False  # vorhergehender Vokal
+    pfx2 = None  # zweites Token von zusammengesetzter Vorsilbe
     for z in (st.split(' ')):
         if z in vorsilben:
-            z = vorsilben[z]
-            z, y_adj = get_y_adjust(z)
-            y_offset += y_adj
+            pfx = vorsilben[z]
+            if ' ' in pfx:
+                assert len(pfx.split(' ')) == 2, 'Compound prefix has more than 2 parts: {}'.format(pfx)
+                pfx1, _, pfx2 = pfx.partition(' ')
+            else:
+                pfx1 = pfx
+            pfx1, y_adj = get_y_adjust(pfx1)
+            y_word_offset += y_adj
+            if pfx2:
+                w.append(pfx1)
+                z = pfx2
+                pfx2 = None
+                first_token = False
+            else:
+                z = pfx1
         v = z in vokalAbstaende or z in praefix_formen
-        if first and z in ('i', 'ü'):
+        if first_token and z in ('i', 'ü'):
             z = 'I'
         if pv and v:
             w.append('c')
@@ -1000,7 +1017,7 @@ def SplitStiefoWord(st):
         w.append(z)
         pz = z
         pv = v
-        first = False
+        first_token = False
     if w[-1] in ('i', 'ü'):
         w[-1] = 'I'
 
@@ -1018,7 +1035,7 @@ def SplitStiefoWord(st):
             assert not x, "Praefix nicht am Wortanfang! w={} l={} x={}".format(w, l, x)
             x.append(praefix_formen[l][0])  # Typ (Anstrich, waagr. Strich, Aufstrich)
             x.append(praefix_formen[l][2])  # Vokaltupel
-            y_offset += praefix_formen[l][1] - y_baseline  # Vorsilbe bestimmt vert. Versatz
+            y_word_offset += praefix_formen[l][1] - y_baseline  # Vorsilbe bestimmt vert. Versatz
             k = False
         else:
             # Bei 2 Konsonanten besonderen Abstands-Tupel anfügen
@@ -1028,7 +1045,7 @@ def SplitStiefoWord(st):
             k = True
     if not k and l not in praefix_formen_allein_ohne_endezeichen:
         x.append('=')  # Wort endet mit Vokal
-    return (x, y_offset)
+    return (x, y_word_offset)
 
 
 def stiefoWortZuKurve(w):
