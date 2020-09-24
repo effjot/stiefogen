@@ -92,16 +92,27 @@ vorsilben = {
 }
 
 
-kuerzel = {
+kuerzel_AS1 = {
     'in': 'i n',  # Wort „in“ wird normal geschrieben, waagr. Strich nur für Vorsilbe
-    'sie': '-2-', 'es': '+2-', 'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
-    'pro': '2--', 'aus': '++2--', 'so': '--2--', 'bei': '4--',
-    'der': '+2.', 'die': '--2.', 'das': '++3.',
+    'sie': '-2-', 'es': '+2-',
+    'aus': '++2--', 'so': '--2--',
+    'der': '+2.', 'die': '--2.', 'das': '++3.',  # 1. Lernabschnitt
     'des': '2s', 'sich': '1s', 'sein': '3s',
-    'dem': '2m', 'mich': '1m', 'mein': '3m',
-    'darauf': '0d //',
-    'ist': '1t', 'hätte': '2t', 'hatte': '3t', 'heute': '4t'
+    'dem': '2m', 'mich': '1m', 'mir': '1m', 'mein': '3m',
+    'den': '2en', 'nicht': '1en', 'man': '3en',
+    'ist': '1t'
 }
+
+
+kuerzel_AS2 = {
+    'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
+    'pro': '2--', 'bei': '4--',
+    'darauf': '0d //',
+    'hätte': '2t', 'hatte': '3t', 'heute': '4t'
+}
+
+
+kuerzel = {**kuerzel_AS1, **kuerzel_AS2}
 
 
 """ 2 Koordinatensysteme für Höhe:
@@ -559,11 +570,19 @@ def glyph_doch(dl, dr):
     return [w, scale(m, 1, -1)]
 
 
-def glyph_den(dl, dr):
-    b = [(0, 0)]*2 if not dl else []
-    m = bogen_auf(dl, dr)
-    e = [(1, 0)]*2 if not dr else []
-    return [0.4, scale(b + m + e, 0.4, 0.5)]
+# def glyph_den(dl, dr):
+#     b = [(0, 0)]*2 if not dl else []
+#     m = bogen_auf(dl, dr)
+#     e = [(1, 0)]*2 if not dr else []
+#     return [0.4, scale(b + m + e, 0.4, 0.5)]
+
+
+def glyph_en(dl, dr):
+    assert not dl, 'Glyph “en” must be at beginning of word.'
+    b = [(0, 0), (0, 0)]
+    w, m = glyph_n(b, dr)
+    e = []
+    return [w + w, b + shift(m + e, w, 0)]
 
 
 def glyph_ent(dl, dr):
@@ -623,9 +642,9 @@ def glyph_sonder(dl, dr):
     return [l, (b + m + e)]
 
 
-def glyph_un(dl, dr):
-    w, m = glyph_d(dl, dr)
-    return [0.5*w, scale(m, 0.7, 0.5)]
+# def glyph_un(dl, dr):
+#     w, m = glyph_d(dl, dr)
+#     return [0.5*w, scale(m, 0.7, 0.5)]
 
 
 def glyph_voll(dl, dr):
@@ -839,7 +858,8 @@ glyphs = {
     'zw':       glyph_zw, 
     'schw':     glyph_schw, 
     'q':        glyph_qu, 
-    'c':        glyph_c, 
+    'c':        glyph_c,
+    'en': glyph_en,
     'ab':       glyph_b,       # ".ab"
     'aber':     glyph_b,       # ".aber ek"
     'all':      glyph_gegen,   # ".all"
@@ -851,7 +871,6 @@ glyphs = {
     'chen':     glyph_chen,    # ",chen"
     'da':       glyph_d,       # ".da"
     'dir':      glyph_dir,     # ",dir"
-    'den':      glyph_den,     # "den"
     'deutsch':  glyph_doch,    # ":.deutsch"
     'doch':     glyph_doch,    # "doch"
     'durch':    glyph_doch,    # ".durch"
@@ -882,16 +901,13 @@ glyphs = {
     'letzt':    glyph_letzt,   # "letzt"
     'lich':     glyph_lich,    # "lich"  ( auch fuer 'endlich', oder :lich fuer 'moeglich', ",,w e lich" fuer 'wirklich')
     'los':      glyph_los,     # "los"
-    'man':      glyph_den,     # ":,man"
     'mein':     glyph_m,       # ".mein"
     'muss':     glyph_muss,    # "muss"
     'nach':     glyph_ver,     # ":,nach"
-    'nicht':    glyph_den,     # ",nicht"
     'noch':     glyph_uns,     # ",,uns"
     'nur':      glyph_nur,     # "nur"
     'ober':     glyph_bund,    # ",,bund"
     'rueck':    glyph_klein,   # ",,rueck"
-    'sind':     glyph_nd,      # ",,sind"
     'selbst':   glyph_selbst,  # "selbst"
     'sonder':   glyph_sonder,  # "sonder"
     'sonst':    glyph_selbst,  # ",,sonst"
@@ -901,7 +917,7 @@ glyphs = {
     'ueber':    glyph_b,       # ",,ueber ek"
     'uns':      glyph_uns,     # "uns"
     'um':       glyph_um,      # "um"
-    'un':       glyph_un,      # ",,,,un"
+#    'un':       glyph_un,      # ",,,,un"
     'und':      glyph_nd,      # "und"
     'unter':    glyph_nd,      # ",,unter ek"
     'ver':      glyph_ver,     # "ver"
@@ -1069,7 +1085,7 @@ def stiefoWortZuKurve(w):
     xpos = [(0, 0)]  # Stift-Endpositionen hinter Vokalen und Konsonanten
 
     ll, y_offset = SplitStiefoWord(w)
-    print("stiefoWortZuKurve: w={}, ll={}".format(w, ll))
+    #print("stiefoWortZuKurve: w={}, ll={}".format(w, ll))
     ll = [None] + ll + [None]
     for i in range(0, len(ll) - 2, 2):
         dl = ll[i]      # Vokal vor dem aktuellen Konsonant
