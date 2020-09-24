@@ -11,47 +11,84 @@ import re
 ## Schrägstellung (s.a. render.py)
 slant = math.sin(20 * math.pi/180)
 
-## Effektive Abstände (horizontale) für Vokaltypen
+## Effektive Abstände (horizontale) für Vokale und Vorsilben
 de = 1.1  # e, ä, a, ö
 di = 0.2  # i, ü
-di_extra = 0.5  # Zuschlagg für etwas weitere Verbindung für bestimmte Konsonanten
 du = 2.8  # u, au, o, ei, ai, eu, äu, oi
 dkv = 0.5  # direkte Konsonantenverbindung ohne Vokal
+d_extra = 0.5  # Zuschlag für etwas weitere Verbindung für bestimmte Konsonanten
 
 
-vokalAbstaende = {
-    #    (dx, dy, eff. Abst)
-    'a'      : (1,  1, de), 
-    'schaft' : (0.6, 1, de*0.6), 
-#    'sam'    : (1,  1, de*1.2), 
-    'e'      : (1,  0, de), 
-    'i'      : (1, -1, di),
-    'I': (1, -1, di + di_extra),
-    'ischmal': (1, -1, 0.25 * di),  # war 'ii' in effjot/master
-    'o'      : (2, -1, du), 
-#    'vor'    : (2, -1, du), 
-    'u'      : (2,  0, du), 
-#    'ein'    : (2,  0, du), 
-    'ö'      : (1,  2, de + 0.3),
-    'oe'     : (1,  2, de + 0.3),
-    'ei'     : (2,  1, du),
-    'eu'     : (2,  2, du),
-    'oi'     : (2,  2, du),
-    'ä'      : (1,  0, de),
-    'ae'     : (1,  0, de),
-    'ü'      : (1, -1, di),
-    'ue'     : (1, -1, di),
-    'au'     : (2,  0, du),
-    '/': (1, 2, de - 0.2), # + di_extra),
-    '//': (2, 2, du - 0.4),
-#    'zu'     : (2,  0, du),
-    'ung'    : (2,  0, du), 
-#    'er'     : (1,  0, dkv),
-    'ek'     : (1*0.2,  0, dkv*0.2),
-    'e2'     : (1,  0, 1),    # Alle W-lich Verbindungen
-#    'be'     : (1,  2, de*1.2),   # Nur in Verbindung mit ,,,, "un-gleich"=",,,,un be g l ei ch"
-#    'auf'    : (2,  2, du),   # Nur in Verbindung mit ,,,,
-#    'aufa'   : (2,  3, du),   # Nur in Verbindung mit ,,,,
+## Vokale (horiz. und vert. Abstände bei der Verbindung von Konsonanten)
+## Tupel (dx, dy, eff. Abst)
+vokal_formen = {
+    'e': (1, 0, de),
+    'ä': (1, 0, de),
+    'ae': (1, 0, de),
+    'e0': (1, 0, d_extra),  # etwas schmaler, für aber, über, Vorsilben er/mit/an
+    'e@': (1, 0, dkv + 0.5 * d_extra),  # für Verbindungen W-lich, F-lich, usw.
+    'u': (2, 0, du),
+    'au': (2, 0, du),
+    'i': (1, -1, di),
+    'I': (1, -1, di + d_extra),  # breiter, für Wortanfang und bestimmte Verbindungen
+    'i0': (1, -1, 0.25 * di),  # schmaler, für bestimmte Verbindungen
+    'ü': (1, -1, di),
+    'ue': (1, -1, di),
+    'o': (2, -1, du),
+    'a': (1, 1, de),
+    'ö': (1, 2, de + 0.3),
+    'oe': (1, 2, de + 0.3),
+    'ei': (2, 1, du),
+    'eu': (2, 2, du),
+    'oi': (2, 2, du),
+    '/': (1, 2, de - 0.2),  # Aufstriche (be, auf, un)
+    '//': (2, 2, du - 0.4)
+}
+
+
+vokal_formen.update({
+    'ung': vokal_formen['u'],
+    'igung': vokal_formen['u'],
+    'ig': vokal_formen['I'],
+    'isch': vokal_formen['I'],
+    'tion': vokal_formen['o'],
+    'keit': vokal_formen['ei'],
+    'igkeit': vokal_formen['ei'],
+    'schaft': vokal_formen['a'][0:2] + (0.6 * de,)
+})
+
+
+praefix_formen = {
+    # (Typ, vert. Pos. in Halbstufen, Vokal-Tupel (DX, DY, eff. Abst))
+    # Typ: _ normaler Anstrich, - waager. Anstrich, / Aufstrich
+    '1_': ("_", 1, vokal_formen['e0']),
+    '2_': ("_", 2, (1, 0, 0.75 * de)),  # Vergleich mit Stiefo-Materialien sieht kürzer aus als E
+    '3_': ("_", 3, vokal_formen['e0']),
+    '1__': ("_", 1, vokal_formen['u']),
+    '2__': ("_", 2, vokal_formen['u']),
+    '3__': ("_", 3, vokal_formen['u']),
+    '0-': ('-', 0, (1, 0, 0)),
+    '1-': ("-", 1, (1, 0, -0.75 * de)),
+    '2-': ("-", 2, (1, 0, -0.75 * de)),
+    '3-': ("-", 3, (1, 0, -(di + d_extra))),
+    '4-': ("-", 4, (1, 0, -(di + d_extra))),
+    '1--': ("-", 1, (2, 0, -du)),
+    '2--': ("-", 2, (2, 0, -du)),
+    '3--': ("-", 3, (2, 0, -du)),
+    '4--': ("-", 4, (2, 0, -du)),
+    '0/': ("/", 0, vokal_formen['/']),
+    '0//': ("/", 0, vokal_formen['//'])
+}
+
+
+vorsilben = {
+    """Klartext-Vorsilben in Präfix-Formen übersetzen"""
+    'mit': '1_', 'er': '2_', 'an': '3_',
+    'vor': '1__', 'zu': '2__', 'ein': '3__',
+    'in': '1-', 'inter': '1-', 'ge': '2-', 'trans': '3-',
+    'pro': '1--', 'aus': '2--', 'bei': '3--',
+    'be': '0/', 'auf': '0//', 'un': '0d /', 'darauf': '0d //',
+    'fort': 'o t'
 }
 
 
@@ -60,39 +97,10 @@ kuerzel = {
     'sie': '-2-', 'es': '+2-', 'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
     'pro': '2--', 'aus': '++2--', 'so': '--2--', 'bei': '4--',
     'der': '+2.', 'die': '--2.', 'das': '++3.',
-    'darauf': '0d //'
-}
-
-
-vorsilben = {
-    'mit': '1_', 'er': '2_', 'an': '3_',
-    'vor': '1__', 'zu': '2__', 'ein': '3__',
-    'in': '1-', 'inter': '1-', 'ge': '2-', 'trans': '3-',
-    'pro': '1--', 'aus': '2--', 'bei': '3--',
-    'be': '0/', 'auf': '0//', 'un': '0d /', 'darauf': '0d //'
-}
-
-
-praefix_formen = {
-    # (Typ, vert. Pos. in Halbstufen, Vokal-Tupel (DX, DY, eff. Abst))
-    # Typ: _ normaler Anstrich, - waager. Anstrich, / Aufstrich
-    '1_': ("_", 1, (1, 0, di_extra)),
-    '2_': ("_", 2, (1, 0, 0.75 * de)),  # Vergleich mit Stiefo-Materialien sieht kürzer aus als E
-    '3_': ("_", 3, (1, 0, di_extra)),
-    '1__': ("_", 1, (2, 0, du)),
-    '2__': ("_", 2, (2, 0, du)),  # identisch zu U
-    '3__': ("_", 3, (2, 0, du)),
-    '0-': ('-', 0, (1, 0, 0)),
-    '1-': ("-", 1, (1, 0, -0.75 * de)),
-    '2-': ("-", 2, (1, 0, -0.75 * de)),
-    '3-': ("-", 3, (1, 0, -(di + di_extra))),
-    '4-': ("-", 4, (1, 0, -(di + di_extra))),
-    '1--': ("-", 1, (2, 0, -du)),
-    '2--': ("-", 2, (2, 0, -du)),
-    '3--': ("-", 3, (2, 0, -du)),
-    '4--': ("-", 4, (2, 0, -du)),
-    '0/': ("/", 0, vokalAbstaende['/']),
-    '0//': ("/", 0, vokalAbstaende['//'])
+    'des': '2s', 'sich': '1s', 'sein': '3s',
+    'dem': '2m', 'mich': '1m', 'mein': '3m',
+    'darauf': '0d //',
+    'ist': '1t', 'hätte': '2t', 'hatte': '3t', 'heute': '4t'
 }
 
 
@@ -1004,32 +1012,32 @@ def SplitStiefoWord(st):
                 first_token = False
             else:
                 z = pfx1
-        v = z in vokalAbstaende or z in praefix_formen
-        if first_token and z in ('i', 'ü'):
+        v = z in vokal_formen or z in praefix_formen
+        if first_token and z in ('i', 'ü', 'ue'):
             z = 'I'
         if pv and v:
             w.append('c')
-        if pz in ('i', 'ü') and z in ('b', 'd', 'f', 'k', 'm', 'p', 'r', 'z',
+        if pz in ('i', 'ü', 'ue') and z in ('b', 'd', 'f', 'k', 'm', 'p', 'r', 'z',
                                       'cht', 'ng', 'nk', 'st'):
             w[-1] = 'I'
-        if pz in ('i', 'ü') and z in ('ch'):  # evtl. 'sp'
-            w[-1] = 'ischmal'
+        if pz in ('i', 'ü', 'ue') and z in ('ch'):  # evtl. auch 'sp'
+            w[-1] = 'i0'
         w.append(z)
         pz = z
         pv = v
         first_token = False
-    if w[-1] in ('i', 'ü'):
+    if w[-1] in ('i', 'ü', 'ue'):
         w[-1] = 'I'
 
     ## Wort in Glyphen und Vokal-Tupel zerlegen
     x = []  # zerlegtes Wort
     k = False
     for l in w:
-        if l in vokalAbstaende:
+        if l in vokal_formen:
             if not x:
                 x.append('_')  # Anstrich für Vokal am Wortanfang
             # Vokale durch Abstands-Tupel ersetzen
-            x.append(vokalAbstaende[l])
+            x.append(vokal_formen[l])
             k = False
         elif l in praefix_formen:
             assert not x, "Praefix nicht am Wortanfang! w={} l={} x={}".format(w, l, x)
@@ -1061,7 +1069,7 @@ def stiefoWortZuKurve(w):
     xpos = [(0, 0)]  # Stift-Endpositionen hinter Vokalen und Konsonanten
 
     ll, y_offset = SplitStiefoWord(w)
-    #print("stiefoWortZuKurve: w={}, ll={}".format(w, ll))
+    print("stiefoWortZuKurve: w={}, ll={}".format(w, ll))
     ll = [None] + ll + [None]
     for i in range(0, len(ll) - 2, 2):
         dl = ll[i]      # Vokal vor dem aktuellen Konsonant
