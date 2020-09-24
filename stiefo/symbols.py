@@ -246,10 +246,17 @@ def untenRund(dr, runder = True):
     return m + e
 
 
-def untenEingelegt(dr):
-    m = [(0, 0.25),
-         (0.0, 0.0), (-0.2, 0)]
-    e = [(-0.5, 0.0)] if dr else []
+def untenEingelegt(dr, runder = False):
+    if runder:
+        m = [(0, 0.25),
+             (0.0, 0.0) if dr else (-0.1, 0),
+             (-0.2, 0) if dr else (-0.3, 0)]
+        e = [(-0.5, 0.0)] if dr else []
+    else:
+        m = [(0, 0.25),
+             (0.0, 0.0),
+             (-0.2, 0)]
+        e = [(-0.5, 0.0)] if dr else []
     return m + e
 
 
@@ -448,10 +455,10 @@ def glyph_cht(dl, dr):
     return (0.8, scale(g, 1, 1, 0.5))
 
 
-def glyph_h(dl, dr):
+def glyph_h(dl, dr, runder = True):
     b = obenSpitz(dl)
     m = [(0, 0.5)]
-    e = untenEingelegt(dr)
+    e = untenEingelegt(dr, runder = runder)
     return (0.2, shift(b + m + e, 0.2))
 
 
@@ -850,7 +857,8 @@ glyphs = {
     'd':        glyph_d, 
     'f':        glyph_f, 
     'g':        glyph_g, 
-    'h':        glyph_h, 
+    'h':        glyph_h,
+    'h0': lambda dl, dr: glyph_h(dl, dr, runder = False),
     'j':        glyph_j, 
     'k':        glyph_k, 
     'l':        glyph_l, 
