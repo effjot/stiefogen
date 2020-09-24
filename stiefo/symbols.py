@@ -46,7 +46,8 @@ vokal_formen = {
 }
 
 
-vokal_formen.update({
+## Nachsilben
+vokal_formen.update({  # Aufbauschrift 1, 5. Lernabschnitt
     'ung': vokal_formen['u'],
     'igung': vokal_formen['u'],
     'ig': vokal_formen['I'],
@@ -81,26 +82,45 @@ praefix_formen = {
 }
 
 
-vorsilben = {
-    """Klartext-Vorsilben in Präfix-Formen übersetzen"""
-    'mit': '1_', 'er': '2_', 'an': '3_',
-    'vor': '1__', 'zu': '2__', 'ein': '3__',
-    'in': '1-', 'inter': '1-', 'ge': '2-', 'trans': '3-',
-    'pro': '1--', 'aus': '2--', 'bei': '3--',
-    'be': '0/', 'auf': '0//', 'un': '0d /', 'darauf': '0d //',
-    'fort': 'o t'
+"""Klartext-Vorsilben in Präfix-Formen / versetzte Konsonanten übersetzen"""
+vorsilben_AS1 = {
+    'dis': '1d', 'da': '3d', 'dar': '3d',  # 2. Lernabschnitt
+    'er': '2_', 'mit': '1_', 'an': '3_',  # 3. Lernabschnitt
+    'zu': '2__', 'vor': '1__', 'ein': '3__',  # 4. Lernabschnitt
+    'unter': '2nd', 'über': '1nd',  # 6. Lernabschnitt
+    'ab': '3b',  # (Anleitung Selbststudium S. 10-1)
+    'ge': '2-', 'aus': '2--',  # 7. Lernabschnitt
+    'auf': '0//'
 }
 
 
+vorsilben_AS2 = {
+    'in': '1-', 'inter': '1-', 'trans': '3-',
+    'pro': '1--', 'bei': '3--',
+    'be': '0/', 'un': '0d /', 'darauf': '0d //',
+    'fort': '1t'
+}
+
+
+vorsilben = {**vorsilben_AS1, **vorsilben_AS2}
+
+
 kuerzel_AS1 = {
-    'in': 'i n',  # Wort „in“ wird normal geschrieben, waagr. Strich nur für Vorsilbe
-    'sie': '-2-', 'es': '+2-',
-    'aus': '++2--', 'so': '--2--',
     'der': '+2.', 'die': '--2.', 'das': '++3.',  # 1. Lernabschnitt
     'des': '2s', 'sich': '1s', 'sein': '3s',
     'dem': '2m', 'mich': '1m', 'mir': '1m', 'mein': '3m',
     'den': '2en', 'nicht': '1en', 'man': '3en',
-    'ist': '1t'
+    'dies': '1d',  # 2. Lernabschnitt
+    'ist': '1t', 'von': '1f',
+    'wir': '1w', 'hab': '3h', 'hast': '3h', 'hat': '3h', 'gehab': '3- h',
+    'und': '2nd', 'sind': '1nd',  # 6. Lernabschnitt
+    'unter': '2nd e0', 'über': '1nd e0', 'aber': '3nd e0',
+    'werd': '2c', 'wird': '1c', 'wirst': '1c', 'war': '3c',
+    'würde': '1c e@',  # (Anleitung Selbststudium S. 10-1)
+    'wurd': '2c u', 'word': '1c u', 'geword': '1c u',
+    'es': '+2-', 'sie': '-2-',  # 7. Lernabschnitt
+    'aus': '++2--', 'so': '--2--',
+    'in': 'i n',  # Wort „in“ wird normal geschrieben, waagr. Strich nur für Vorsilbe
 }
 
 
