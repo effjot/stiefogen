@@ -91,6 +91,7 @@ vorsilben_AS1 = {
     'ab': '3b',  # (Anleitung Selbststudium S. 10-1)
     'ge': '2-', 'aus': '2--',  # 7. Lernabschnitt
     'ver': '2@0', 'für': '1@0', 'nach': '3@0',  # 8. Lernabschnitt
+    'gegen': '2@1',
     'auf': '0//'
 }
 
@@ -569,11 +570,11 @@ def glyph_selbst(dl, dr):
     return [1, shift(scale(b + m + e, 0.8, 1), 0.4)]
 
 
-def glyph_gegen(dl, dr):
+def glyph_schleife_halbstuf_geg_uzs(dl, dr):
     # Immer in Kombination mit Wortabsenkung verwenden!
     assert not dl, "Glyphen 'gegen/will/all usw.' duerfen nur am Wortanfang stehen!"
     # FIXME: "dagegen" ermöglichen
-    b = [(0, 0)] # (P0)
+    b = [(0, 0)]  # (P0)
     m = kreis_auf(dl, dr)
     e = [(0.75, 0), (1, 0.5), (1, 0.5)] if not dr else [(0.75, 0)]
     return [0.5, shift(scale(b + m + e, 0.4, 0.5), 0.2, 0)]
@@ -861,7 +862,7 @@ glyphs = {
     'q':        glyph_qu, 
     'c':        glyph_c,
     'en': glyph_en,
-    'all':      glyph_gegen,   # ".all"
+#    'all':      glyph_gegen,   # ".all"
     'ander':    glyph_ander,   # ".ander"
     'auch':     glyph_ander,   # ";auch"
     'bin':      glyph_b,       # ",,bin"
@@ -875,8 +876,8 @@ glyphs = {
     'euer':     glyph_ca,      # ":euer"
     'euro':     glyph_nur,     # ":euro"
     '@0': glyph_punktschleife_geg_uzs,
-    'ganz':     glyph_g,       # ".ganz"
-    'gegen':    glyph_gegen,   # "gegen"
+    '@1': glyph_schleife_halbstuf_geg_uzs,
+#    'gegen':    glyph_gegen,   # "gegen"
     'gleich':   glyph_gleich,  # "gleich"
     'ich':      glyph_ander,   # ",ich"
     'immer':    glyph_ca,      # ",immer"
@@ -896,7 +897,7 @@ glyphs = {
     'selbst':   glyph_selbst,  # "selbst"
     'sonder':   glyph_sonder,  # "sonder"
     'sonst':    glyph_selbst,  # ",,sonst"
-    'soll':     glyph_gegen,   # ",,soll u"
+#    'soll':     glyph_gegen,   # ",,soll u"
     'stat':     glyph_selbst,  # ".statt"
     'trotz':    glyph_zer,     # ",,trotz"
     'ueber':    glyph_b,       # ",,ueber ek"
@@ -913,8 +914,8 @@ glyphs = {
     'wesen':    glyph_wesen,   # "wesen"
     'werts':    glyph_werts,   # "werts"
     'wieder':   glyph_wesen,   # ",,wieder"
-    'will':     glyph_gegen,   # ",,will"
-    'woll':     glyph_gegen,   # ",,woll"
+#    'will':     glyph_gegen,   # ",,will"
+#    'woll':     glyph_gegen,   # ",,woll"
     'zer':      glyph_zer,     # "zer"
     'zwar':     glyph_ca,      # ":,zwar"
     '.': glyph_punkt,
