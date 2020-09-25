@@ -13,10 +13,10 @@ slant = math.sin(20 * math.pi/180)
 
 ## Effektive Abstände (horizontale) für Vokale und Vorsilben
 de = 1.1  # e, ä, a, ö
-di = 0.2  # i, ü
+di = 0.3  # i, ü
 du = 2.8  # u, au, o, ei, ai, eu, äu, oi
 dkv = 0.5  # direkte Konsonantenverbindung ohne Vokal
-d_extra = 0.5  # Zuschlag für etwas weitere Verbindung für bestimmte Konsonanten
+d_extra = 0.4  # Zuschlag für etwas weitere Verbindung für bestimmte Konsonanten
 
 
 ## Vokale (horiz. und vert. Abstände bei der Verbindung von Konsonanten)
@@ -25,7 +25,7 @@ vokal_formen = {
     'e': (1, 0, de),
     'ä': (1, 0, de),
     'ae': (1, 0, de),
-    'e0': (1, 0, d_extra),  # etwas schmaler, für aber, über, Vorsilben er/mit/an
+    'e0': (1, 0, 0.5 * de),  # etwas schmaler, für aber, über, Vorsilben er/mit/an
     'e@': (1, 0, dkv + 0.5 * d_extra),  # für Verbindungen W-lich, F-lich, usw.
     'u': (2, 0, du),
     'au': (2, 0, du),
@@ -1061,8 +1061,8 @@ def SplitStiefoWord(st):
             z = 'I'
         if pv and v:
             w.append('c')
-        if pz in ('i', 'ü', 'ue') and z in ('b', 'd', 'f', 'k', 'm', 'p', 'r', 'z',
-                                      'cht', 'ng', 'nk', 'st'):
+        if pz in ('i', 'ü', 'ue') and z in ('b', 'd', 'f', 'g', 'k', 'm', 'p', 'r', 'z',
+                                            'cht', 'ng', 'nk', 'st'):
             w[-1] = 'I'
         if pz in ('i', 'ü', 'ue') and z in ('ch'):  # evtl. auch 'sp'
             w[-1] = 'i0'
@@ -1128,7 +1128,7 @@ def stiefoWortZuKurve(w):
             k = k[1:]
         y_offset += k_level - y_baseline + k_adj
 
-        assert k in glyphs, "error, unknown glyph: [" + k + "]"
+        assert k in glyphs, "Unknown glyph: [" + k + "]"
         glFunc = glyphs[k]
         if k != '-':
             w, g = glFunc(dl, dr)  # w = x-Abstand hinter Glyph, g = Bezier-Punkte des Glyphen

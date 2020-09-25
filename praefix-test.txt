@@ -1,48 +1,25 @@
 {"Stiefo Aufbauschrift I, Seite 8 – 9"}
 
 {"Grundstellung – Tiefstellung – Hochstellung"}
-
 ergeb, angeb, mitgeb
 erfahr, anfahr, mitfahr
 
 {"Beispiele"}
-
 erbet mitbring anbiet, erdrückt mitdenk andrückt
 erhör mithör anhör, erleg mitliefer anlehn
 errat mitrat anreg, ersetz, mitsetz, ansetz
 
 {"Übungstext"}
-
-sehr geehrter herr schneider! wir haben mit ein unserer kund
-ihre terminschwierigkeiten besproch. er erklärte uns, dass er an ein
-beliefung ihr fa  mit den von ihnen benötig artikeln interessier ist.
-da wir an ein einschaltung uns fa in dies geschäft nicht interessier
-sind, habes wir dem kund ihre fa genannt und ihn gebet, sich direkt mit
-ihn in verbindung zu setz.
+sehr geehrter herr schneider! wir haben mit einem unserer kund
+ihre termin schwierigkeiten besprochen. er erklärte uns, dass er an ein
+belieferung ihr firma  mit den von ihnen benötig artikeln interessier ist.
+da wir an ein einschaltung unserer firma in dieses geschäft nicht interessier
+sind, haben wir dem kund ihre firma genannt und ihn gebet, sich direkt mit
+ihnen in verbindung zu setzen.
 
 {"sehr geehrter herr schneider! wir haben mit einem unserer kunden"}
 {"ihre terminschwierigkeiten besprochen. er erklärte uns, dass er an einer"}
 {"belieferung ihrer firma mit den von ihnen benötigten artikeln interessiert ist."}
 {"da wir an einer einschaltung unserer firma in dieses geschäft nicht interessiert"}
-{"sind, haber wir dem kunden ihre firma genannt und ihn gebeten, sich direkt mit"}
+{"sind, haben wir dem kunden ihre firma genannt und ihn gebeten, sich direkt mit"}
 {"mit ihnen in verbindung zu setzen."}
-
-
-
-
-{"Stiefo Aufbauschrift I, Seite 10 – 11"}
-
-{"Grundstellung – Tiefstellung – Hochstellung"}
-
-zugeb, vorgeb, eingeb
-zufall, vorfall, einfall
-
-
-
-sehr geehrte herren! wir haben von ihrem angebot kenntnis genommen. 
-
-auslesen erlesen mitlesen
-
-ausgeben mit eingeben
-
-ergeben mitgeben angeben 
