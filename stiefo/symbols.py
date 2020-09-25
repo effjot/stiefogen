@@ -26,7 +26,7 @@ vokal_formen = {
     'ä': (1, 0, de),
     'ae': (1, 0, de),
     'e0': (1, 0, 0.5 * de),  # etwas schmaler, für aber, über, Vorsilben er/mit/an
-    'e@': (1, 0, dkv + 0.5 * d_extra),  # für Verbindungen W-lich, F-lich, usw.
+    'e@': (0, 0, 0),  # für Verbindungen mit -lich (außer W-lich F-lich, usw.)
     'u': (2, 0, du),
     'au': (2, 0, du),
     'i': (1, -1, di),
@@ -96,6 +96,12 @@ vorsilben_AS1 = {
 }
 
 
+nachsilben_AS1 = {
+    'lich': 'e@ @*0', 'entlich': 'e@ @*0',  # 8. Lernabschnitt
+    'lich*': '@*0', 'entlich*': '@*0',  # Varianten für unten rund (W-lich, F-lich, usw.)
+}
+
+
 vorsilben_AS2 = {
     'in': '1-', 'inter': '1-', 'trans': '3-',
     'pro': '1--', 'bei': '3--',
@@ -104,7 +110,12 @@ vorsilben_AS2 = {
 }
 
 
-vorsilben = {**vorsilben_AS1, **vorsilben_AS2}
+nachsilben_AS2 = {
+    'alich': 'e@ ++3@*0', 'schaftlich': 'e@ ++3@*0'
+}
+
+
+vor_nach_silben = {**vorsilben_AS1, **nachsilben_AS1, **vorsilben_AS2, **nachsilben_AS2}
 
 
 kuerzel_AS1 = {
@@ -122,6 +133,7 @@ kuerzel_AS1 = {
     'wurd': '2c u', 'word': '1c u', 'geword': '1c u',
     'es': '+2-', 'sie': '-2-',  # 7. Lernabschnitt
     'aus': '++2--', 'so': '--2--',
+    'endlich': '2@*0',  # 8. Lernabschnitt
     'in': 'i n',  # Wort „in“ wird normal geschrieben, waagr. Strich nur für Vorsilbe
 }
 
@@ -638,20 +650,22 @@ def glyph_punktschleife_geg_uzs(dl, dr):
     return [0.3, (b + m + e)]
 
 
+def glyph_punktschleife_im_uzs(dl, dr):
+    _, m = glyph_punktschleife_geg_uzs(None, None)
+    m = shift(reversed(rotate_ccw(m, math.pi)), 0.4, 0.2)
+    if dl:
+        m = m[2:]
+    if dr:
+        m = m[:-2]
+    return [0.4, m]
+
+
 def glyph_dir(dl, dr):
     w, m = glyph_ver(dr, dl)  # dl und dr vertauscht!
     m = reversed(scale(m, -1, 1))
     return w, m
 
 
-def glyph_lich(dl, dr):
-    _, m = glyph_ver(None, None)
-    m = shift(reversed(rotate_ccw(m, math.pi)), 0, 0.2)
-    if dl:
-        m = m[2:]
-    if dr:
-        m = m[:-2]
-    return [0.4, m]
 
 
 def glyph_los(dl, dr):
@@ -876,6 +890,7 @@ glyphs = {
     'euer':     glyph_ca,      # ":euer"
     'euro':     glyph_nur,     # ":euro"
     '@0': glyph_punktschleife_geg_uzs,
+    '@*0': glyph_punktschleife_im_uzs,
     '@1': glyph_schleife_halbstuf_geg_uzs,
 #    'gegen':    glyph_gegen,   # "gegen"
     'gleich':   glyph_gleich,  # "gleich"
@@ -886,7 +901,6 @@ glyphs = {
     'kein':     glyph_uns,     # ".uns"
     'klein':    glyph_klein,   # "klein"
     'letzt':    glyph_letzt,   # "letzt"
-    'lich':     glyph_lich,    # "lich"  ( auch fuer 'endlich', oder :lich fuer 'moeglich', ",,w e lich" fuer 'wirklich')
     'los':      glyph_los,     # "los"
     'mein':     glyph_m,       # ".mein"
     'muss':     glyph_muss,    # "muss"
@@ -997,8 +1011,8 @@ def SplitStiefoWord(st):
     pv = False  # vorhergehender Vokal
     pfx2 = None  # zweites Token von zusammengesetzter Vorsilbe
     for z in (st.split(' ')):
-        if z in vorsilben:
-            pfx = vorsilben[z]
+        if z in vor_nach_silben:
+            pfx = vor_nach_silben[z]
             if ' ' in pfx:
                 assert len(pfx.split(' ')) == 2, 'Compound prefix has more than 2 parts: {}'.format(pfx)
                 pfx1, _, pfx2 = pfx.partition(' ')
