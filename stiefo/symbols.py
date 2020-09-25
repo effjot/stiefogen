@@ -90,6 +90,7 @@ vorsilben_AS1 = {
     'unter': '2nd', 'über': '1nd',  # 6. Lernabschnitt
     'ab': '3b',  # (Anleitung Selbststudium S. 10-1)
     'ge': '2-', 'aus': '2--',  # 7. Lernabschnitt
+    'ver': '2@0', 'für': '1@0', 'nach': '3@0',  # 8. Lernabschnitt
     'auf': '0//'
 }
 
@@ -605,7 +606,7 @@ def glyph_doch(dl, dr):
 
 
 def glyph_en(dl, dr):
-    assert not dl, 'Glyph “en” must be at beginning of word.'
+    assert not dl, 'Glyph “en” only allowed at beginning of word.'
     b = [(0, 0), (0, 0)]
     w, m = glyph_n(b, dr)
     e = []
@@ -613,7 +614,7 @@ def glyph_en(dl, dr):
 
 
 def glyph_ent(dl, dr):
-    assert not dl, "Glyph 'ent' darf nur am Wortanfang stehen"
+    assert not dl, 'Glyph “ent” only allowed at beginning of word.'
     b = obenRund(True)
     m = [(0, 0.5)]
     e = untenSpitz(dr)
@@ -629,8 +630,7 @@ def glyph_ander(dl, dr):
     return [0.5, (b + m + e)]
 
 
-def glyph_ver(dl, dr):
-    #assert not dl, "Glyph 'ver' darf nur am Wortanfang stehen!"
+def glyph_punktschleife_geg_uzs(dl, dr):
     b = [(0, 0)] if not dl else [(0, 0), (0, 0)]
     m = scale(kreis_auf(dl, dr), 0.15, 0.2)
     e = [(0.3, -0.1), (0.4, 0.2), (0.4, 0.2)] if not dr else [(0.5, -0.1)]
@@ -684,27 +684,12 @@ def glyph_jetzt(dl, dr):
     return (0.5, scale(g, 1, 1, 0.5))
 
 
-def glyph_der(dl, dr):
-    assert not dl and not dr
-    b = [(0, 0)]
-    m = scale(kreis_auf(dl, dr), 0.1, 0.1)
-    e = []
-    return (0.1, shift(b + m + e, 0, 0.1))
-
-
 def glyph_punkt(dl, dr):
-    assert not dl and not dr, "Punkt muss alleine stehen"
+    assert not dl and not dr, 'Glyph “.” must not be connected.'
     b = [(0, 0)]
     m = scale(kreis_auf(dl, dr), 0.1, 0.1)
     e = []
     return (0.1, b + m + e)
-
-
-def glyph_es1(dl, dr, l):
-    b = [] if dl else [(0, 0)]*2
-    m = [(0,0), (l, 0), (l, 0)]
-    e = [] if dr else [(l,0)]*2
-    return (l, (b + m + e))
 
 
 def glyph_werend(dl, dr):
@@ -723,18 +708,6 @@ def glyph_werts(dl, dr):
     m = [(0.6, 2),
          (-0.2, 1), (-0.2, 1), (0.6, 0)]
     return (0.5, scale(m, 0.6, 1))
-
-
-def glyph_es(dl, dr):
-    l = 0.6
-    w, m = glyph_es1(dl, dr, l)
-    return (w*l, scale(m, l, 1))
-
-
-def glyph_so(dl, dr):
-    l = 1.3
-    w, m = glyph_es1(dl, dr, l)
-    return (w*l, scale(m, l, 1))
 
 
 def glyph_viel(dl, dr):
@@ -888,8 +861,6 @@ glyphs = {
     'q':        glyph_qu, 
     'c':        glyph_c,
     'en': glyph_en,
-    'ab':       glyph_b,       # ".ab"
-    'aber':     glyph_b,       # ".aber ek"
     'all':      glyph_gegen,   # ".all"
     'ander':    glyph_ander,   # ".ander"
     'auch':     glyph_ander,   # ";auch"
@@ -897,41 +868,27 @@ glyphs = {
     'bund':     glyph_bund,    # "bund"
     'ca':       glyph_ca,      # ";ca"
     'chen':     glyph_chen,    # ",chen"
-    'da':       glyph_d,       # ".da"
-    'dir':      glyph_dir,     # ",dir"
     'deutsch':  glyph_doch,    # ":.deutsch"
     'doch':     glyph_doch,    # "doch"
     'durch':    glyph_doch,    # ".durch"
     'ent':      glyph_ent,     # "ent"
     'euer':     glyph_ca,      # ":euer"
     'euro':     glyph_nur,     # ":euro"
-    'fast':     glyph_f,       # ".fast"
-    'fest':     glyph_f,       # "fest"
-    'fort':     glyph_t,       # ",fort"
-    'fuer':     glyph_ver,     # ",fuer"
-    'galt':     glyph_l,       # ".galt"
+    '@0': glyph_punktschleife_geg_uzs,
     'ganz':     glyph_g,       # ".ganz"
     'gegen':    glyph_gegen,   # "gegen"
-    'gelt':     glyph_l,       # "gelt"
-    'gilt':     glyph_l,       # ",,gilt"
     'gleich':   glyph_gleich,  # "gleich"
-    'gut':      glyph_g,       # "gut"
     'ich':      glyph_ander,   # ",ich"
-    'ig':       glyph_es,      # "ig"
-    'ist':      glyph_t,       # ",ist"
     'immer':    glyph_ca,      # ",immer"
-    'ion':      glyph_so,      # "ion"
     'jed':      glyph_jed,     # "jed"
     'jetzt':    glyph_jetzt,   # "jetzt"
     'kein':     glyph_uns,     # ".uns"
     'klein':    glyph_klein,   # "klein"
-    'kon':      glyph_k,       # ",,kon"
     'letzt':    glyph_letzt,   # "letzt"
     'lich':     glyph_lich,    # "lich"  ( auch fuer 'endlich', oder :lich fuer 'moeglich', ",,w e lich" fuer 'wirklich')
     'los':      glyph_los,     # "los"
     'mein':     glyph_m,       # ".mein"
     'muss':     glyph_muss,    # "muss"
-    'nach':     glyph_ver,     # ":,nach"
     'noch':     glyph_uns,     # ",,uns"
     'nur':      glyph_nur,     # "nur"
     'ober':     glyph_bund,    # ",,bund"
@@ -948,7 +905,6 @@ glyphs = {
 #    'un':       glyph_un,      # ",,,,un"
     'und':      glyph_nd,      # "und"
     'unter':    glyph_nd,      # ",,unter ek"
-    'ver':      glyph_ver,     # "ver"
     'viel':     glyph_viel,    # ",,viel"
     'voll':     glyph_voll,    # "voll"
     'welch':    glyph_ch,      # "welch"
