@@ -42,7 +42,8 @@ vokal_formen = {
     'eu': (2, 2, du),
     'oi': (2, 2, du),
     '/': (1, 2, de - 0.2),  # Aufstriche (be, auf, un)
-    '//': (2, 2, du - 0.4)
+    '//': (2, 2, du - 0.4),
+    '|': (None, None, None)  # belieber horiz. Abstand  TODO: vielleicht auch vert.?
 }
 
 
@@ -68,7 +69,7 @@ praefix_formen = {
     '1__': ("_", 1, vokal_formen['u']),
     '2__': ("_", 2, vokal_formen['u']),
     '3__': ("_", 3, vokal_formen['u']),
-    '0-': ('-', 0, (1, 0, 0)),
+    '0-': ('-', 0, (1, 0, -0.75 * de)),  # TODO: nötig?
     '1-': ("-", 1, (1, 0, -0.75 * de)),
     '2-': ("-", 2, (1, 0, -0.75 * de)),
     '3-': ("-", 3, (1, 0, -(di + d_extra))),
@@ -92,6 +93,7 @@ vorsilben_AS1 = {
     'ge': '2-', 'aus': '2--',  # 7. Lernabschnitt
     'ver': '2@0', 'für': '1@0', 'nach': '3@0',  # 8. Lernabschnitt
     'gegen': '2@1',
+    'durch': '2dd |0',  # 9. Lernabschnitt
     'auf': '0//'
 }
 
@@ -99,10 +101,13 @@ vorsilben_AS1 = {
 nachsilben_AS1 = {
     'lich': 'e@ @*0', 'entlich': 'e@ @*0',  # 8. Lernabschnitt
     'lich*': '@*0', 'entlich*': '@*0',  # Varianten für unten rund (W-lich, F-lich, usw.)
+    'doch': '1dd',  # 9. Lernabschnitt
+    'noch': '1nn',  # als Nachsilben für jedoch, dennoch
 }
 
 
 vorsilben_AS2 = {
+    'deutsch': '4dd |0',  # 9. Lernabschnitt
     'in': '1-', 'inter': '1-', 'trans': '3-',
     'pro': '1--', 'bei': '3--',
     'be': '0/', 'un': '0d /', 'darauf': '0d //',
@@ -134,11 +139,17 @@ kuerzel_AS1 = {
     'es': '+2-', 'sie': '-2-',  # 7. Lernabschnitt
     'aus': '++2--', 'so': '--2--',
     'endlich': '2@*0',  # 8. Lernabschnitt
+    'durch': '2dd',  # 9. Lernabschnitt
+    'uns': '2nn',
     'in': 'i n',  # Wort „in“ wird normal geschrieben, waagr. Strich nur für Vorsilbe
 }
 
 
 kuerzel_AS2 = {
+    'kein': '3nn',  # 9. Lernabschnitt
+    'deutschland': '4dd |0.1 nd',  # 10. Lernabschnitt
+    'jedoch': 'j |0 1dd',  # 18. Lernabschnitt
+    # TODO: 'dennoch': '2en „enger Abstand“ 1nn',  # 24. Lernabschnitt, Bsp. 2
     'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
     'pro': '2--', 'bei': '4--',
     'darauf': '0d //',
@@ -216,7 +227,7 @@ def rotate_ccw(g, r):
 def ist_vokal_waagr_strich(dl):
     """Waagerechter Strich anhand Vokaltupel erkennen"""
     dx, dy, ea = dl
-    return (dy == 0 and ea <= 0)
+    return (dy == 0 and ea < 0)
 
 
 def obenSpitz(dl):
@@ -292,7 +303,6 @@ def kopfSchleife(dl):
         b = [(0, 0.5), (0.12, 0.55), (0.31, 1)]
     else:
         dx, dy, ea = dl
-        #print("kopfSchleife dx, dy, ea", dx, dy, ea)
         if dy == -1 or ist_vokal_waagr_strich(dl):  # i-Position oder waagr. Anstrich
             b = [(-0.2, 0.5), (0.0, 0.5), (0.18, 0.5),
                  (0.3, 1), ]
@@ -332,7 +342,8 @@ def welle_ab(dl, dr):
 
 
 def bogen_auf(dl, dr):
-    h = 0.6
+    """Bogen aufwärts, für weites N (uns usw.). Beide Enden immer spitz."""
+    h = 0.65
     l = 0.3
     b = [(0, 0), (0, 0)]      # Start immer spitz [P2], (P3/Q0)
     m = [(l, h), (1 - l, h)]  # [Q1], [Q2]
@@ -341,7 +352,19 @@ def bogen_auf(dl, dr):
 
 
 def bogen_ab(dl, dr):
-    return scale(bogen_auf(dl, dr), 1, -1)
+    """Bogen abwärts, für weites D (durch usw.).
+
+    Ende nur spitz wenn allein steht, sonst letzten Stützpunkt etwas früher,
+    letzten Kontrollpunkt für Fortsetzung in gleicher Richtung setzen, damit
+    glatte Verbindung zu Folgekonsonant.
+    """
+    y0 = 0.5  # Höhe Anfang- und Endpunkt
+    h = 0.65
+    l = 0.3
+    b = [(0, y0), (0, y0)]    # Start immer spitz [P2], (P3/Q0)  # TODO: ändern für jedoch
+    m = [(l, y0 - h), (1 - l, y0 - h)]  # [Q1], [Q2]
+    e = [(1, y0), (1, y0)] if not dr else [(1 - l/2, y0 - h/2), (1 - l/3, y0 - h/3)]  # Ende (Q3/R0)
+    return b + m + e
 
 
 ### Glyphen (Konsonanten)
@@ -355,7 +378,6 @@ def glyph_d(dl, dr):
 
 
 def glyph_n(dl, dr):
-    #print("glyph_n: dl=", dl)
     b = [(-0.3, 0.5)] if dl else [(-0.2, 0.45), (-0.2, 0.45), (-0.1, 0.5)]
     m = [(-0.1, 0.5), (0.2, 0.5),
          (0.4, 0), (0.4, 0)]
@@ -583,7 +605,6 @@ def glyph_selbst(dl, dr):
 
 
 def glyph_schleife_halbstuf_geg_uzs(dl, dr):
-    # Immer in Kombination mit Wortabsenkung verwenden!
     assert not dl, "Glyphen 'gegen/will/all usw.' duerfen nur am Wortanfang stehen!"
     # FIXME: "dagegen" ermöglichen
     b = [(0, 0)]  # (P0)
@@ -599,23 +620,19 @@ def glyph_ca(dl, dr):
     return [0.7, shift(scale(b + m + e, 0.7, 1), 0, 0.1)]
 
 
-def glyph_uns(dl, dr):
-    b = [(0, 0)]*2 if not dl else []
+def glyph_n_weit(dl, dr):
+    b = ([(0, 0)]*2 if not dl else [])  # [P0], [P1]
     m = bogen_auf(dl, dr)
     e = [(1, 0)]*2 if not dr else []
     return [2, scale(b + m + e, 2, 1)]
 
 
-def glyph_doch(dl, dr):
-    w, m = glyph_uns(dl, dr)
-    return [w, scale(m, 1, -1)]
-
-
-# def glyph_den(dl, dr):
-#     b = [(0, 0)]*2 if not dl else []
-#     m = bogen_auf(dl, dr)
-#     e = [(1, 0)]*2 if not dr else []
-#     return [0.4, scale(b + m + e, 0.4, 0.5)]
+def glyph_d_weit(dl, dr):
+    y0 = 0.5
+    b = ([(0, y0)]*2 if not dl else [])  # [P0], [P1]
+    m = bogen_ab(dl, dr)
+    e = [(1, y0)]*2 if not dr else []
+    return [2, scale(b + m + e, 2, 1)]
 
 
 def glyph_en(dl, dr):
@@ -623,7 +640,7 @@ def glyph_en(dl, dr):
     b = [(0, 0), (0, 0)]
     w, m = glyph_n(b, dr)
     e = []
-    return [w + w, b + shift(m + e, w, 0)]
+    return [w + 0.05 + w, b + shift(m + e, w + 0.05, 0)]
 
 
 def glyph_ent(dl, dr):
@@ -666,8 +683,6 @@ def glyph_dir(dl, dr):
     return w, m
 
 
-
-
 def glyph_los(dl, dr):
     l = 1.5
     b = [(0, 0)]*2 if not dl else []
@@ -684,11 +699,6 @@ def glyph_sonder(dl, dr):
     return [l, (b + m + e)]
 
 
-# def glyph_un(dl, dr):
-#     w, m = glyph_d(dl, dr)
-#     return [0.5*w, scale(m, 0.7, 0.5)]
-
-
 def glyph_voll(dl, dr):
     # TODO
     return [1.3, (b + m + e)]
@@ -700,7 +710,7 @@ def glyph_jetzt(dl, dr):
 
 
 def glyph_punkt(dl, dr):
-    assert not dl and not dr, 'Glyph “.” must not be connected.'
+    assert not dl and not dr, 'Glyph “.” (dot) must not be connected.'
     b = [(0, 0)]
     m = scale(kreis_auf(dl, dr), 0.1, 0.1)
     e = []
@@ -876,48 +886,40 @@ glyphs = {
     'q':        glyph_qu, 
     'c':        glyph_c,
     'en': glyph_en,
-#    'all':      glyph_gegen,   # ".all"
+    'nn': glyph_n_weit,
+    'dd': glyph_d_weit,
+    '@0': glyph_punktschleife_geg_uzs,
+    '@*0': glyph_punktschleife_im_uzs,
+    '@1': glyph_schleife_halbstuf_geg_uzs,
     'ander':    glyph_ander,   # ".ander"
     'auch':     glyph_ander,   # ";auch"
     'bin':      glyph_b,       # ",,bin"
     'bund':     glyph_bund,    # "bund"
     'ca':       glyph_ca,      # ";ca"
     'chen':     glyph_chen,    # ",chen"
-    'deutsch':  glyph_doch,    # ":.deutsch"
-    'doch':     glyph_doch,    # "doch"
-    'durch':    glyph_doch,    # ".durch"
     'ent':      glyph_ent,     # "ent"
     'euer':     glyph_ca,      # ":euer"
     'euro':     glyph_nur,     # ":euro"
-    '@0': glyph_punktschleife_geg_uzs,
-    '@*0': glyph_punktschleife_im_uzs,
-    '@1': glyph_schleife_halbstuf_geg_uzs,
-#    'gegen':    glyph_gegen,   # "gegen"
     'gleich':   glyph_gleich,  # "gleich"
     'ich':      glyph_ander,   # ",ich"
     'immer':    glyph_ca,      # ",immer"
     'jed':      glyph_jed,     # "jed"
     'jetzt':    glyph_jetzt,   # "jetzt"
-    'kein':     glyph_uns,     # ".uns"
     'klein':    glyph_klein,   # "klein"
     'letzt':    glyph_letzt,   # "letzt"
     'los':      glyph_los,     # "los"
     'mein':     glyph_m,       # ".mein"
     'muss':     glyph_muss,    # "muss"
-    'noch':     glyph_uns,     # ",,uns"
     'nur':      glyph_nur,     # "nur"
     'ober':     glyph_bund,    # ",,bund"
     'rueck':    glyph_klein,   # ",,rueck"
     'selbst':   glyph_selbst,  # "selbst"
     'sonder':   glyph_sonder,  # "sonder"
     'sonst':    glyph_selbst,  # ",,sonst"
-#    'soll':     glyph_gegen,   # ",,soll u"
     'stat':     glyph_selbst,  # ".statt"
     'trotz':    glyph_zer,     # ",,trotz"
     'ueber':    glyph_b,       # ",,ueber ek"
-    'uns':      glyph_uns,     # "uns"
     'um':       glyph_um,      # "um"
-#    'un':       glyph_un,      # ",,,,un"
     'und':      glyph_nd,      # "und"
     'unter':    glyph_nd,      # ",,unter ek"
     'viel':     glyph_viel,    # ",,viel"
@@ -928,8 +930,6 @@ glyphs = {
     'wesen':    glyph_wesen,   # "wesen"
     'werts':    glyph_werts,   # "werts"
     'wieder':   glyph_wesen,   # ",,wieder"
-#    'will':     glyph_gegen,   # ",,will"
-#    'woll':     glyph_gegen,   # ",,woll"
     'zer':      glyph_zer,     # "zer"
     'zwar':     glyph_ca,      # ":,zwar"
     '.': glyph_punkt,
@@ -1027,7 +1027,7 @@ def SplitStiefoWord(st):
                 first_token = False
             else:
                 z = pfx1
-        v = z in vokal_formen or z in praefix_formen
+        v = z in vokal_formen or z[0] == '|' or z in praefix_formen
         if first_token and z in ('i', 'ü', 'ue'):
             z = 'I'
         if pv and v:
@@ -1048,11 +1048,15 @@ def SplitStiefoWord(st):
     x = []  # zerlegtes Wort
     k = False
     for l in w:
-        if l in vokal_formen:
+        if l[0] in vokal_formen:
             if not x:
                 x.append('_')  # Anstrich für Vokal am Wortanfang
             # Vokale durch Abstands-Tupel ersetzen
-            x.append(vokal_formen[l])
+            if l[0] != '|':
+                x.append(vokal_formen[l])
+            else:
+                stretch = float(l[1:])
+                x.append((stretch, 0, stretch))
             k = False
         elif l in praefix_formen:
             assert not x, "Praefix nicht am Wortanfang! w={} l={} x={}".format(w, l, x)

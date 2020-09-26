@@ -307,13 +307,11 @@ def list_to_text(l):
     return "\n".join(lines)
 
 
-
 def text_to_list(txt):
-    return re.split(' \u00A0 |\n|  +| *\\| *', txt)
+    return re.split(' \u00A0 |\n|  +', txt)
 
 
 # -----------------------------------------------
 
 if __name__ == '__main__':
     print(doctest.testmod())
-

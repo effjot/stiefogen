@@ -9,4 +9,6 @@ import stiefo
 #                      "ei g schaft", "auf g a b", "be l a st"])
 
 #stiefo.render_screen(["ver r a t", "ver b i nd", "für", "nach g e b", "gegen"])
-stiefo.render_screen(["endlich", "ge l e g lich", "w lich", "w lich*"])
+#stiefo.render_screen(["endlich", "ge l e g lich", "w lich", "w lich*"])
+#stiefo.render_screen(['uns', 'durch', 'doch', 'durch l a s', 'noch'])
+stiefo.render_screen(['durch', 'durch s', 'durch m e s', 'noch m a l', 'jedoch', 'deutschland'])
