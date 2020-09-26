@@ -116,6 +116,9 @@ vorsilben_AS2 = {
 
 
 nachsilben_AS2 = {
+    'chen': 'ch1',  # 2. Lernabschnitt
+    'gleich': 'ch4',  # 27. Lernabschnitt
+    'rechn': 'ch3',  # Anhang
     'alich': 'e@ ++3@*0', 'schaftlich': 'e@ ++3@*0'
 }
 
@@ -385,14 +388,6 @@ def glyph_n(dl, dr):
     return (0.4, b + m + e)
 
 
-def glyph_r0(dl, dr):
-    b = [(-0.3, 0.5)] if dl else [(-0.2, 0.5), (-0.2, 0.5), (-0.1, 0.5)]
-    m = [(-0.1, 0.5), (0.2, 0.5),
-         (0.2, 0), (0.5, 0.0)]
-    e = [(0.7, 0.0)] if dr else [(0.5, 0.0), (0.6, 0.0), (0.6, 0.0)]
-    return (0.4, b + m + e)
-
-
 def glyph_r(dl, dr):
     y1 = 0.5
     y0 = 0.0
@@ -520,7 +515,6 @@ def glyph_st(dl, dr):
 
 
 def glyph_l(dl, dr):
-    #print("glyph_l: dl=",dl)
     b = kopfSchleife(dl)
     m = [(0, 0.5)]
     e = untenRund(dr)
@@ -532,6 +526,30 @@ def glyph_ch(dl, dr):
     m = [(0, 0.5)]
     e = untenEingelegt(dr)
     return (0.4, shift(b + m + e, 0.2))
+
+
+def glyph_ch_halbstuf(dl, dr):
+    sx = 1
+    sy = 0.5
+    w, m = glyph_ch(dl,dr)
+    m = scale(m, sx, sy, s=+slant/2)
+    m = shift(m, -0.2, 0)
+    return (w * sx, m)
+
+
+def glyph_ch_einhalbstuf(dl, dr):
+    """1,5-stufiges CH"""
+    sx = 1.25
+    sy = 1.5
+    w, m = glyph_ch(dl, dr)
+    return (w * sx, scale(m, sx, sy, s=+slant/2))
+
+
+def glyph_ch_2stuf(dl, dr):
+    sx = 1.5
+    sy = 2
+    w, m = glyph_ch(dl, dr)
+    return (w * sx, scale(m, sx, sy, s=+slant/2))
 
 
 def glyph_c(dl, dr):
@@ -557,13 +575,6 @@ def glyph_s(dl, dr):
     return (0.3, shift(b + m + e, 0.1))
 
 
-def glyph_sp0(dl, dr):
-    b = kopfSchleife(dl)
-    m = [(0, 0.5)]
-    e = untenSpitz(dr)
-    return (0.5, shift(scale(b + m + e, 1, 1, 0.8), -0.4))
-
-
 def glyph_sp(dl, dr):
     b = kopfSchleife(dl)
     m = [(0, 0.5)]
@@ -571,19 +582,14 @@ def glyph_sp(dl, dr):
     return (0.4, shift(b + m + e, 0))
 
 
-def glyph_zw(dl, dr):
-    w, g = glyph_z(dl, dr)
+def glyph_qu(dl, dr):
+    w, g = glyph_f(dl, dr)
     return (0.2, scale(g, 1, 0.5))
 
 
 def glyph_schw(dl, dr):
     w, g = glyph_sch(dl, dr)
     return (0.4, scale(g, 1, 0.5))
-
-
-def glyph_qu(dl, dr):
-    w, g = glyph_f(dl, dr)
-    return (0.2, scale(g, 1, 0.5))
 
 
 def glyph_th(dl, dr):
@@ -596,68 +602,15 @@ def glyph_tsch(dl, dr):
     return (0.3, scale(g, 1, 0.5))
 
 
-def glyph_selbst(dl, dr):
-    assert not dl, "Glyph 'selbst' darf nur am Wortanfang stehen!"
-    b = [(0, 0)]  # (P0)
-    m = kreis_auf(dl, dr)
-    e = [(0.75, 0), (1, 0.5), (1, 0.5)] if not dr else [(0.75, 0)]
-    return [1, shift(scale(b + m + e, 0.8, 1), 0.4)]
+def glyph_x(dl, dr):
+    w, m = glyph_k(dl, dr)
+    return (w * 0.5, scale(m, 0.5, 0.5))
 
 
-def glyph_schleife_halbstuf_geg_uzs(dl, dr):
-    assert not dl, "Glyphen 'gegen/will/all usw.' duerfen nur am Wortanfang stehen!"
-    # FIXME: "dagegen" ermöglichen
-    b = [(0, 0)]  # (P0)
-    m = kreis_auf(dl, dr)
-    e = [(0.75, 0), (1, 0.5), (1, 0.5)] if not dr else [(0.75, 0)]
-    return [0.5, shift(scale(b + m + e, 0.4, 0.5), 0.2, 0)]
+def glyph_zw(dl, dr):
+    w, g = glyph_z(dl, dr)
+    return (0.2, scale(g, 1, 0.5))
 
-
-def glyph_ca(dl, dr):
-    b = [(0, -0.1)]*2 if not dl else []
-    m = welle_auf(dl, dr)
-    e = [(1, 0)]*2 if not dr else []
-    return [0.7, shift(scale(b + m + e, 0.7, 1), 0, 0.1)]
-
-
-def glyph_n_weit(dl, dr):
-    b = ([(0, 0)]*2 if not dl else [])  # [P0], [P1]
-    m = bogen_auf(dl, dr)
-    e = [(1, 0)]*2 if not dr else []
-    return [2, scale(b + m + e, 2, 1)]
-
-
-def glyph_d_weit(dl, dr):
-    y0 = 0.5
-    b = ([(0, y0)]*2 if not dl else [])  # [P0], [P1]
-    m = bogen_ab(dl, dr)
-    e = [(1, y0)]*2 if not dr else []
-    return [2, scale(b + m + e, 2, 1)]
-
-
-def glyph_en(dl, dr):
-    assert not dl, 'Glyph “en” only allowed at beginning of word.'
-    b = [(0, 0), (0, 0)]
-    w, m = glyph_n(b, dr)
-    e = []
-    return [w + 0.05 + w, b + shift(m + e, w + 0.05, 0)]
-
-
-def glyph_ent(dl, dr):
-    assert not dl, 'Glyph “ent” only allowed at beginning of word.'
-    b = obenRund(True)
-    m = [(0, 0.5)]
-    e = untenSpitz(dr)
-    return (0.41, scale([(0, 0)]*2 + shift(b + m + e, 0.8), 0.5, 0.5))
-
-
-def glyph_ander(dl, dr):
-    assert not dl, "Glyph 'ander' darf nur am Wortanfang stehen!"
-    # FIXME: "einander" ermöglichen
-    b = [(0, 0)]
-    m = shift(scale(kreis_auf(dl, dr), 0.15, 0.2), 0.5, 0)
-    e = [(0.5, 0)]*3 if not dr else [(0.55, 0)]
-    return [0.5, (b + m + e)]
 
 
 def glyph_punktschleife_geg_uzs(dl, dr):
@@ -675,6 +628,70 @@ def glyph_punktschleife_im_uzs(dl, dr):
     if dr:
         m = m[:-2]
     return [0.4, m]
+
+
+def glyph_schleife_halbstuf_geg_uzs(dl, dr):
+    assert not dl, "Glyphen 'gegen/will/all usw.' duerfen nur am Wortanfang stehen!"
+    # FIXME: "dagegen" ermöglichen
+    b = [(0, 0)]  # (P0)
+    m = kreis_auf(dl, dr)
+    e = [(0.75, 0), (1, 0.5), (1, 0.5)] if not dr else [(0.75, 0)]
+    return [0.5, shift(scale(b + m + e, 0.4, 0.5), 0.2, 0)]
+
+
+def glyph_selbst(dl, dr):
+    assert not dl, "Glyph 'selbst' darf nur am Wortanfang stehen!"
+    b = [(0, 0)]  # (P0)
+    m = kreis_auf(dl, dr)
+    e = [(0.75, 0), (1, 0.5), (1, 0.5)] if not dr else [(0.75, 0)]
+    return [1, shift(scale(b + m + e, 0.8, 1), 0.4)]
+
+
+def glyph_en(dl, dr):
+    assert not dl, 'Glyph “en” only allowed at beginning of word.'
+    b = [(0, 0), (0, 0)]
+    w, m = glyph_n(b, dr)
+    e = []
+    return [w + 0.05 + w, b + shift(m + e, w + 0.05, 0)]
+
+
+def glyph_n_weit(dl, dr):
+    b = ([(0, 0)]*2 if not dl else [])  # [P0], [P1]
+    m = bogen_auf(dl, dr)
+    e = [(1, 0)]*2 if not dr else []
+    return [2, scale(b + m + e, 2, 1)]
+
+
+def glyph_d_weit(dl, dr):
+    y0 = 0.5
+    b = ([(0, y0)]*2 if not dl else [])  # [P0], [P1]
+    m = bogen_ab(dl, dr)
+    e = [(1, y0)]*2 if not dr else []
+    return [2, scale(b + m + e, 2, 1)]
+
+
+def glyph_ca(dl, dr):
+    b = [(0, -0.1)]*2 if not dl else []
+    m = welle_auf(dl, dr)
+    e = [(1, 0)]*2 if not dr else []
+    return [0.7, shift(scale(b + m + e, 0.7, 1), 0, 0.1)]
+
+
+def glyph_ent(dl, dr):
+    assert not dl, 'Glyph “ent” only allowed at beginning of word.'
+    b = obenRund(True)
+    m = [(0, 0.5)]
+    e = untenSpitz(dr)
+    return (0.41, scale([(0, 0)]*2 + shift(b + m + e, 0.8), 0.5, 0.5))
+
+
+def glyph_ander(dl, dr):
+    assert not dl, "Glyph 'ander' darf nur am Wortanfang stehen!"
+    # FIXME: "einander" ermöglichen
+    b = [(0, 0)]
+    m = shift(scale(kreis_auf(dl, dr), 0.15, 0.2), 0.5, 0)
+    e = [(0.5, 0)]*3 if not dr else [(0.55, 0)]
+    return [0.5, (b + m + e)]
 
 
 def glyph_dir(dl, dr):
@@ -749,13 +766,6 @@ def glyph_klein(dl, dr):
     return (w*sx, scale(m, sx, sy))
 
 
-def glyph_gleich(dl, dr):
-    sx = 1.5
-    sy = 2
-    w, m = glyph_ch(dl, dr)
-    return (w*sx, scale(m, sx, sy))
-
-
 def glyph_letzt(dl, dr):
     sx = 1.5
     sy = 2
@@ -797,19 +807,6 @@ def glyph_nur(dl, dr):
     w, m = glyph_ca(dl, dr)
     return (w*sx, scale(m, sx, sy))
 
-
-def glyph_chen(dl, dr):
-    sx = 1
-    sy = 0.5
-    w,m = glyph_ch(dl,dr)
-    m = scale(m, sx, sy)
-    m = shift(m, -0.2, -0.25)
-    return (w*sx, m)
-
-
-def glyph_x(dl, dr):
-    w, m = glyph_k(dl, dr)
-    return (w * 0.5, scale(m, 0.5, 0.5))
 
 
 def glyph_muss(dl, dr):
@@ -869,8 +866,14 @@ glyphs = {
     'w':        glyph_w, 
     'x':        glyph_x,
     'z':        glyph_z, 
+    'zw':       glyph_zw, 
+    'zer':      glyph_zer,
     'sch':      glyph_sch, 
-    'ch':       glyph_ch, 
+    'schw':     glyph_schw,
+    'ch': glyph_ch,
+    'ch1': glyph_ch_halbstuf,
+    'ch3': glyph_ch_einhalbstuf,
+    'ch4': glyph_ch_2stuf,
     'nd':       glyph_nd, 
     'ng':       glyph_ng, 
     'cht':      glyph_cht, 
@@ -881,8 +884,6 @@ glyphs = {
     'nk':       glyph_ng, 
     'th':       glyph_th, 
     'tsch':     glyph_tsch, 
-    'zw':       glyph_zw, 
-    'schw':     glyph_schw, 
     'q':        glyph_qu, 
     'c':        glyph_c,
     'en': glyph_en,
@@ -896,11 +897,9 @@ glyphs = {
     'bin':      glyph_b,       # ",,bin"
     'bund':     glyph_bund,    # "bund"
     'ca':       glyph_ca,      # ";ca"
-    'chen':     glyph_chen,    # ",chen"
     'ent':      glyph_ent,     # "ent"
     'euer':     glyph_ca,      # ":euer"
     'euro':     glyph_nur,     # ":euro"
-    'gleich':   glyph_gleich,  # "gleich"
     'ich':      glyph_ander,   # ",ich"
     'immer':    glyph_ca,      # ",immer"
     'jed':      glyph_jed,     # "jed"
@@ -930,7 +929,6 @@ glyphs = {
     'wesen':    glyph_wesen,   # "wesen"
     'werts':    glyph_werts,   # "werts"
     'wieder':   glyph_wesen,   # ",,wieder"
-    'zer':      glyph_zer,     # "zer"
     'zwar':     glyph_ca,      # ":,zwar"
     '.': glyph_punkt,
     '-': glyph_waagr_strich,
