@@ -1003,12 +1003,24 @@ def SplitStiefoWord(st):
         st, y_adj = get_y_adjust(st)
         y_word_offset += y_adj
 
+    disjointed = re.search(r'\{(.+)\}', st)
+    if disjointed:
+        disjointed_st = disjointed.group(1)
+        st = re.sub(r'\{(.+)\}', '!', st)
+    else:
+        disjointed_st = None
+
     ## Buchstabenkette auswerten
     first_token = True
     pz = False  # vorhergehendes Zeichen
     pv = False  # vorhergehender Vokal
     pfx2 = None  # zweites Token von zusammengesetzter Vorsilbe
     for z in (st.split(' ')):
+#        print("z = {}, pz={}, pv={}".format(z, pz, pv))
+        if z == '!':
+            w.append(z)
+            continue
+
         if z in vor_nach_silben:
             pfx = vor_nach_silben[z]
             if ' ' in pfx:
@@ -1026,6 +1038,7 @@ def SplitStiefoWord(st):
             else:
                 z = pfx1
         v = z in vokal_formen or z[0] == '|' or z in praefix_formen
+ #       print(" v={}".format(v))
         if first_token and z in ('i', 'ü', 'ue'):
             z = 'I'
         if pv and v:
@@ -1062,6 +1075,8 @@ def SplitStiefoWord(st):
             x.append(praefix_formen[l][2])  # Vokaltupel
             y_word_offset += praefix_formen[l][1] - y_baseline  # Vorsilbe bestimmt vert. Versatz
             k = False
+        elif l == '!':
+            x.append(l)
         else:
             # Bei 2 Konsonanten besonderen Abstands-Tupel anfügen
             if k:
@@ -1070,7 +1085,7 @@ def SplitStiefoWord(st):
             k = True
     if not k and l not in praefix_formen_allein_ohne_endezeichen:
         x.append('=')  # Wort endet mit Vokal
-    return (x, y_word_offset)
+    return (x, y_word_offset, disjointed_st)
 
 
 def slanted(x, y, s=slant):
@@ -1084,18 +1099,24 @@ def stiefoWortZuKurve(w):
     Buchstaben"""
 
     sc = 1.5  # Skalierung in x-Richtung für Glyphen und Zwischenräume
-
     c = []  # Bezier-Punkte des Worts
-    ll, y_word_offset = SplitStiefoWord(w)
+    disjointed_outline_offset = None
 
-    #print("stiefoWortZuKurve: w={}, ll={}".format(w, ll))
+    ll, y_word_offset, disjointed = SplitStiefoWord(w)
+    #print("stiefoWortZuKurve: w={}, ll={}, y_w_off={}, disj={}".format(w, ll, y_word_offset,disjointed))
+
     ll = [None] + ll + [None]
+    if disjointed:
+        i_disjointed = ll.index('!') - 1
+        ll.remove('!')
+
     x = 0  # aktuelle Stiftposition
     y = (y_word_offset - y_baseline) * conv_y_step
     xpos = [slanted(x, y)]  # Stift-Positionen (Startpunkt und nach jedem Buchstaben)
 
     #print("start xpos={}, x={}, y={}".format(xpos, x, y))
     for i in range(0, len(ll) - 2, 2):
+        #print("  i={}".format(i))
         dl = ll[i]      # Vokal vor dem aktuellen Konsonant
         k = ll[i + 1]   # aktueller Konsonant (Glyph)
         dr = ll[i + 2]  # Vokal nach Konsonant
@@ -1107,8 +1128,7 @@ def stiefoWortZuKurve(w):
             k_level = int(k[0])
             k = k[1:]
         y_offset = (k_level + k_adj - y_baseline) * conv_y_step
-
-        print("  k={} k_level={}, k_adj={}, y_offset={}".format(k, k_level, k_adj, y_offset))
+        #print("  k={} k_level={}, k_adj={}, y_offset={}".format(k, k_level, k_adj, y_offset))
         assert k in glyphs, 'Unknown glyph: [{}]'.format(k)
         glFunc = glyphs[k]
         if k != '-':
@@ -1133,13 +1153,32 @@ def stiefoWortZuKurve(w):
             y += dy * conv_y_step  # Delta y des Stifts ist dy des linken Vokals
             xpos.append(slanted(x, y))
 
+        if disjointed:
+            if i == i_disjointed:    # Mitte Vokal
+                disjointed_outline_offset = (x - ea/2 if ea > 0 else x + ea/2, y)
+            if i + 1 == i_disjointed:   # am Konsonant
+                disjointed_outline_offset = (x, y)
+
         gs = shiftToPos(g, x, y, slant)  # Bezier-Punkte an die Stiftposition verschieben
         x += w  # Stift hinter Glyph setzen
 
-        xpos.append(slanted(x, y))
+        curve_width = x
         for t in gs:
             c.append(t)
-    return [(x, c, xpos)]
+        xpos.append(slanted(x, y))
+
+    if disjointed:
+        dj_x, dj_y = slanted(*disjointed_outline_offset)
+        dj_off = (-(curve_width - dj_x), dj_y)
+        #print("recurse disj:", disjointed)
+        dj_width, dj_curve, dj_pos, _ = stiefoWortZuKurve(disjointed)[0]
+        if disjointed_outline_offset[0] + dj_width < curve_width:
+            dj_width = curve_width - disjointed_outline_offset[0]
+        disjointed_outline = [(dj_width, dj_curve, dj_pos, dj_off)]
+        #print("disjointed result: ", disjointed_outline)
+    else:
+        disjointed_outline = []
+    return [(curve_width, c, xpos, None)] + disjointed_outline
 
 
 if __name__ == '__main__':

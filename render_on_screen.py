@@ -11,4 +11,4 @@ import stiefo
 #stiefo.render_screen(["ver r a t", "ver b i nd", "für", "nach g e b", "gegen"])
 #stiefo.render_screen(["endlich", "ge l e g lich", "w lich", "w lich*"])
 #stiefo.render_screen(['durch', 'durch s', 'durch m e s', 'noch m a l', 'jedoch', 'deutschland'])
-stiefo.render_screen(['m e n', '3m e n', '1m eu n'])
+stiefo.render_screen(['e b {a s}', 'e {a s} b', 'ein {a}', 'j {a s}', 'nach {a r}', 'un 1l {a r}'])

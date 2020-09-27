@@ -276,6 +276,7 @@ class DrawingArea(QtGui.QFrame):
 
     def doDrawing(self, qp, ww, wh):
         h = self.stiefoHeight
+        word_space = h
         sl = stiefo.slant
         hmargin = 8
         vmargin = 4
@@ -316,10 +317,21 @@ class DrawingArea(QtGui.QFrame):
 		# Strich zu zeichnen ohne den Stift "abzuheben".
 		# Ein Wort kann aber aus mehreren Teilen bestehen, daher muss hier
 		# noch ein Mechanismus her, der damit umgehen kann...
-                for w, c, p in stiefo.stiefoWortZuKurve(word):
+                for w, c, p, outline_offset in stiefo.stiefoWortZuKurve(word):
+#                    print(">>>", w,c,p,outline_offset)
                     w = w * sx  # Wortlänge
 
-                    # Zeilenumbruch
+                    # Kurve verschieben (Startpunkt anpassen)
+                    dx = 0
+                    dy = 0
+                    if outline_offset:
+                        print("oloff", outline_offset)
+                        dx = outline_offset[0] * sx
+                        dy = outline_offset[1] * sy
+                        px += dx - word_space
+                        py -= dy
+
+                    # Zeilenumbruch  TODO: Offset vs Zeilenumbruch?!
                     if px + w > ww:
                         px = hmargin
                         py += 4*h
@@ -366,7 +378,8 @@ class DrawingArea(QtGui.QFrame):
                     qp.drawPath(pp)
 
                     # Neue Zeichenposition berechnen
-                    px = px + w + h
+                    px = px + w + word_space
+                    py += dy  # Offset rückgängig machen
             else:
                 if (word == ','):
                     px = px + 2.5*h
