@@ -1073,6 +1073,10 @@ def SplitStiefoWord(st):
     return (x, y_word_offset)
 
 
+def slanted(x, y, s=slant):
+    return (x + s * y, y)
+
+
 def stiefoWortZuKurve(w):
     """Erzeuge Kurve aus Wort.  Liefert Tupel (x, c, xpos) mit den zum
     Zeichnen notwendigen Informationen: x = Breite des Worts,
@@ -1080,14 +1084,17 @@ def stiefoWortZuKurve(w):
     Buchstaben"""
 
     sc = 1.5  # Skalierung in x-Richtung für Glyphen und Zwischenräume
-    x = 0  # aktuelle Stiftposition
-    y = 0  # aktuelle Stiftposition
-    c = []  # Bezier-Punkte des Worts
-    xpos = [(0, 0)]  # Stift-Endpositionen hinter Vokalen und Konsonanten
 
-    ll, y_offset = SplitStiefoWord(w)
+    c = []  # Bezier-Punkte des Worts
+    ll, y_word_offset = SplitStiefoWord(w)
+
     #print("stiefoWortZuKurve: w={}, ll={}".format(w, ll))
     ll = [None] + ll + [None]
+    x = 0  # aktuelle Stiftposition
+    y = (y_word_offset - y_baseline) * conv_y_step
+    xpos = [slanted(x, y)]  # Stift-Positionen (Startpunkt und nach jedem Buchstaben)
+
+    #print("start xpos={}, x={}, y={}".format(xpos, x, y))
     for i in range(0, len(ll) - 2, 2):
         dl = ll[i]      # Vokal vor dem aktuellen Konsonant
         k = ll[i + 1]   # aktueller Konsonant (Glyph)
@@ -1099,9 +1106,10 @@ def stiefoWortZuKurve(w):
         if k[0].isdigit():
             k_level = int(k[0])
             k = k[1:]
-        y_offset += k_level - y_baseline + k_adj
+        y_offset = (k_level + k_adj - y_baseline) * conv_y_step
 
-        assert k in glyphs, "Unknown glyph: [" + k + "]"
+        print("  k={} k_level={}, k_adj={}, y_offset={}".format(k, k_level, k_adj, y_offset))
+        assert k in glyphs, 'Unknown glyph: [{}]'.format(k)
         glFunc = glyphs[k]
         if k != '-':
             w, g = glFunc(dl, dr)  # w = x-Abstand hinter Glyph, g = Bezier-Punkte des Glyphen
@@ -1112,21 +1120,23 @@ def stiefoWortZuKurve(w):
                 strich_nkons = ll[i + 3]
             else:
                 strich_nkons = None
-  #          print("l, nkons", strich_l, strich_nkons)
             w, g = glFunc(strich_l, strich_nkons)
 
-        w *= sc  # in x-Richtung skalieren
-        g = scale(g, sc, 1)  # in x-Richtung skalieren
+        w *= sc  # Breite in x-Richtung skalieren
+        g = scale(g, sc, 1)  # Glyph in x-Richtung skalieren
+        y += y_offset  # vert. Versatz Konsonant
+
         if dl:
             dx, dy, ea = dl  # Vokalabstände (siehe SplitStiefoWord)
             x += ea if ea > 0 else 0  # Delta x des Stifts ist eff. Abst. des linken Vokals
                           # waagr. Strich (mit neg. ea markiert): kein weiterer Abstand
             y += dy * conv_y_step  # Delta y des Stifts ist dy des linken Vokals
-            xpos.append((x, y))
-        gs = shiftToPos(g, x, y + (y_offset - y_baseline) * conv_y_step, slant)  # Bezier-Punkte
-                            # an die Stiftposition verschieben
+            xpos.append(slanted(x, y))
+
+        gs = shiftToPos(g, x, y, slant)  # Bezier-Punkte an die Stiftposition verschieben
         x += w  # Stift hinter Glyph setzen
-        xpos.append((x, y))
+
+        xpos.append(slanted(x, y))
         for t in gs:
             c.append(t)
     return [(x, c, xpos)]
