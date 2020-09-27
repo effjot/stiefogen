@@ -36,6 +36,7 @@ vokal_formen = {
     'ue': (1, -1, di),
     'o': (2, -1, du),
     'a': (1, 1, de),
+    'a0': (1, 1, 0.6 * de),
     'ö': (1, 2, de + 0.3),
     'oe': (1, 2, de + 0.3),
     'ei': (2, 1, du),
@@ -56,7 +57,7 @@ vokal_formen.update({  # Aufbauschrift 1, 5. Lernabschnitt
     'tion': vokal_formen['o'],
     'keit': vokal_formen['ei'],
     'igkeit': vokal_formen['ei'],
-    'schaft': vokal_formen['a'][0:2] + (0.6 * de,)
+    'schaft': vokal_formen['a0']
 })
 
 
@@ -1003,12 +1004,19 @@ def SplitStiefoWord(st):
         st, y_adj = get_y_adjust(st)
         y_word_offset += y_adj
 
-    disjointed = re.search(r'\{(.+)\}', st)
+    disjointed = re.search(r'\{(.+)\}(\(\+?-?\d+\.?\d*,\+?-?\d+\.?\d*\))?', st)
     if disjointed:
-        disjointed_st = disjointed.group(1)
-        st = re.sub(r'\{(.+)\}', '!', st)
+        disjointed_code = disjointed.group(1)
+        adjust_str = disjointed.group(2)
+        st = re.sub(r'\{(.+)\}(\(.*\))?', '!', st)
+        if adjust_str:
+            disjointed_adjust = tuple(map(float, adjust_str[1:-1].split(',')))
+            #print("adjust_str={}, tuple={}".format(adjust_str, disjointed_adjust))
+        else:
+            disjointed_adjust = None
     else:
-        disjointed_st = None
+        disjointed_code = None
+        disjointed_adjust = None
 
     ## Buchstabenkette auswerten
     first_token = True
@@ -1085,7 +1093,7 @@ def SplitStiefoWord(st):
             k = True
     if not k and l not in praefix_formen_allein_ohne_endezeichen:
         x.append('=')  # Wort endet mit Vokal
-    return (x, y_word_offset, disjointed_st)
+    return (x, y_word_offset, disjointed_code, disjointed_adjust)
 
 
 def slanted(x, y, s=slant):
@@ -1102,7 +1110,7 @@ def stiefoWortZuKurve(w):
     c = []  # Bezier-Punkte des Worts
     disjointed_outline_offset = None
 
-    ll, y_word_offset, disjointed = SplitStiefoWord(w)
+    ll, y_word_offset, disjointed, disjointed_adj = SplitStiefoWord(w)
     #print("stiefoWortZuKurve: w={}, ll={}, y_w_off={}, disj={}".format(w, ll, y_word_offset,disjointed))
 
     ll = [None] + ll + [None]
@@ -1168,7 +1176,11 @@ def stiefoWortZuKurve(w):
         xpos.append(slanted(x, y))
 
     if disjointed:
-        dj_x, dj_y = slanted(*disjointed_outline_offset)
+        #dj_x, dj_y = slanted(*disjointed_outline_offset)
+        dj_x, dj_y = disjointed_outline_offset
+        if disjointed_adj:
+            dj_x += disjointed_adj[0]
+            dj_y += disjointed_adj[1]
         dj_off = (-(curve_width - dj_x), dj_y)
         #print("recurse disj:", disjointed)
         dj_width, dj_curve, dj_pos, _ = stiefoWortZuKurve(disjointed)[0]

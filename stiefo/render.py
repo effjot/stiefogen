@@ -325,7 +325,6 @@ class DrawingArea(QtGui.QFrame):
                     dx = 0
                     dy = 0
                     if outline_offset:
-                        print("oloff", outline_offset)
                         dx = outline_offset[0] * sx
                         dy = outline_offset[1] * sy
                         px += dx - word_space
