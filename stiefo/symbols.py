@@ -108,6 +108,7 @@ nachsilben_AS1 = {
 
 
 vorsilben_AS2 = {
+    'selb': '2@2', 'sonst': '1@2', 'stat': '3@2',  # 7. Lernabschnitt
     'deutsch': '4dd |0',  # 9. Lernabschnitt
     'in': '1-', 'inter': '1-', 'trans': '3-',
     'pro': '1--', 'bei': '3--',
@@ -150,6 +151,10 @@ kuerzel_AS1 = {
 
 
 kuerzel_AS2 = {
+    'selbst': 'selb', 'selbständig': 'selb i',  # 7. Lernabschnitt
+    'selbstverständlich': 'selb |0 @*00', 'sonstig': 'sonst i',
+    'staatlich': 'stat e@ @*0', 'stattlich': 'stat |0 @*00',  # Anhang
+    'status': 'stat u s',
     'kein': '3nn',  # 9. Lernabschnitt
     'deutschland': '4dd |0.1 nd',  # 10. Lernabschnitt
     'jedoch': 'j |0 1dd',  # 18. Lernabschnitt
@@ -652,12 +657,12 @@ def glyph_schleife_halbstuf_geg_uzs(dl, dr):
     return [0.5, shift(scale(b + m + e, 0.4, 0.5), 0.2, 0)]
 
 
-def glyph_selbst(dl, dr):
+def glyph_schleife_1stuf_geg_uzs(dl, dr):
     assert not dl, "Glyph 'selbst' darf nur am Wortanfang stehen!"
     b = [(0, 0)]  # (P0)
     m = kreis_auf(dl, dr)
-    e = [(0.75, 0), (1, 0.5), (1, 0.5)] if not dr else [(0.75, 0)]
-    return [1, shift(scale(b + m + e, 0.8, 1), 0.4)]
+    e = [(0.5, 0), (0.75, 0.25), (0.75, 0.25)] if not dr else [(0.35, 0)]
+    return [0.75, shift(scale(b + m + e, 0.8, 1), 0.4)]
 
 
 def glyph_en(dl, dr):
@@ -909,6 +914,7 @@ glyphs = {
     '@*': glyph_punktschleife_im_uzs,  # Abkürzung
     '@*00': lambda dl, dr: glyph_punktschleife_im_uzs(dl, dr, schmal = True),
     '@1': glyph_schleife_halbstuf_geg_uzs,
+    '@2':   glyph_schleife_1stuf_geg_uzs,
     'ander':    glyph_ander,   # ".ander"
     'auch':     glyph_ander,   # ";auch"
     'bin':      glyph_b,       # ",,bin"
@@ -929,10 +935,6 @@ glyphs = {
     'nur':      glyph_nur,     # "nur"
     'ober':     glyph_bund,    # ",,bund"
     'rueck':    glyph_klein,   # ",,rueck"
-    'selbst':   glyph_selbst,  # "selbst"
-    'sonder':   glyph_sonder,  # "sonder"
-    'sonst':    glyph_selbst,  # ",,sonst"
-    'stat':     glyph_selbst,  # ".statt"
     'trotz':    glyph_zer,     # ",,trotz"
     'ueber':    glyph_b,       # ",,ueber ek"
     'um':       glyph_um,      # "um"

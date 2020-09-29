@@ -12,4 +12,5 @@ import stiefo
 #stiefo.render_screen(["endlich", "ge l e g lich", "w lich", "w lich*"])
 #stiefo.render_screen(['durch', 'durch s', 'durch m e s', 'noch m a l', 'jedoch', 'deutschland'])
 #stiefo.render_screen(['e b {a s}', 'e {a s} b', 'ein {a0}', 'j {a s}', 'nach {a0 r}', 'un 1l {a0 r}'])
-stiefo.render_screen(['l e b {a}(-0.4,0)', 'un 1l {a r}(-0.1,0)', '+3@0 {a0 r}(0.4,-0.25)', 'ge w i {a0}(-0.3,0) s', 'm {a}(-0.4,0) r'])
+#stiefo.render_screen(['l e b {a}(-0.4,0)', 'un 1l {a r}(-0.1,0)', '+3@0 {a0 r}(0.4,-0.25)', 'ge w i {a0}(-0.3,0) s', 'm {a}(-0.4,0) r'])
+stiefo.render_screen(['selbstverständlich', 'staatlich', 'stattlich', 'selb'])
