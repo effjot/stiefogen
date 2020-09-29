@@ -31,6 +31,7 @@ def render_screen(words):
 class print_renderer:
     def __init__(self, printer, painter):
         self.h = stiefoHeightPrint
+        self.word_space = 0.5 * self.h
         self.printer = printer
         self.painter = painter
         self.pageRect = printer.pageRect(QtGui.QPrinter.DevicePixel)
@@ -47,7 +48,7 @@ class print_renderer:
         self.pgNr = 1
         self.sx = self.h
         self.sy = self.h
-        self.px, self.py = self.x0, self.y0
+        self.px, self.py = self.x0 + self.word_space, self.y0
         self.lineatur(self.pgNr)
 
     def lineatur(self, pgnr = None):
@@ -65,7 +66,7 @@ class print_renderer:
             self.painter.drawText((self.x1 - self.x0)/2, self.y1 + 100, str(pgnr))
 
     def line_break(self):
-        self.px = self.x0
+        self.px = self.x0 + self.word_space
         self.py += 4*self.h
 
     def new_page(self):
@@ -166,6 +167,8 @@ class print_renderer:
                     for dw, _, _, _ in crv:
                         w += dw  # FIXME: was mit disjointed?!
                     res.append(('curve', w*self.sx, crv, 0))
+                    #print('prepare: word={}, w={}'.format(word, w))
+
 
         spcreq = [w for _, w, _, _ in res]
         d = 0
@@ -188,7 +191,7 @@ class print_renderer:
         flag = False
         for cmd, w, data, spc in cmds:
             if (cmd == 'curve' or cmd == 'period') and flag:
-                if self.px > self.x0: self.advance(self.h*0.5)
+                if self.px > self.x0: self.advance(self.word_space)
 
             if self.px + spc + 3*self.h > self.x1:
                 if cmd != 'period': self.line_break()
@@ -245,6 +248,7 @@ class BezierDrawer(QtGui.QMainWindow):
             printer.setOutputFileName(self.filename)
             printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
             printer.setResolution(300)
+            printer.setPaperSize(QtGui.QPrinter.A4)
 
             painter = QtGui.QPainter()
             painter.begin(printer)
@@ -293,7 +297,7 @@ class DrawingArea(QtGui.QFrame):
         sy = h
         sl = stiefo.slant
 
-        x0 = hmargin
+        x0 = hmargin + word_space
         y0 = vmargin + 3*h
         x1 = ww - hmargin
         y1 = wh - vmargin
