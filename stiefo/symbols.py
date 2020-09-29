@@ -616,7 +616,7 @@ def glyph_zw(dl, dr):
 
 def glyph_punktschleife_geg_uzs(dl, dr):
     b = [(0, 0)] if not dl else [(0, 0), (0, 0)]
-    m = scale(kreis_auf(dl, dr), 0.15, 0.2)
+    m = scale(kreis_auf(dl, dr), 0.1, 0.15)
     e = [(0.3, -0.1), (0.4, 0.2), (0.4, 0.2)] if not dr else [(0.5, -0.1)]
     return [0.3, (b + m + e)]
 
