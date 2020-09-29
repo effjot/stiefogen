@@ -86,7 +86,7 @@ praefix_formen = {
 
 """Klartext-Vorsilben in Präfix-Formen / versetzte Konsonanten übersetzen"""
 vorsilben_AS1 = {
-    'dis': '1d', 'da': '3d', 'dar': '3d',  # 2. Lernabschnitt
+    'dis': '1d', 'da': '3d', 'dar': '3d |0.75',  # 2. Lernabschnitt
     'er': '2_', 'mit': '1_', 'an': '3_',  # 3. Lernabschnitt
     'zu': '2__', 'vor': '1__', 'ein': '3__',  # 4. Lernabschnitt
     'unter': '2nd', 'über': '1nd',  # 6. Lernabschnitt
@@ -101,7 +101,7 @@ vorsilben_AS1 = {
 
 nachsilben_AS1 = {
     'lich': 'e@ @*0', 'entlich': 'e@ @*0',  # 8. Lernabschnitt
-    'lich*': '@*0', 'entlich*': '@*0',  # Varianten für unten rund (W-lich, F-lich, usw.)
+    'lich*': '@*00', 'entlich*': '@*00',  # Varianten für unten rund (W-lich, F-lich, usw.)
     'doch': '1dd',  # 9. Lernabschnitt
     'noch': '1nn',  # als Nachsilben für jedoch, dennoch
 }
@@ -120,7 +120,7 @@ nachsilben_AS2 = {
     'chen': 'ch1',  # 2. Lernabschnitt
     'gleich': 'ch4',  # 27. Lernabschnitt
     'rechn': 'ch3',  # Anhang
-    'alich': 'e@ ++3@*0', 'schaftlich': 'e@ ++3@*0'
+    'alich': '|0.25 ++3@*0', 'schaftlich': '|0.25 ++3@*0'
 }
 
 
@@ -625,21 +625,22 @@ def glyph_zw(dl, dr):
 
 
 
-def glyph_punktschleife_geg_uzs(dl, dr):
+def glyph_punktschleife_geg_uzs(dl, dr, schmal = False):
+    x0 = 0.1 if schmal else 0.3
     b = [(0, 0)] if not dl else [(0, 0), (0, 0)]
     m = scale(kreis_auf(dl, dr), 0.1, 0.15)
-    e = [(0.3, -0.1), (0.4, 0.2), (0.4, 0.2)] if not dr else [(0.5, -0.1)]
-    return [0.3, (b + m + e)]
+    e = [(x0, -0.1), (x0 + 0.1, 0.2), (x0 + 0.1, 0.2)] if not dr else [(x0 + 0.2, -0.1)]
+    return [0.15 if schmal else 0.3, (b + m + e)]
 
 
-def glyph_punktschleife_im_uzs(dl, dr):
-    _, m = glyph_punktschleife_geg_uzs(None, None)
-    m = shift(reversed(rotate_ccw(m, math.pi)), 0.4, 0.2)
+def glyph_punktschleife_im_uzs(dl, dr, schmal = False):
+    _, m = glyph_punktschleife_geg_uzs(None, None, schmal=schmal)
+    m = shift(reversed(rotate_ccw(m, math.pi)), 0.25 if schmal else 0.4, 0.2)
     if dl:
         m = m[2:]
     if dr:
         m = m[:-2]
-    return [0.4, m]
+    return [0.25 if schmal else 0.4, m]
 
 
 def glyph_schleife_halbstuf_geg_uzs(dl, dr):
@@ -902,7 +903,11 @@ glyphs = {
     'nn': glyph_n_weit,
     'dd': glyph_d_weit,
     '@0': glyph_punktschleife_geg_uzs,
+    '@': glyph_punktschleife_geg_uzs,  # Abkürzung
+    '@00': lambda dl, dr: glyph_punktschleife_geg_uzs(dl, dr, schmal = True),
     '@*0': glyph_punktschleife_im_uzs,
+    '@*': glyph_punktschleife_im_uzs,  # Abkürzung
+    '@*00': lambda dl, dr: glyph_punktschleife_im_uzs(dl, dr, schmal = True),
     '@1': glyph_schleife_halbstuf_geg_uzs,
     'ander':    glyph_ander,   # ".ander"
     'auch':     glyph_ander,   # ";auch"
