@@ -93,7 +93,16 @@ class print_renderer:
         self.px = self.px + 0.5*self.h
 
     def draw_curve(self, crv):
-        for w, c, _ in crv:
+        for w, c, _, outline_offset in crv:
+            # Kurve verschieben (Startpunkt anpassen)
+            dx = 0
+            dy = 0
+            if outline_offset:
+                dx = outline_offset[0] * self.sx
+                dy = outline_offset[1] * self.sy
+                self.px += dx - self.word_space
+                self.py -= dy
+
             cc = [(self.px + x * self.sx, self.py - y * self.sy) for x, y in c]
             pp = QtGui.QPainterPath()
             pp.moveTo(*cc[0])
@@ -154,8 +163,8 @@ class print_renderer:
                 else:
                     crv = stiefo.stiefoWortZuKurve(word)
                     w = 0
-                    for dw, _, _ in crv:
-                        w += dw
+                    for dw, _, _, _ in crv:
+                        w += dw  # FIXME: was mit disjointed?!
                     res.append(('curve', w*self.sx, crv, 0))
 
         spcreq = [w for _, w, _, _ in res]
@@ -312,11 +321,6 @@ class DrawingArea(QtGui.QFrame):
         px, py = hmargin, vmargin + 3*h  # start position for drawing
         for word in self.screenWords:
             if stiefo.isword(word) and word not in (',', '..'):
-	        # TODO
-		# In c und p sind die Informationen um ein Wort in einem
-		# Strich zu zeichnen ohne den Stift "abzuheben".
-		# Ein Wort kann aber aus mehreren Teilen bestehen, daher muss hier
-		# noch ein Mechanismus her, der damit umgehen kann...
                 for w, c, p, outline_offset in stiefo.stiefoWortZuKurve(word):
 #                    print(">>>", w,c,p,outline_offset)
                     w = w * sx  # Wortlänge

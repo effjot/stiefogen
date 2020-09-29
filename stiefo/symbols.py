@@ -157,7 +157,16 @@ kuerzel_AS2 = {
     'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
     'pro': '2--', 'bei': '4--',
     'darauf': '0d //',
-    'hätte': '2t', 'hatte': '3t', 'heute': '4t'
+    'hätte': '2t', 'hatte': '3t', 'heute': '4t',
+    'für': '1@0',
+    'lebhaft': 'l e b {a}(-0.4,0)',
+    'gewissenhaft': 'ge w i {a0}(-0.3,0) s',
+    'einfach': 'ein {a0}(0,-0.25)', 'mehrfach': 'm {a}(-0.4,0) r',
+    'ebenfalls': 'e {a s} b',
+    'unmittelbar': 'un 1l {a r}(-0.1,0)',
+    'nachbar': '+3@0 {a0 r}(0.4,-0.25)',
+    'nachbarschaft': '+3@0 {a0 r schaft}(0.4,-0.25)',
+    'nachprüfbar': 'nach p ü f {a r}(-0.25,0)'
 }
 
 
@@ -956,7 +965,7 @@ def isword(word):
 
 def get_y_adjust(s):
     """Hilfsfunktion: Anweisung zur Feinanpassung vert. Versatz extrahieren"""
-    assert isinstance(s, str)
+    assert isinstance(s, str), 'Not a string: {}'.format(s)
     y_adjust = 0
 
     if re.match(r'([+]*|[-]*)\d', s):
@@ -1026,7 +1035,7 @@ def SplitStiefoWord(st):
     pv = False  # vorhergehender Vokal
     pfx2 = None  # zweites Token von zusammengesetzter Vorsilbe
     for z in (st.split(' ')):
-#        print("z = {}, pz={}, pv={}".format(z, pz, pv))
+        #print("z = {}, pz={}, pv={}".format(z, pz, pv))
         if z == '!':
             w.append(z)
             continue
@@ -1048,7 +1057,6 @@ def SplitStiefoWord(st):
             else:
                 z = pfx1
         v = z in vokal_formen or z[0] == '|' or z in praefix_formen
- #       print(" v={}".format(v))
         if first_token and z in ('i', 'ü', 'ue'):
             z = 'I'
         if pv and v:
@@ -1178,18 +1186,15 @@ def stiefoWortZuKurve(w):
         xpos.append(slanted(x, y))
 
     if disjointed:
-        #dj_x, dj_y = slanted(*disjointed_outline_offset)
         dj_x, dj_y = disjointed_outline_offset
         if disjointed_adj:
             dj_x += disjointed_adj[0]
-            dj_y += disjointed_adj[1]
+            dj_y += disjointed_adj[1] * conv_y_step
         dj_off = (-(curve_width - dj_x), dj_y)
-        #print("recurse disj:", disjointed)
         dj_width, dj_curve, dj_pos, _ = stiefoWortZuKurve(disjointed)[0]
-        if disjointed_outline_offset[0] + dj_width < curve_width:
+        if disjointed_outline_offset[0] + dj_width < curve_width:  # bei nicht über Wortende hinaushängendem Zeichen Wortlänge anpassen
             dj_width = curve_width - disjointed_outline_offset[0]
         disjointed_outline = [(dj_width, dj_curve, dj_pos, dj_off)]
-        #print("disjointed result: ", disjointed_outline)
     else:
         disjointed_outline = []
     return [(curve_width, c, xpos, None)] + disjointed_outline
