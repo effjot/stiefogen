@@ -1077,14 +1077,14 @@ def SplitStiefoWord(st):
     x = []  # zerlegtes Wort
     k = False
     for l in w:
-        if l[0] in vokal_formen:
+        if l in vokal_formen or l[0] == '|':
             if not x:
                 x.append('_')  # Anstrich für Vokal am Wortanfang
             # Vokale durch Abstands-Tupel ersetzen
             if l[0] != '|':
                 x.append(vokal_formen[l])
             else:
-                stretch = float(l[1:])
+                stretch = float(l[1:]) if len(l) > 1 else 0
                 x.append((stretch, 0, stretch))
             k = False
         elif l in praefix_formen:
