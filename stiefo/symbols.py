@@ -472,8 +472,42 @@ def glyph_m(dl, dr):
 def glyph_m_2stuf(dl, dr):
     sx = 1.8
     sy = 2
-    w, m = glyph_m(dl, dr)
-    return(w * sx, scale(m, sx, sy))
+    w, g = glyph_m(dl, dr)
+    return (w * sx, scale(g, sx, sy))
+
+
+def glyph_m_var(dl, dr):
+    assert not dl, 'Glyph “m var” only allowed at beginning of word.'
+    w, b_m = glyph_m(False, False)
+    if not dr:
+        e = [(0, 0), (0, 0.3), (w, 0.3)]
+    else:
+        e = [(-0.1, 0), (-0.1, 0.20), (w - 0.1, 0.25), (w + 0.1, 0.30)]
+    return (w, b_m + e)
+
+
+def glyph_m_weit_ALT(dl, dr):
+    b = [(-0.2, 0.7), (0.3, 0.9)] if not dl else []
+    m = [(0.8, 1), (1.1, 1), (1.7, 1),
+         (1.4, 0.0), (1.1, 0)]
+    e = [(0.8, 0.0)] if dr else []
+    return (1.5, (b + m + e))
+
+
+def glyph_m_weit(dl, dr):
+    b = [(-0.1, 0.6), (0.3, 0.9)] if not dl else []
+    m = [(0.2 if dl else 0.6, 1), (0.9, 1), (1.5, 1),
+         (1.2, 0.0), (0.9, 0)]
+    e = [(0.6, 0.0)] if dr else []
+    return (1.3, (b + m + e))
+
+
+def glyph_m_weit_var(dl, dr):
+    assert not dr, 'Glyph “m weit var” only allowed at end of word.'
+    x0 = 0.9  # last x from m part of glyph_m_weit
+    w, b_m = glyph_m_weit(dl, False)
+    e = [(x0 - 0.15, 0), (x0 - 0.15, 0.3), (x0 + 0.25, 0.25)]
+    return (w, b_m + e)
 
 
 def glyph_p(dl, dr):
@@ -839,14 +873,6 @@ def glyph_nur(dl, dr):
     return (w*sx, scale(m, sx, sy))
 
 
-def glyph_muss(dl, dr):
-    b = [(-0.2, 0.7), (0.3, 0.9)] if not dl else []
-    m = [(0.8, 1), (1.1, 1), (1.7, 1),
-         (1.4, 0.0), (1.1, 0)]
-    e = [(0.8, 0.0)] if dr else []
-    return (1.5, (b + m + e))
-
-
 def glyph_waagr_strich(l, naechster_kons):
 #    print("waagr_strich l={}, nk={}.".format(l, naechster_kons))
     if not naechster_kons or naechster_kons == '=':
@@ -885,7 +911,10 @@ glyphs = {
     'l': glyph_l,
     'l4': glyph_l_2stuf,
     'm': glyph_m,
+    'm*': glyph_m_var,
     'm4': glyph_m_2stuf,
+    'mm': glyph_m_weit,
+    'mm*': glyph_m_weit_var,
     'n': glyph_n,
     'p': glyph_p,
     'r': glyph_r,
@@ -939,7 +968,6 @@ glyphs = {
     'euro':     glyph_nur,     # ":euro"
     'immer':    glyph_ca,      # ",immer"
     'los':      glyph_los,     # "los"
-    'muss':     glyph_muss,    # "muss"
     'nur':      glyph_nur,     # "nur"
     'voll':     glyph_voll,    # "voll"
     'euch':     glyph_ch,      # "euch"
