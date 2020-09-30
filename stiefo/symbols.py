@@ -429,12 +429,51 @@ def glyph_w(dl, dr):
     return (0.3, shift(b + m + e, 0.3))
 
 
+def glyph_w_2stuf(dl, dr):
+    sx = 1.5
+    sy = 2
+    w, m = glyph_w(dl, dr)
+    return (w * sx, scale(m, sx, sy))
+
+
+def glyph_w_var(dl, dr, y1 = 0.4, dx1 = 0.2):
+    w, b_m = glyph_w(dl, True)
+    b_m[-1] = (w + dx1, 0)  # letzter Kontrollpunkt von glyph_w liegt sonst zu weit rechts
+    e = [(w + dx1, y1), (w, y1), (w - dx1, y1),
+         (w - dx1, 0), (w, 0)]
+    if dr:
+        e.append((w + dx1, 0))
+    return(w + 0.5*dx1, b_m + e)
+
+
+def glyph_w_var_2stuf(dl, dr):
+    sx = 1.5
+    sy = 2
+    w, m = glyph_w_var(dl, dr, y1 = 0.4/sy, dx1 = 0.2/sx)
+    return (w * sx, scale(m, sx, sy))
+
+
+def glyph_w_var2_2stuf(dl, dr):
+    assert not dl and not dr, 'Glyph “w var2 2stuf” must not be connected.'
+    # FIXME "rückwärts", "vorwärts" ermöglichen -> disjointed?!
+    m = [(0.6, 2),
+         (-0.2, 1.1), (-0.2, 0.9), (0.6, 0)]
+    return (0.5, scale(m, 0.6, 1))
+
+
 def glyph_m(dl, dr):
     b = [(-0.3, 1)] if dl else [(-0.2, 0.9), (-0.2, 0.9), (-0.1, 1)]
     m = [(0, 1), (0.3, 1),
          (0.3, 0.0), (0, 0)]
     e = [(-0.4, 0.0)] if dr else []
     return (0.3, shift(b + m + e, 0.1))
+
+
+def glyph_m_2stuf(dl, dr):
+    sx = 1.8
+    sy = 2
+    w, m = glyph_m(dl, dr)
+    return(w * sx, scale(m, sx, sy))
 
 
 def glyph_p(dl, dr):
@@ -452,9 +491,23 @@ def glyph_b(dl, dr):
     return 0, b + m + e
 
 
+def glyph_b_2stuf(dl, dr):
+    sx = 1.5
+    sy = 2
+    w, m = glyph_b(dl, dr)
+    return(w * sx, scale(m, sx, sy))
+
+
 def glyph_j(dl, dr):
     w, g = glyph_b(dl, dr)
     return (0.7, scale(g, 1, 1, 0.7))
+
+
+def glyph_j_2stuf(dl, dr):
+    sx = 1.5
+    sy = 2
+    w, m = glyph_j(dl, dr)
+    return(w * sx, scale(m, sx, sy))
 
 
 def glyph_t(dl, dr):
@@ -472,6 +525,13 @@ def glyph_f(dl, dr, runder = True):
     m = [(0.0, 0.5)]
     e = untenRund(dr, runder = runder)
     return (0.2, b + m + e)
+
+
+def glyph_f_2stuf(dl, dr):
+    sx = 1.5
+    sy = 2
+    w, m = glyph_f(dl, dr)
+    return (w*sx, scale(m, sx, sy))
 
 
 def glyph_pf(dl, dr):
@@ -498,6 +558,13 @@ def glyph_k(dl, dr, runder = True):
     return (0.3, shift(b + m + e, 0.15))
 
 
+def glyph_k_2stuf(dl, dr):
+    sx = 1.5
+    sy = 2
+    w, m = glyph_k(dl, dr, runder=False)
+    return (w*sx, scale(m, sx, sy))
+
+
 def glyph_cht(dl, dr):
     w, g = glyph_k(dl, dr, runder = False)
     return (0.8, scale(g, 1, 1, 0.5))
@@ -517,11 +584,28 @@ def glyph_z(dl, dr):
     return (0.2, b + m + e)
 
 
+def glyph_z_halbstuf(dl, dr):
+    w, g = glyph_z(dl, dr)
+    return (0.2, scale(g, 1, 0.5))
+
+
+def glyph_z_2stuf(dl, dr):
+    sx = 1.5
+    sy = 2
+    w, m = glyph_z(dl, dr)
+    return(w * sx, scale(m, sx, sy))
+
+
 def glyph_sch(dl, dr):
     b = obenGewoelbt(dl)
     m = [(0, 0.5)]
     e = untenEingelegt(dr)
     return (0.4, shift(b + m + e, 0.2))
+
+
+def glyph_sch_halbstuf(dl, dr):
+    w, g = glyph_sch(dl, dr)
+    return (0.4, scale(g, 1, 0.5))
 
 
 def glyph_st(dl, dr):
@@ -536,6 +620,13 @@ def glyph_l(dl, dr):
     m = [(0, 0.5)]
     e = untenRund(dr)
     return (0.25, b + m + e)
+
+
+def glyph_l_2stuf(dl, dr):
+    sx = 1.5
+    sy = 2
+    w, m = glyph_l(dl, dr)
+    return (w * sx, scale(m, sx, sy))
 
 
 def glyph_ch(dl, dr):
@@ -604,11 +695,6 @@ def glyph_qu(dl, dr):
     return (0.2, scale(g, 1, 0.5))
 
 
-def glyph_schw(dl, dr):
-    w, g = glyph_sch(dl, dr)
-    return (0.4, scale(g, 1, 0.5))
-
-
 def glyph_th(dl, dr):
     w, g = glyph_h(dl, dr)
     return (0.2, scale(g, 1, 0.5))
@@ -622,12 +708,6 @@ def glyph_tsch(dl, dr):
 def glyph_x(dl, dr):
     w, m = glyph_k(dl, dr)
     return (w * 0.5, scale(m, 0.5, 0.5))
-
-
-def glyph_zw(dl, dr):
-    w, g = glyph_z(dl, dr)
-    return (0.2, scale(g, 1, 0.5))
-
 
 
 def glyph_punktschleife_geg_uzs(dl, dr, schmal = False):
@@ -752,79 +832,11 @@ def glyph_punkt(dl, dr):
     return (0.1, b + m + e)
 
 
-def glyph_werend(dl, dr):
-    assert not dl and not dr, "Glyph darf nur allein stehen"
-    m = [(0.6, 2),
-         (0.6, 1.5), (0, 1.5), (0, 0.45),
-         (0, -0.14), (0.6, -0.1), (0.6, 0.24),
-         (0.6, 0.5),(0.1, 0.17), (0.1, 0.17)]
-
-    return (0.5, scale(m, 1, 1))
-
-
-def glyph_werts(dl, dr):
-    assert not dl and not dr, "Glyph darf nur allein stehen"
-    # FIXME "rückwärts", "vorwärts" ermöglichen
-    m = [(0.6, 2),
-         (-0.2, 1), (-0.2, 1), (0.6, 0)]
-    return (0.5, scale(m, 0.6, 1))
-
-
-def glyph_viel(dl, dr):
-    sx = 1.5
-    sy = 2
-    w, m = glyph_f(dl, dr)
-    return (w*sx, scale(m, sx, sy))
-
-
-def glyph_klein(dl, dr):
-    sx = 1.5
-    sy = 2
-    w, m = glyph_k(dl, dr)
-    return (w*sx, scale(m, sx, sy))
-
-
-def glyph_letzt(dl, dr):
-    sx = 1.5
-    sy = 2
-    w, m = glyph_l(dl, dr)
-    return (w*sx, scale(m, sx, sy))
-
-
-def glyph_bund(dl, dr):
-    sx = 1.5
-    sy = 2
-    w, m = glyph_b(dl, dr)
-    return (w*sx, scale(m, sx, sy))
-
-
-def glyph_wesen(dl, dr):
-    sx = 1.5
-    sy = 2
-    w, m = glyph_w(dl, dr)
-    return (w*sx, scale(m, sx, sy))
-
-
-def glyph_zer(dl, dr):
-    sx = 1.5
-    sy = 2
-    w, m = glyph_z(dl, dr)
-    return (w*sx, scale(m, sx, sy))
-
-
-def glyph_jed(dl, dr):
-    sx = 1.5
-    sy = 2
-    w, m = glyph_j(dl, dr)
-    return (w*sx, scale(m, sx, sy))
-
-
 def glyph_nur(dl, dr):
     sx = 3
     sy = 1
     w, m = glyph_ca(dl, dr)
     return (w*sx, scale(m, sx, sy))
-
 
 
 def glyph_muss(dl, dr):
@@ -833,14 +845,6 @@ def glyph_muss(dl, dr):
          (1.4, 0.0), (1.1, 0)]
     e = [(0.8, 0.0)] if dr else []
     return (1.5, (b + m + e))
-
-
-def glyph_um(dl, dr):
-    b = [(-0.5, 1)] if dl else []
-    m = [(0, 1.6), (0.35, 2.1), (1.85, 2.4),
-         (0.65, 0.25), (0.65, 0.25), (0.5, 0), (0.3, 0)]
-    e = [(0, 0)] if dr else []
-    return (1.2, (b + m + e))
 
 
 def glyph_waagr_strich(l, naechster_kons):
@@ -866,43 +870,55 @@ def glyph_waagr_strich(l, naechster_kons):
 ### Lookup Konsonanten -> Glyph-Funktionen
 
 glyphs = {
-    'b':        glyph_b, 
-    'd':        glyph_d, 
-    'f':        glyph_f, 
-    'g':        glyph_g, 
-    'h':        glyph_h,
+    'b': glyph_b,
+    'b4': glyph_b_2stuf,
+    'd': glyph_d,
+    'f': glyph_f,
+    'f4': glyph_f_2stuf,
+    'g': glyph_g,
+    'h': glyph_h,
     'h0': lambda dl, dr: glyph_h(dl, dr, runder = False),
-    'j':        glyph_j, 
-    'k':        glyph_k, 
-    'l':        glyph_l, 
-    'm':        glyph_m, 
-    'n':        glyph_n, 
-    'p':        glyph_p, 
-    'r':        glyph_r, 
-    's':        glyph_s, 
-    't':        glyph_t, 
-    'w':        glyph_w, 
-    'x':        glyph_x,
-    'z':        glyph_z, 
-    'zw':       glyph_zw, 
-    'zer':      glyph_zer,
-    'sch':      glyph_sch, 
-    'schw':     glyph_schw,
+    'j': glyph_j,
+    'j4': glyph_j_2stuf,
+    'k': glyph_k,
+    'k4': glyph_k_2stuf,
+    'l': glyph_l,
+    'l4': glyph_l_2stuf,
+    'm': glyph_m,
+    'm4': glyph_m_2stuf,
+    'n': glyph_n,
+    'p': glyph_p,
+    'r': glyph_r,
+    's': glyph_s,
+    't': glyph_t,
+    'w': glyph_w,
+    'w*': glyph_w_var,
+    'w4': glyph_w_2stuf,
+    'w*4': glyph_w_var_2stuf,
+    'w**4': glyph_w_var2_2stuf,
+    'x': glyph_x,
+    'z': glyph_z,
+    'z1': glyph_z_halbstuf,
+    'zw': glyph_z_halbstuf,
+    'z4': glyph_z_2stuf,
+    'sch': glyph_sch,
+    'sch1': glyph_sch_halbstuf,
+    'schw': glyph_sch_halbstuf,
     'ch': glyph_ch,
     'ch1': glyph_ch_halbstuf,
     'ch3': glyph_ch_einhalbstuf,
     'ch4': glyph_ch_2stuf,
-    'nd':       glyph_nd, 
-    'ng':       glyph_ng, 
-    'cht':      glyph_cht, 
-    'st':       glyph_st, 
-    'sp':       glyph_sp, 
-    'pf':       glyph_pf, 
-    'nt':       glyph_nd, 
-    'nk':       glyph_ng, 
-    'th':       glyph_th, 
-    'tsch':     glyph_tsch, 
-    'q':        glyph_qu, 
+    'nd':       glyph_nd,
+    'ng':       glyph_ng,
+    'cht':      glyph_cht,
+    'st':       glyph_st,
+    'sp':       glyph_sp,
+    'pf':       glyph_pf,
+    'nt':       glyph_nd,
+    'nk':       glyph_ng,
+    'th':       glyph_th,
+    'tsch':     glyph_tsch,
+    'q':        glyph_qu,
     'c':        glyph_c,
     'en': glyph_en,
     'nn': glyph_n_weit,
@@ -917,37 +933,16 @@ glyphs = {
     '@2':   glyph_schleife_1stuf_geg_uzs,
     'ander':    glyph_ander,   # ".ander"
     'auch':     glyph_ander,   # ";auch"
-    'bin':      glyph_b,       # ",,bin"
-    'bund':     glyph_bund,    # "bund"
     'ca':       glyph_ca,      # ";ca"
     'ent':      glyph_ent,     # "ent"
     'euer':     glyph_ca,      # ":euer"
     'euro':     glyph_nur,     # ":euro"
-    'ich':      glyph_ander,   # ",ich"
     'immer':    glyph_ca,      # ",immer"
-    'jed':      glyph_jed,     # "jed"
-    'jetzt':    glyph_jetzt,   # "jetzt"
-    'klein':    glyph_klein,   # "klein"
-    'letzt':    glyph_letzt,   # "letzt"
     'los':      glyph_los,     # "los"
-    'mein':     glyph_m,       # ".mein"
     'muss':     glyph_muss,    # "muss"
     'nur':      glyph_nur,     # "nur"
-    'ober':     glyph_bund,    # ",,bund"
-    'rueck':    glyph_klein,   # ",,rueck"
-    'trotz':    glyph_zer,     # ",,trotz"
-    'ueber':    glyph_b,       # ",,ueber ek"
-    'um':       glyph_um,      # "um"
-    'und':      glyph_nd,      # "und"
-    'unter':    glyph_nd,      # ",,unter ek"
-    'viel':     glyph_viel,    # ",,viel"
     'voll':     glyph_voll,    # "voll"
-    'welch':    glyph_ch,      # "welch"
     'euch':     glyph_ch,      # "euch"
-    'werend':   glyph_werend,  # "werend"
-    'wesen':    glyph_wesen,   # "wesen"
-    'werts':    glyph_werts,   # "werts"
-    'wieder':   glyph_wesen,   # ",,wieder"
     'zwar':     glyph_ca,      # ":,zwar"
     '.': glyph_punkt,
     '-': glyph_waagr_strich,
