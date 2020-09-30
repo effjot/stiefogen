@@ -16,5 +16,6 @@ import stiefo
 #stiefo.render_screen(['selbstverständlich', 'staatlich', 'stattlich', 'selb'])
 #stiefo.render_screen(['w', 'w*', 'w4', 'w*4', 'ei g m4', 'ei g 1m4 e r', 'm4 s i cht',
 #                      'w4 lich*', '1z4', '1f4 ei', 'zu 1k4', 'vor {w**4}'])
-stiefo.render_screen(['m e t', 'm', 'm*', 'm* e r', 'm* {a0}(0,0.3)',
-                      't u r 1mm', 'mm'])
+#stiefo.render_screen(['m e t', 'm', 'm*', 'm* e r', 'm* {a0}(0,0.3)',
+#                      't u r 1mm', 'mm'])
+stiefo.render_screen(['s e r', 's', 's*'])

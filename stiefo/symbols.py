@@ -478,11 +478,12 @@ def glyph_m_2stuf(dl, dr):
 
 def glyph_m_var(dl, dr):
     assert not dl, 'Glyph “m var” only allowed at beginning of word.'
+    y1 = 0.3
     w, b_m = glyph_m(False, False)
     if not dr:
-        e = [(0, 0), (0, 0.3), (w, 0.3)]
+        e = [(0, 0), (0, y1), (w, y1)]
     else:
-        e = [(-0.1, 0), (-0.1, 0.20), (w - 0.1, 0.25), (w + 0.1, 0.30)]
+        e = [(-0.05, 0), (-0.05, y1 - 0.10), (w - 0.1, y1 - 0.05), (w + 0.1, y1)]
     return (w, b_m + e)
 
 
@@ -717,6 +718,16 @@ def glyph_s(dl, dr):
     return (0.3, shift(b + m + e, 0.1))
 
 
+def glyph_s_var(dl, dr):
+    y1 = 0.25
+    w, b_m = glyph_s(dl, False)
+    if not dr:
+        e = [(-0.1, 0.1), (0, y1 + 0.1), (w, y1 - 0.1)]
+    else:
+        e = [(-0.05, 0), (-0.05, y1 - 0.10), (w - 0.1, y1 - 0.05), (w + 0.1, y1)]
+    return (w, b_m + e)
+
+
 def glyph_sp(dl, dr):
     b = kopfSchleife(dl)
     m = [(0, 0.5)]
@@ -748,7 +759,7 @@ def glyph_punktschleife_geg_uzs(dl, dr, schmal = False):
     x0 = 0.1 if schmal else 0.3
     b = [(0, 0)] if not dl else [(0, 0), (0, 0)]
     m = scale(kreis_auf(dl, dr), 0.1, 0.15)
-    e = [(x0, -0.1), (x0 + 0.1, 0.2), (x0 + 0.1, 0.2)] if not dr else [(x0 + 0.2, -0.1)]
+    e = [(x0, -0.1), (x0 + 0.1, 0.2), (x0 + 0.1, 0.2)] if not dr else [(x0 + 0.1 if schmal else 0.2, -0.1)]
     return [0.15 if schmal else 0.3, (b + m + e)]
 
 
@@ -919,6 +930,7 @@ glyphs = {
     'p': glyph_p,
     'r': glyph_r,
     's': glyph_s,
+    's*': glyph_s_var,
     't': glyph_t,
     'w': glyph_w,
     'w*': glyph_w_var,
