@@ -152,7 +152,7 @@ kuerzel_AS1 = {
 
 
 kuerzel_AS2 = {
-    'auch': '2@^0', 'ich': '1@^0', 'ander': '3@^0',  # 3. Lernabschnitt
+    'auch': '2@^0', 'ich': '1@^0', 'ander': '3@^0', 'dich': '1d* | @^00', # 3. Lernabschnitt
     'selbst': 'selb', 'selbständig': 'selb i',  # 7. Lernabschnitt
     'selbstverständlich': 'selb |0 @*00', 'sonstig': 'sonst i',
     'staatlich': 'stat e@ @*0', 'stattlich': 'stat |0 @*00',  # Anhang
@@ -390,11 +390,14 @@ def bogen_ab(dl, dr):
 
 ### Glyphen (Konsonanten)
 
-def glyph_d(dl, dr):
+def glyph_d(dl, dr, verbindung_schmal = False):
     b = [(0, 0.5)] if dl else []
     m = [(0, 0.5), (0, 0.5),
          (0.2, 0), (0.5, 0)]
-    e = [(0.8, 0)] if dr else [(0.5, 0), (0.6, 0.05), (0.6, 0.05)]
+    if dr:
+        e = [(0.55 if verbindung_schmal else 0.8, 0)]
+    else:
+        e = [(0.5, 0), (0.6, 0.05), (0.6, 0.05)]
     return (0.5, b + m + e)
 
 
@@ -927,6 +930,7 @@ glyphs = {
     'b': glyph_b,
     'b4': glyph_b_2stuf,
     'd': glyph_d,
+    'd*': lambda dl, dr: glyph_d(dl, dr, verbindung_schmal=True),  # für "dich"
     'f': glyph_f,
     'f4': glyph_f_2stuf,
     'g': glyph_g,
