@@ -26,7 +26,7 @@ vokal_formen = {
     'ä': (1, 0, de),
     'ae': (1, 0, de),
     'e0': (1, 0, 0.5 * de),  # etwas schmaler, für aber, über, Vorsilben er/mit/an
-    'e@': (0, 0, 0),  # für Verbindungen mit -lich (außer W-lich F-lich, usw.)
+    'e@': (0, 0, 0.05),  # für Verbindungen mit -lich (außer W-lich F-lich, usw.)
     'u': (2, 0, du),
     'au': (2, 0, du),
     'i': (1, -1, di),
@@ -119,6 +119,7 @@ vorsilben_AS2 = {
 
 nachsilben_AS2 = {
     'chen': 'ch1',  # 2. Lernabschnitt
+    'ander': '3@^00',  # 3. Lernabschnitt
     'gleich': 'ch4',  # 27. Lernabschnitt
     'rechn': 'ch3',  # Anhang
     'alich': '|0.25 ++3@*0', 'schaftlich': '|0.25 ++3@*0'
@@ -151,6 +152,7 @@ kuerzel_AS1 = {
 
 
 kuerzel_AS2 = {
+    'auch': '2@^0', 'ich': '1@^0', 'ander': '3@^0',  # 3. Lernabschnitt
     'selbst': 'selb', 'selbständig': 'selb i',  # 7. Lernabschnitt
     'selbstverständlich': 'selb |0 @*00', 'sonstig': 'sonst i',
     'staatlich': 'stat e@ @*0', 'stattlich': 'stat |0 @*00',  # Anhang
@@ -336,6 +338,7 @@ def kopfSchleife(dl):
 
 
 def kreis_auf(dl, dr):
+    """Kreis gegen UZS, auf Grundlinie liegend"""
     # (Startpunkt ist nicht definiert)
     m = [(0.25, 0),    (0.5, 0.25),  (0.5, 0.5),   # [Q1], [Q2], (Q3/R0)
          (0.5, 0.75),  (0.25, 1),    (0, 1),       # [R1], [R2], (R3/S0)
@@ -763,6 +766,25 @@ def glyph_punktschleife_geg_uzs(dl, dr, schmal = False):
     return [0.15 if schmal else 0.3, (b + m + e)]
 
 
+def glyph_punktschleife_geg_uzs_anstrich(dl, dr, schmal = False):
+    x0 = 0.25 if not dl else 0.125
+    if not schmal:
+        x0 += 0.25
+    if not dl:
+        if not dr:
+            b = [(0, 0), (0.2, -0.05), (x0 - 0.2, -0.05), (x0, 0.025)]
+        else:
+            b = [(0, 0), (0, 0), (x0, 0), (x0, 0)]
+    else:
+        if not dr:
+            b = [(0, 0), (0, 0), (1/3*x0, 0), (2/3*x0, 0.0125), (x0, 0.025)]
+        else:
+            b = [(0, 0), (0, 0), (0, 0), (x0, 0), (x0, 0)]
+    m = shift(scale(kreis_auf(dl, dr), 0.1, 0.15), x0, 0.05 if not dr else 0)
+    e = [(x0, 0.05)]*3 if not dr else [(x0 + 0.05, 0)]
+    return [x0, (b + m + e)]
+
+
 def glyph_punktschleife_im_uzs(dl, dr, schmal = False):
     _, m = glyph_punktschleife_geg_uzs(None, None, schmal=schmal)
     m = shift(reversed(rotate_ccw(m, math.pi)), 0.25 if schmal else 0.4, 0.2)
@@ -828,17 +850,10 @@ def glyph_ent(dl, dr):
     return (0.41, scale([(0, 0)]*2 + shift(b + m + e, 0.8), 0.5, 0.5))
 
 
-def glyph_ander(dl, dr):
-    assert not dl, "Glyph 'ander' darf nur am Wortanfang stehen!"
-    # FIXME: "einander" ermöglichen
-    b = [(0, 0)]
-    m = shift(scale(kreis_auf(dl, dr), 0.15, 0.2), 0.5, 0)
-    e = [(0.5, 0)]*3 if not dr else [(0.55, 0)]
-    return [0.5, (b + m + e)]
 
 
 def glyph_dir(dl, dr):
-    w, m = glyph_ver(dr, dl)  # dl und dr vertauscht!
+    w, m = glyph_punktschleife_geg_uzs(dr, dl)  # dl und dr vertauscht!
     m = reversed(scale(m, -1, 1))
     return w, m
 
@@ -896,6 +911,8 @@ def glyph_waagr_strich(l, naechster_kons):
         if naechster_kons in ('b', 'f', 'h', 'j', 'k', 'm', 'p', 'w', 'z',
                               'cht', 'nd', 'nt', 'ng', 'pf', 'sch'):
             y0 = 1
+        elif naechster_kons.startswith('@'):
+            y0 = 0
         else:
             y0 = 0.5
         e = [(l, y0)]
@@ -967,13 +984,14 @@ glyphs = {
     '@0': glyph_punktschleife_geg_uzs,
     '@': glyph_punktschleife_geg_uzs,  # Abkürzung
     '@00': lambda dl, dr: glyph_punktschleife_geg_uzs(dl, dr, schmal = True),
+    '@^0': glyph_punktschleife_geg_uzs_anstrich,
+    '@^': glyph_punktschleife_geg_uzs_anstrich,  # Abkürzung
+    '@^00': lambda dl, dr: glyph_punktschleife_geg_uzs_anstrich(dl, dr, schmal = True),
     '@*0': glyph_punktschleife_im_uzs,
     '@*': glyph_punktschleife_im_uzs,  # Abkürzung
     '@*00': lambda dl, dr: glyph_punktschleife_im_uzs(dl, dr, schmal = True),
     '@1': glyph_schleife_halbstuf_geg_uzs,
     '@2':   glyph_schleife_1stuf_geg_uzs,
-    'ander':    glyph_ander,   # ".ander"
-    'auch':     glyph_ander,   # ";auch"
     'ca':       glyph_ca,      # ";ca"
     'ent':      glyph_ent,     # "ent"
     'euer':     glyph_ca,      # ":euer"
@@ -984,6 +1002,7 @@ glyphs = {
     'voll':     glyph_voll,    # "voll"
     'euch':     glyph_ch,      # "euch"
     'zwar':     glyph_ca,      # ":,zwar"
+    'dir':     glyph_dir,      # ":,zwar"
     '.': glyph_punkt,
     '-': glyph_waagr_strich,
     '_': lambda dx, dy: (0, [(0, 0), (0, 0)]),  # Startpunkt normaler Anstrich

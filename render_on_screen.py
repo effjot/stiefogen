@@ -18,4 +18,5 @@ import stiefo
 #                      'w4 lich*', '1z4', '1f4 ei', 'zu 1k4', 'vor {w**4}'])
 #stiefo.render_screen(['m e t', 'm', 'm*', 'm* e r', 'm* {a0}(0,0.3)',
 #                      't u r 1mm', 'mm'])
-stiefo.render_screen(['s e r', 's', 's*'])
+#stiefo.render_screen(['s e r', 's', 's*'])
+stiefo.render_screen(['t e t', '3@^0', 'ander', 'ich', 'ein ander'])
