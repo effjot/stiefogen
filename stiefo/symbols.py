@@ -110,6 +110,7 @@ nachsilben_AS1 = {
 vorsilben_AS2 = {
     'selb': '2@2', 'sonst': '1@2', 'stat': '3@2',  # 7. Lernabschnitt
     'deutsch': '4dd |0',  # 9. Lernabschnitt
+    'euro': '4rr |0',  # 10. Lernabschnitt
     'in': '1-', 'inter': '1-', 'trans': '3-',
     'pro': '1--', 'bei': '3--',
     'be': '0/', 'un': '0d /', 'darauf': '0d //',
@@ -158,7 +159,8 @@ kuerzel_AS2 = {
     'staatlich': 'stat e@ @*0', 'stattlich': 'stat |0 @*00',  # Anhang
     'status': 'stat u s',
     'kein': '3nn',  # 9. Lernabschnitt
-    'deutschland': '4dd |0.1 nd',  # 10. Lernabschnitt
+    'nur': '2rr', 'oder': '1rr', 'europa': '4rr', # 10. Lernabschnitt
+    'deutschland': '4dd |0.1 nd',
     'jedoch': 'j |0 1dd',  # 18. Lernabschnitt
     # TODO: 'dennoch': '2en „enger Abstand“ 1nn',  # 24. Lernabschnitt, Bsp. 2
     'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
@@ -419,6 +421,21 @@ def glyph_r(dl, dr):
          (0.2, y0), (0.5, y0)]
     e = [(0.7, y0)] if dr else [(0.5, y0), (0.6, y0 + 0.1), (0.6, y0 + 0.1)]
     return (0.4, b + m + e)
+
+
+def glyph_r_var(dl, dr):
+    """flaches R / „Welle“"""
+    b = [(0, -0.1)] * 2 if not dl else []
+    m = welle_auf(dl, dr)
+    e = [(1, 0.1)] * 2 if not dr else []
+    return [0.7, shift(scale(b + m + e, 0.7, 1), 0, 0.1)]
+
+
+def glyph_r_weit(dl, dr):
+    sx = 3
+    sy = 2
+    w, m = glyph_r_var(dl, dr)
+    return (w * sx, scale(m, sx, sy))
 
 
 def glyph_w(dl, dr):
@@ -838,21 +855,12 @@ def glyph_d_weit(dl, dr):
     return [2, scale(b + m + e, 2, 1)]
 
 
-def glyph_ca(dl, dr):
-    b = [(0, -0.1)]*2 if not dl else []
-    m = welle_auf(dl, dr)
-    e = [(1, 0)]*2 if not dr else []
-    return [0.7, shift(scale(b + m + e, 0.7, 1), 0, 0.1)]
-
-
 def glyph_ent(dl, dr):
     assert not dl, 'Glyph “ent” only allowed at beginning of word.'
     b = obenRund(True)
     m = [(0, 0.5)]
     e = untenSpitz(dr)
     return (0.41, scale([(0, 0)]*2 + shift(b + m + e, 0.8), 0.5, 0.5))
-
-
 
 
 def glyph_dir(dl, dr):
@@ -893,13 +901,6 @@ def glyph_punkt(dl, dr):
     m = scale(kreis_auf(dl, dr), 0.1, 0.1)
     e = []
     return (0.1, b + m + e)
-
-
-def glyph_nur(dl, dr):
-    sx = 3
-    sy = 1
-    w, m = glyph_ca(dl, dr)
-    return (w*sx, scale(m, sx, sy))
 
 
 def glyph_waagr_strich(l, naechster_kons):
@@ -996,17 +997,11 @@ glyphs = {
     '@*00': lambda dl, dr: glyph_punktschleife_im_uzs(dl, dr, schmal = True),
     '@1': glyph_schleife_halbstuf_geg_uzs,
     '@2':   glyph_schleife_1stuf_geg_uzs,
-    'ca':       glyph_ca,      # ";ca"
+    'r*': glyph_r_var,
+    'rr': glyph_r_weit,
     'ent':      glyph_ent,     # "ent"
-    'euer':     glyph_ca,      # ":euer"
-    'euro':     glyph_nur,     # ":euro"
-    'immer':    glyph_ca,      # ",immer"
     'los':      glyph_los,     # "los"
-    'nur':      glyph_nur,     # "nur"
     'voll':     glyph_voll,    # "voll"
-    'euch':     glyph_ch,      # "euch"
-    'zwar':     glyph_ca,      # ":,zwar"
-    'dir':     glyph_dir,      # ":,zwar"
     '.': glyph_punkt,
     '-': glyph_waagr_strich,
     '_': lambda dx, dy: (0, [(0, 0), (0, 0)]),  # Startpunkt normaler Anstrich
