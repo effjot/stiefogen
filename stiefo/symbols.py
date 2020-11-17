@@ -111,6 +111,7 @@ vorsilben_AS2 = {
     'selb': '2@2', 'sonst': '1@2', 'stat': '3@2',  # 7. Lernabschnitt
     'deutsch': '4dd |0',  # 9. Lernabschnitt
     'euro': '4rr |0',  # 10. Lernabschnitt
+    #'voll': '2-- @^*00 i',  # 11. Lernabschnitt
     'in': '1-', 'inter': '1-', 'trans': '3-',
     'pro': '1--', 'bei': '3--',
     'be': '0/', 'un': '0d /', 'darauf': '0d //',
@@ -121,6 +122,7 @@ vorsilben_AS2 = {
 nachsilben_AS2 = {
     'chen': 'ch1',  # 2. Lernabschnitt
     'ander': '3@^00',  # 3. Lernabschnitt
+    'voll': 'u @^*00',  # 11. Lernabschnitt
     'gleich': 'ch4',  # 27. Lernabschnitt
     'rechn': 'ch3',  # Anhang
     'alich': '|0.25 ++3@*0', 'schaftlich': '|0.25 ++3@*0'
@@ -159,8 +161,9 @@ kuerzel_AS2 = {
     'staatlich': 'stat e@ @*0', 'stattlich': 'stat |0 @*00',  # Anhang
     'status': 'stat u s',
     'kein': '3nn',  # 9. Lernabschnitt
-    'nur': '2rr', 'oder': '1rr', 'europa': '4rr', # 10. Lernabschnitt
+    'nur': '2rr', 'oder': '1rr', 'europa': '4rr',  # 10. Lernabschnitt
     'deutschland': '4dd |0.1 nd',
+    'voll': '2-- @^*00',  # 11. Lernabschnitt
     'jedoch': 'j |0 1dd',  # 18. Lernabschnitt
     # TODO: 'dennoch': '2en „enger Abstand“ 1nn',  # 24. Lernabschnitt, Bsp. 2
     'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
@@ -350,6 +353,7 @@ def kreis_auf(dl, dr):
 
 
 def kreis_ab(dl, dr):
+    """Kreis im UZS, an Grundlinie hängend"""
     return scale(kreis_auf(dl, dr), 1, -1)
 
 
@@ -814,6 +818,10 @@ def glyph_punktschleife_im_uzs(dl, dr, schmal = False):
         m = m[:-2]
     return [0.25 if schmal else 0.4, m]
 
+def glyph_punktschleife_im_uzs_anstrich(dl, dr, schmal = False):
+    w, g = glyph_punktschleife_geg_uzs_anstrich(dl, dr, schmal)
+    return [w, scale(g, 1, -1, 0)]
+
 
 def glyph_schleife_halbstuf_geg_uzs(dl, dr):
     assert not dl, "Glyphen 'gegen/will/all usw.' duerfen nur am Wortanfang stehen!"
@@ -863,13 +871,7 @@ def glyph_ent(dl, dr):
     return (0.41, scale([(0, 0)]*2 + shift(b + m + e, 0.8), 0.5, 0.5))
 
 
-def glyph_dir(dl, dr):
-    w, m = glyph_punktschleife_geg_uzs(dr, dl)  # dl und dr vertauscht!
-    m = reversed(scale(m, -1, 1))
-    return w, m
-
-
-def glyph_los(dl, dr):
+def glyph_los(dl, dr):  # FIXME: ist Symbol für voll
     l = 1.5
     b = [(0, 0)]*2 if not dl else []
     m = [(l, 0)]*2 + shift(scale(kreis_ab(dl, dr), 0.2, 0.2), l)
@@ -995,6 +997,8 @@ glyphs = {
     '@*0': glyph_punktschleife_im_uzs,
     '@*': glyph_punktschleife_im_uzs,  # Abkürzung
     '@*00': lambda dl, dr: glyph_punktschleife_im_uzs(dl, dr, schmal = True),
+    '@^*0': glyph_punktschleife_im_uzs_anstrich,
+    '@^*00': lambda dl, dr: glyph_punktschleife_im_uzs_anstrich(dl, dr, schmal = True),
     '@1': glyph_schleife_halbstuf_geg_uzs,
     '@2':   glyph_schleife_1stuf_geg_uzs,
     'r*': glyph_r_var,
