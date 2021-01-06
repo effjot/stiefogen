@@ -24,7 +24,7 @@ vokalAbstaende = {
     'e'      : (1,  0, de),
     'i'      : (1, -1, di),
     'I': (1, -1, di + di_extra),
-    'ischmal': (1, -2, di),
+    'ischmal': (1, -1, di),
     'o'      : (2, -1, du),
     'vor'    : (2, -1, du),
     'u'      : (2,  0, du),
