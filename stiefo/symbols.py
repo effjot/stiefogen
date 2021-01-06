@@ -37,6 +37,7 @@ vokal_formen = {
     'o': (2, -1, du),
     'a': (1, 1, de),
     'a0': (1, 1, 0.6 * de),
+    'A': (1, 1, de  + 0.5 * d_extra),  # breiter, z.B. für "mittelbar"
     'ö': (1, 2, de + 0.3),
     'oe': (1, 2, de + 0.3),
     'ei': (2, 1, du),
@@ -103,7 +104,7 @@ nachsilben_AS1 = {
     'lich': 'e@ @*0', 'entlich': 'e@ @*0',  # 8. Lernabschnitt
     'lich*': '@*00', 'entlich*': '@*00',  # Varianten für unten rund (W-lich, F-lich, usw.)
     'doch': '1dd',  # 9. Lernabschnitt
-    'noch': '1nn',  # als Nachsilben für jedoch, dennoch
+    'noch': '1nn'  # als Nachsilben für jedoch, dennoch
 }
 
 
@@ -123,6 +124,8 @@ nachsilben_AS2 = {
     'chen': 'ch1',  # 2. Lernabschnitt
     'ander': '3@^00',  # 3. Lernabschnitt
     'voll': 'u @^*00',  # 11. Lernabschnitt
+    'bar': '{a0 r}(-0.5,0)',  # aber für viele Wörter Anpassung a/a0 und Versatz nötig
+    'barkeit': '{a0 r keit}(-0.5,0)',  # (Belegstelle erst in Text 18)
     'gleich': 'ch4',  # 27. Lernabschnitt
     'rechn': 'ch3',  # Anhang
     'alich': '|0.25 ++3@*0', 'schaftlich': '|0.25 ++3@*0'
@@ -149,14 +152,15 @@ kuerzel_AS1 = {
     'es': '+2-', 'sie': '-2-',  # 7. Lernabschnitt
     'aus': '++2--', 'so': '--2--',
     'endlich': '2@*0',  # 8. Lernabschnitt
-    'durch': '2dd',  # 9. Lernabschnitt
-    'uns': '2nn',
+    'durch': '2dd', 'doch': '1dd',  # 9. Lernabschnitt
+    'uns': '2nn', 'noch': '1nn',
     'in': 'i n',  # Wort „in“ wird normal geschrieben, waagr. Strich nur für Vorsilbe
 }
 
 
 kuerzel_AS2 = {
-    'auch': '2@^0', 'ich': '1@^0', 'ander': '3@^0', 'dich': '1d* | @^00', # 3. Lernabschnitt
+    'auch': '2@^0', 'ich': '1@^0', 'ander': '3@^0', 'dich': '1d* | @^00',  # 3. Lernabschnitt
+    'sonder': '2@1 o', 'sonderlich': '2@1 u @^*00', # 6. Lernabschnitt
     'selbst': 'selb', 'selbständig': 'selb i',  # 7. Lernabschnitt
     'selbstverständlich': 'selb |0 @*00', 'sonstig': 'sonst i',
     'staatlich': 'stat e@ @*0', 'stattlich': 'stat |0 @*00',  # Anhang
@@ -165,6 +169,11 @@ kuerzel_AS2 = {
     'nur': '2rr', 'oder': '1rr', 'europa': '4rr',  # 10. Lernabschnitt
     'deutschland': '4dd |0.1 nd',
     'voll': '2-- @^*00',  # 11. Lernabschnitt
+    'prüfbar': 'p ü f {a r}(-0.25,0)', 'nachprüfbar': 'nach p ü f {a r}(-0.25,0)',
+    'dankbar': 'd a nk {a r}(0,0)',
+    'mittelbar': '1l {A r}(-0.1,0)', 'unmittelbar': 'un 1l {A r}(-0.1,0)',  # (Belegstelle "unmittelbar" erst in Text 12)
+    'muss': 'mm', 'musst': 'mm*',  # 14. Lernabschnitt
+    'müss': '1mm', 'müsst': '1mm*',
     'jedoch': 'j |0 1dd',  # 18. Lernabschnitt
     # TODO: 'dennoch': '2en „enger Abstand“ 1nn',  # 24. Lernabschnitt, Bsp. 2
     'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
@@ -176,10 +185,10 @@ kuerzel_AS2 = {
     'gewissenhaft': 'ge w i {a0}(-0.3,0) s',
     'einfach': 'ein {a0}(0,-0.25)', 'mehrfach': 'm {a}(-0.4,0) r',
     'ebenfalls': 'e {a s} b',
-    'unmittelbar': 'un 1l {a r}(-0.1,0)',
     'nachbar': '+3@0 {a0 r}(0.4,-0.25)',
     'nachbarschaft': '+3@0 {a0 r schaft}(0.4,-0.25)',
-    'nachprüfbar': 'nach p ü f {a r}(-0.25,0)'
+
+    'nachvollziehbar': 'nach u @^*00 i z i bar'  # TODO: in Materialien?
 }
 
 
@@ -934,7 +943,7 @@ glyphs = {
     'f4': glyph_f_2stuf,
     'g': glyph_g,
     'h': glyph_h,
-    'h0': lambda dl, dr: glyph_h(dl, dr, runder = False),
+    'h0': lambda dl, dr: glyph_h(dl, dr, runder=False),
     'j': glyph_j,
     'j4': glyph_j_2stuf,
     'k': glyph_k,
@@ -980,7 +989,7 @@ glyphs = {
     'th':       glyph_th,
     'tsch':     glyph_tsch,
     'q':        glyph_qu,
-    'c':        glyph_c,
+    'c': glyph_c,  # Vokalzeichen
     'en': glyph_en,
     'nn': glyph_n_weit,
     'dd': glyph_d_weit,
@@ -1088,7 +1097,6 @@ def SplitStiefoWord(st):
             st_tokenised.append(z)
         first_form = False
     st_tokenised = ' '.join(st_tokenised)
-    print(st_tokenised)
 
     ## zweiteilige Formen (Durchstreichungen) auflösen
     disjointed = re.search(r'\{(.+)\}(\(\+?-?\d+\.?\d*,\+?-?\d+\.?\d*\))?', st_tokenised)

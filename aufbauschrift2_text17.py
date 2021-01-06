@@ -7,5 +7,4 @@ with open(filenamebase + '.txt', "r", encoding="utf-8") as f:
 
 st = stiefo.text_to_list(text)
 
-#stiefo.render_screen(st)
 stiefo.render_pdf(st, filenamebase + ".pdf")
