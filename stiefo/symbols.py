@@ -111,7 +111,7 @@ vorsilben_AS2 = {
     'selb': '2@2', 'sonst': '1@2', 'stat': '3@2',  # 7. Lernabschnitt
     'deutsch': '4dd |0',  # 9. Lernabschnitt
     'euro': '4rr |0',  # 10. Lernabschnitt
-    #'voll': '2-- @^*00 i',  # 11. Lernabschnitt
+    'voll': '2-- @^*00 i',  # 11. Lernabschnitt
     'in': '1-', 'inter': '1-', 'trans': '3-',
     'pro': '1--', 'bei': '3--',
     'be': '0/', 'un': '0d /', 'darauf': '0d //',
@@ -129,7 +129,8 @@ nachsilben_AS2 = {
 }
 
 
-vor_nach_silben = {**vorsilben_AS1, **nachsilben_AS1, **vorsilben_AS2, **nachsilben_AS2}
+vorsilben = {**vorsilben_AS1, **vorsilben_AS2}
+nachsilben = {**nachsilben_AS1, **nachsilben_AS2}
 
 
 kuerzel_AS1 = {
@@ -887,11 +888,6 @@ def glyph_sonder(dl, dr):
     return [l, (b + m + e)]
 
 
-def glyph_voll(dl, dr):
-    # TODO
-    return [1.3, (b + m + e)]
-
-
 def glyph_jetzt(dl, dr):
     w, g = glyph_b(dl, dr)
     return (0.5, scale(g, 1, 1, 0.5))
@@ -1005,7 +1001,6 @@ glyphs = {
     'rr': glyph_r_weit,
     'ent':      glyph_ent,     # "ent"
     'los':      glyph_los,     # "los"
-    'voll':     glyph_voll,    # "voll"
     '.': glyph_punkt,
     '-': glyph_waagr_strich,
     '_': lambda dx, dy: (0, [(0, 0), (0, 0)]),  # Startpunkt normaler Anstrich
@@ -1073,17 +1068,34 @@ def SplitStiefoWord(st):
 
     w = []  # Liste der Buchstaben im Wort
 
-    ## Wort durch Kürzel ersetzen
+    ## Kürzel auflösen
     if (st in kuerzel):
         st = kuerzel[st]
         st, y_adj = get_y_adjust(st)
         y_word_offset += y_adj
 
-    disjointed = re.search(r'\{(.+)\}(\(\+?-?\d+\.?\d*,\+?-?\d+\.?\d*\))?', st)
+    ## Vor- und Nachsilben auflösen (ergibt Token)
+    st_tokenised = []
+    first_form = True
+    for z in st.split(' '):
+        if first_form and z in vorsilben:
+            pfx = vorsilben[z]
+            st_tokenised.extend(pfx.split(' '))
+        elif not first_form and z in nachsilben:
+            pfx = nachsilben[z]
+            st_tokenised.extend(pfx.split(' '))
+        else:
+            st_tokenised.append(z)
+        first_form = False
+    st_tokenised = ' '.join(st_tokenised)
+    print(st_tokenised)
+
+    ## zweiteilige Formen (Durchstreichungen) auflösen
+    disjointed = re.search(r'\{(.+)\}(\(\+?-?\d+\.?\d*,\+?-?\d+\.?\d*\))?', st_tokenised)
     if disjointed:
         disjointed_code = disjointed.group(1)
         adjust_str = disjointed.group(2)
-        st = re.sub(r'\{(.+)\}(\(.*\))?', '!', st)
+        st_tokenised = re.sub(r'\{(.+)\}(\(.*\))?', '!', st_tokenised)
         if adjust_str:
             disjointed_adjust = tuple(map(float, adjust_str[1:-1].split(',')))
             #print("adjust_str={}, tuple={}".format(adjust_str, disjointed_adjust))
@@ -1093,33 +1105,18 @@ def SplitStiefoWord(st):
         disjointed_code = None
         disjointed_adjust = None
 
-    ## Buchstabenkette auswerten
+
+    ## Token auswerten (Präfixe einfügen, bestimmte Vokalanpassungen)
     first_token = True
     pz = False  # vorhergehendes Zeichen
     pv = False  # vorhergehender Vokal
     pfx2 = None  # zweites Token von zusammengesetzter Vorsilbe
-    for z in (st.split(' ')):
+    for z in st_tokenised.split(' '): #(st.split(' ')):
         #print("z = {}, pz={}, pv={}".format(z, pz, pv))
         if z == '!':
             w.append(z)
             continue
 
-        if z in vor_nach_silben:
-            pfx = vor_nach_silben[z]
-            if ' ' in pfx:
-                assert len(pfx.split(' ')) == 2, 'Compound prefix has more than 2 parts: {}'.format(pfx)
-                pfx1, _, pfx2 = pfx.partition(' ')
-            else:
-                pfx1 = pfx
-            pfx1, y_adj = get_y_adjust(pfx1)
-            y_word_offset += y_adj
-            if pfx2:
-                w.append(pfx1)
-                z = pfx2
-                pfx2 = None
-                first_token = False
-            else:
-                z = pfx1
         v = z in vokal_formen or z[0] == '|' or z in praefix_formen
         if first_token and z in ('i', 'ü', 'ue'):
             z = 'I'
@@ -1137,7 +1134,7 @@ def SplitStiefoWord(st):
     if w[-1] in ('i', 'ü', 'ue'):
         w[-1] = 'I'
 
-    ## Wort in Glyphen und Vokal-Tupel zerlegen
+    ## Token in Glyphen und Vokal-Tupel auflösen
     x = []  # zerlegtes Wort
     k = False
     for l in w:
