@@ -37,7 +37,7 @@ vokal_formen = {
     'o': (2, -1, du),
     'a': (1, 1, de),
     'a0': (1, 1, 0.6 * de),
-    'A': (1, 1, de  + 0.5 * d_extra),  # breiter, z.B. für "mittelbar"
+    'A': (1, 1, de + 0.5 * d_extra),  # breiter, z.B. für "mittelbar"
     'ö': (1, 2, de + 0.3),
     'oe': (1, 2, de + 0.3),
     'ei': (2, 1, du),
@@ -103,6 +103,7 @@ vorsilben_AS1 = {
 nachsilben_AS1 = {
     'lich': 'e@ @*0', 'entlich': 'e@ @*0',  # 8. Lernabschnitt
     'lich*': '@*00', 'entlich*': '@*00',  # Varianten für unten rund (W-lich, F-lich, usw.)
+    'lichkeit': 'e@ @*0 keit',
     'doch': '1dd',  # 9. Lernabschnitt
     'noch': '1nn'  # als Nachsilben für jedoch, dennoch
 }
@@ -123,6 +124,7 @@ vorsilben_AS2 = {
 nachsilben_AS2 = {
     'chen': 'ch1',  # 2. Lernabschnitt
     'ander': '3@^00',  # 3. Lernabschnitt
+    'möglich': '4@*0', 'möglichkeit': '4@*0 keit',  # 4. Lernabschnitt
     'voll': 'u @^*00',  # 11. Lernabschnitt
     'bar': '{a0 r}(-0.5,0)',  # aber für viele Wörter Anpassung a/a0 und Versatz nötig
     'barkeit': '{a0 r keit}(-0.5,0)',  # (Belegstelle erst in Text 18)
@@ -160,7 +162,9 @@ kuerzel_AS1 = {
 
 kuerzel_AS2 = {
     'auch': '2@^0', 'ich': '1@^0', 'ander': '3@^0', 'dich': '1d* | @^00',  # 3. Lernabschnitt
-    'sonder': '2@1 o', 'sonderlich': '2@1 u @^*00', # 6. Lernabschnitt
+    'möglich': '4@*0', 'möglichkeit': '4@*0 keit',  # 4. Lernabschnitt
+    'nämlich': 'n e@ @*0', 'natürlich': 'n |0.25 ++3@*0', 'namentlich': '3en e@ @*0',
+    'sonder': '2@1 o', 'sonderlich': '2@1 u @^*00',  # 6. Lernabschnitt
     'selbst': 'selb', 'selbständig': 'selb i',  # 7. Lernabschnitt
     'selbstverständlich': 'selb |0 @*00', 'sonstig': 'sonst i',
     'staatlich': 'stat e@ @*0', 'stattlich': 'stat |0 @*00',  # Anhang
@@ -172,6 +176,7 @@ kuerzel_AS2 = {
     'prüfbar': 'p ü f {a r}(-0.25,0)', 'nachprüfbar': 'nach p ü f {a r}(-0.25,0)',
     'dankbar': 'd a nk {a r}(0,0)',
     'mittelbar': '1l {A r}(-0.1,0)', 'unmittelbar': 'un 1l {A r}(-0.1,0)',  # (Belegstelle "unmittelbar" erst in Text 12)
+    'unendlich': 'un 2@*0', 'unendlichkeit': 'uen 2@*0 keit',  # (kein Beleg; Ergänzung FJ)
     'muss': 'mm', 'musst': 'mm*',  # 14. Lernabschnitt
     'müss': '1mm', 'müsst': '1mm*',
     'jedoch': 'j |0 1dd',  # 18. Lernabschnitt
@@ -941,13 +946,16 @@ glyphs = {
     'd*': lambda dl, dr: glyph_d(dl, dr, verbindung_schmal=True),  # für "dich"
     'f': glyph_f,
     'f4': glyph_f_2stuf,
+    'qu': glyph_qu,  # halbstufiges F
     'g': glyph_g,
     'h': glyph_h,
-    'h0': lambda dl, dr: glyph_h(dl, dr, runder=False),
+    'h*': lambda dl, dr: glyph_h(dl, dr, runder=False),  # war h0
+    'th': glyph_th,  # halbstufiges H
     'j': glyph_j,
     'j4': glyph_j_2stuf,
     'k': glyph_k,
     'k4': glyph_k_2stuf,
+    'x': glyph_x,  # halbstufiges K
     'l': glyph_l,
     'l4': glyph_l_2stuf,
     'm': glyph_m,
@@ -966,7 +974,6 @@ glyphs = {
     'w4': glyph_w_2stuf,
     'w*4': glyph_w_var_2stuf,
     'w**4': glyph_w_var2_2stuf,
-    'x': glyph_x,
     'z': glyph_z,
     'z1': glyph_z_halbstuf,
     'zw': glyph_z_halbstuf,
@@ -978,7 +985,9 @@ glyphs = {
     'ch1': glyph_ch_halbstuf,
     'ch3': glyph_ch_einhalbstuf,
     'ch4': glyph_ch_2stuf,
-    'nd':       glyph_nd,
+    'nd': glyph_nd,
+    'tsch': glyph_tsch,  # halbstufiges ND
+    'ent': glyph_ent, # halbstufiges ND mit Anstrich
     'ng':       glyph_ng,
     'cht':      glyph_cht,
     'st':       glyph_st,
@@ -986,10 +995,7 @@ glyphs = {
     'pf':       glyph_pf,
     'nt':       glyph_nd,
     'nk':       glyph_ng,
-    'th':       glyph_th,
-    'tsch':     glyph_tsch,
-    'q':        glyph_qu,
-    'c': glyph_c,  # Vokalzeichen
+     'c': glyph_c,  # Vokalzeichen
     'en': glyph_en,
     'nn': glyph_n_weit,
     'dd': glyph_d_weit,
@@ -1008,8 +1014,7 @@ glyphs = {
     '@2':   glyph_schleife_1stuf_geg_uzs,
     'r*': glyph_r_var,
     'rr': glyph_r_weit,
-    'ent':      glyph_ent,     # "ent"
-    'los':      glyph_los,     # "los"
+     'los':      glyph_los,     # "los"
     '.': glyph_punkt,
     '-': glyph_waagr_strich,
     '_': lambda dx, dy: (0, [(0, 0), (0, 0)]),  # Startpunkt normaler Anstrich
