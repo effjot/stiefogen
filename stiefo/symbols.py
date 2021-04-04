@@ -45,7 +45,7 @@ vokal_formen = {
     'oi': (2, 2, du),
     '/': (1, 2, de - 0.2),  # Aufstriche (be, auf, un)
     '//': (2, 2, du - 0.4),
-    '|': (None, None, None)  # belieber horiz. Abstand  TODO: vielleicht auch vert.?
+    '|': (None, None, None)  # beliebiger horiz. Abstand  TODO: vielleicht auch vert.?
 }
 
 
@@ -85,6 +85,9 @@ praefix_formen = {
 }
 
 
+
+#FIXME: System Vor-/Nachsilben, Kürzel überarbeiten. Bsp.: -voll-, -ver- im Wort nicht möglich
+
 """Klartext-Vorsilben in Präfix-Formen / versetzte Konsonanten übersetzen"""
 vorsilben_AS1 = {
     'dis': '1d', 'da': '3d', 'dar': '3d |0.75',  # 2. Lernabschnitt
@@ -113,7 +116,7 @@ vorsilben_AS2 = {
     'selb': '2@2', 'sonst': '1@2', 'stat': '3@2',  # 7. Lernabschnitt
     'deutsch': '4dd |0',  # 9. Lernabschnitt
     'euro': '4rr |0',  # 10. Lernabschnitt
-    'voll': '2-- @^*00 i',  # 11. Lernabschnitt
+    'voll': '2-- @^*00 i', 'los': '@00 o',  # 11. Lernabschnitt
     'in': '1-', 'inter': '1-', 'trans': '3-',
     'pro': '1--', 'bei': '3--',
     'be': '0/', 'un': '0d /', 'darauf': '0d //',
@@ -126,7 +129,8 @@ nachsilben_AS2 = {
     'ander': '3@^00',  # 3. Lernabschnitt
     'möglich': '4@*0', 'möglichkeit': '4@*0 keit',  # 4. Lernabschnitt
     'voll': 'u @^*00',  # 11. Lernabschnitt
-    'bar': '{a0 r}(-0.5,0)',  # aber für viele Wörter Anpassung a/a0 und Versatz nötig
+    'los': '|0.25 @^00 o',
+    'bar': '{a0 r}(-0.5,0)',  # aber für viele Wörter Anpassung a/a0 und Versatz nötig!
     'barkeit': '{a0 r keit}(-0.5,0)',  # (Belegstelle erst in Text 18)
     'gleich': 'ch4',  # 27. Lernabschnitt
     'rechn': 'ch3',  # Anhang
@@ -153,7 +157,7 @@ kuerzel_AS1 = {
     'wurd': '2c u', 'word': '1c u', 'geword': '1c u',
     'es': '+2-', 'sie': '-2-',  # 7. Lernabschnitt
     'aus': '++2--', 'so': '--2--',
-    'endlich': '2@*0',  # 8. Lernabschnitt
+    'endlich': '2@*0', 'für': '1@0',  # 8. Lernabschnitt
     'durch': '2dd', 'doch': '1dd',  # 9. Lernabschnitt
     'uns': '2nn', 'noch': '1nn',
     'in': 'i n',  # Wort „in“ wird normal geschrieben, waagr. Strich nur für Vorsilbe
@@ -173,8 +177,12 @@ kuerzel_AS2 = {
     'nur': '2rr', 'oder': '1rr', 'europa': '4rr',  # 10. Lernabschnitt
     'deutschland': '4dd |0.1 nd',
     'voll': '2-- @^*00',  # 11. Lernabschnitt
+    'lebhaft': 'l e b {a}(-0.4,0)',
+    'einfach': 'ein {a0}(0,-0.25)', 'mehrfach': 'm {a}(-0.4,0) r',
+    'ebenfalls': 'e {a s} b',
     'prüfbar': 'p ü f {a r}(-0.25,0)', 'nachprüfbar': 'nach p ü f {a r}(-0.25,0)',
     'dankbar': 'd a nk {a r}(0,0)',
+    'nachbar': '+3@0 {a0 r}(0.4,-0.25)', 'nachbarschaft': '+3@0 {a0 r schaft}(0.4,-0.25)',
     'mittelbar': '1l {A r}(-0.1,0)', 'unmittelbar': 'un 1l {A r}(-0.1,0)',  # (Belegstelle "unmittelbar" erst in Text 12)
     'unendlich': 'un 2@*0', 'unendlichkeit': 'uen 2@*0 keit',  # (kein Beleg; Ergänzung FJ)
     'muss': 'mm', 'musst': 'mm*',  # 14. Lernabschnitt
@@ -185,15 +193,7 @@ kuerzel_AS2 = {
     'pro': '2--', 'bei': '4--',
     'darauf': '0d //',
     'hätte': '2t', 'hatte': '3t', 'heute': '4t',
-    'für': '1@0',
-    'lebhaft': 'l e b {a}(-0.4,0)',
-    'gewissenhaft': 'ge w i {a0}(-0.3,0) s',
-    'einfach': 'ein {a0}(0,-0.25)', 'mehrfach': 'm {a}(-0.4,0) r',
-    'ebenfalls': 'e {a s} b',
-    'nachbar': '+3@0 {a0 r}(0.4,-0.25)',
-    'nachbarschaft': '+3@0 {a0 r schaft}(0.4,-0.25)',
-
-    'nachvollziehbar': 'nach u @^*00 i z i bar'  # TODO: in Materialien?
+    'gewissenhaft': 'ge w i {a0}(-0.3,0) s', 'nachvollziehbar': 'nach u @^*00 i z i bar'  # keine Belegstellen
 }
 
 
@@ -258,14 +258,15 @@ def shiftToPos(g, dx, dy, s = slant):
 
 def rotate_ccw(g, r):
     """ Punkte imt Pfad/Glyph g um r (Radians) gegen den Uhrzeigersinn rotieren"""
-    return [(x*math.cos(r) - y*math.sin(r), y*math.cos(r) + x*math.sin(r)) for (x, y) in g]
+    return [(x * math.cos(r) - y * math.sin(r), y * math.cos(r) + x * math.sin(r))
+            for (x, y) in g]
 
 
 ### Teilelemente der Glyphen
 ### bei obenSpitz und untenSpitz erläutern Kommentare das Prinzip der Bezier-Punkte
 
 def ist_vokal_waagr_strich(dl):
-    """Waagerechter Strich anhand Vokaltupel erkennen"""
+    """Waagerechten Strich anhand Vokaltupel erkennen"""
     dx, dy, ea = dl
     return (dy == 0 and ea < 0)
 
@@ -443,7 +444,7 @@ def glyph_r(dl, dr):
 
 
 def glyph_r_var(dl, dr):
-    """flaches R / „Welle“"""
+    """flaches R / „Tilde“"""
     b = [(0, -0.1)] * 2 if not dl else []
     m = welle_auf(dl, dr)
     e = [(1, 0.1)] * 2 if not dr else []
@@ -608,7 +609,7 @@ def glyph_f_2stuf(dl, dr):
     sx = 1.5
     sy = 2
     w, m = glyph_f(dl, dr)
-    return (w*sx, scale(m, sx, sy))
+    return (w * sx, scale(m, sx, sy))
 
 
 def glyph_pf(dl, dr):
@@ -639,7 +640,7 @@ def glyph_k_2stuf(dl, dr):
     sx = 1.5
     sy = 2
     w, m = glyph_k(dl, dr, runder=False)
-    return (w*sx, scale(m, sx, sy))
+    return (w * sx, scale(m, sx, sy))
 
 
 def glyph_cht(dl, dr):
@@ -716,7 +717,7 @@ def glyph_ch(dl, dr):
 def glyph_ch_halbstuf(dl, dr):
     sx = 1
     sy = 0.5
-    w, m = glyph_ch(dl,dr)
+    w, m = glyph_ch(dl, dr)
     m = scale(m, sx, sy, s=+slant/2)
     m = shift(m, -0.2, 0)
     return (w * sx, m)
@@ -886,18 +887,10 @@ def glyph_ent(dl, dr):
     return (0.41, scale([(0, 0)]*2 + shift(b + m + e, 0.8), 0.5, 0.5))
 
 
-def glyph_los(dl, dr):  # FIXME: ist Symbol für voll
-    l = 1.5
-    b = [(0, 0)]*2 if not dl else []
-    m = [(l, 0)]*2 + shift(scale(kreis_ab(dl, dr), 0.2, 0.2), l)
-    e = [(l, 0)] if dr else []
-    return [l, (b + m + e)]
-
-
 def glyph_sonder(dl, dr):
     l = 1.8
     m = scale(kreis_auf(dl, dr), 0.4, 0.4)
-    b = [(0, 0)] if not dl else [m[0]]*2
+    b = [(0, 0)] if not dl else [m[0]] * 2
     e = [(0, 0), (l, 0), (l, 0)] if not dr else [(l, 0)]
     return [l, (b + m + e)]
 
@@ -987,7 +980,7 @@ glyphs = {
     'ch4': glyph_ch_2stuf,
     'nd': glyph_nd,
     'tsch': glyph_tsch,  # halbstufiges ND
-    'ent': glyph_ent, # halbstufiges ND mit Anstrich
+    'ent': glyph_ent,  # halbstufiges ND mit Anstrich
     'ng':       glyph_ng,
     'cht':      glyph_cht,
     'st':       glyph_st,
@@ -995,10 +988,11 @@ glyphs = {
     'pf':       glyph_pf,
     'nt':       glyph_nd,
     'nk':       glyph_ng,
-     'c': glyph_c,  # Vokalzeichen
+    'c': glyph_c,  # Vokalzeichen
     'en': glyph_en,
     'nn': glyph_n_weit,
     'dd': glyph_d_weit,
+    #FIXME: unterschiedliche Symbole für Scheife UZS, GUZS (@ und O?)
     '@0': glyph_punktschleife_geg_uzs,
     '@': glyph_punktschleife_geg_uzs,  # Abkürzung
     '@00': lambda dl, dr: glyph_punktschleife_geg_uzs(dl, dr, schmal = True),
@@ -1014,7 +1008,6 @@ glyphs = {
     '@2':   glyph_schleife_1stuf_geg_uzs,
     'r*': glyph_r_var,
     'rr': glyph_r_weit,
-     'los':      glyph_los,     # "los"
     '.': glyph_punkt,
     '-': glyph_waagr_strich,
     '_': lambda dx, dy: (0, [(0, 0), (0, 0)]),  # Startpunkt normaler Anstrich
