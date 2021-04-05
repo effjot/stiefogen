@@ -45,6 +45,10 @@ Codes sind alle klein geschrieben.
 (TODO: Unterscheidung nd/nt, f/v usw. durch Strich darüber könnte bei
 Bedarf implementiert werden)
 
+(TODO: Codes für die 3-stufigen frei wählbaren Kürzel? z.B. mit
+Großbuchstaben für 3-stufige Version der ganzstufigen Konsonanten und
+C+Symbol für 3-stufige Version der halbstufigen Konsonanten)
+
 
 ### Vokale
 
@@ -89,6 +93,132 @@ Vokal-Varianten:
 * `u n d a nk` = Undank (Trennung von `n` und `d`!)
 * `n a cht` = Nacht
 * `n a ch t ei l` = Nachteil (Trennung von `ch` und `t`!)
+
+
+## Codierung der Aufbauschrift
+
+### Konsonantensymbole
+
+Folgende Symbole für Konsonanten und Kürzel kommen hinzu:
+
+* `chen` (halbstufiges CH)
+* `qu` (halbstufiges F)
+* `schw` (halbstufiges SCH)
+* `th` (halbstufiges H)
+* `tsch` (halbstufiges ND)
+* `x` (halbstufiges K)
+* `zw` (halbstufiges Z)
+* `.` Punkt
+* `@` Schleife gegen Uhrzeigersinn (UZS)
+* `@*` Schleife im Uhrzeigersinn (FIXME: besseres Codezeichen finden)
+
+### vertikaler Versatz und Größe von Konsonantensymbolen
+
+Konsonantensymbole können vertikal verschoben und in unterschiedlichen
+Größen gezeichnet werden.  Dazu wird vor dem Konsonant eine Zahl für
+den vertikale Versatz und nach dem Konsonant eine Zahl für die Größe
+gesetzt.  Versatz und Größe werden in Halbstufen gezählt.  Um negative
+Zahlen beim Versatz zur vermeiden, beginnt die Skala mit 0 für einen Versatz um 2
+Halbstufen nach unten.  Folgende Versätze sind damit möglich:
+
+* 0: ganze Stufe tiefer (z.B. Startpunkt der Vorsilben auf-, be-, un-)
+* 1: halbe Stufe tiefer (i)
+* 2: kein Versatz (e)
+* 3: halbe Stufe höher (a)
+* 4: ganze Stufe höher (ö)
+
+Lässt man den Versatz weg, wird der Konsonant nicht vertikal
+verschoben (Versatz = 2).
+
+Der vertikale Versatz kann mit vorangestelltem `+` und `-`
+feinjustiert werden (in Schritten von Achtelstufen: `y_smallstep` in
+symbols.py):
+
+* `--`: Viertelstufe tiefer
+* `-`: Achtelstufe tiefer
+* `+`: Achtelstufe höher
+* `++`: Viertelstufe höher
+
+(FIXME: nachgestellte Symbole oder Versatz mit Komma wären wohl
+eleganter)
+
+
+Gültige Größenangaben sind:
+
+* 0 (bei Schleifen): Punktschleife
+* 1: halbstufig
+* 2: ganzstufig
+* 3: 1,5-stufig (selten, Aufbauschrift-2-Kürzel für Büro, -rechn-)
+* 4: zweistufig (Aufbauschrift-2-Kürzel)
+* 6: dreistufig (vom Nutzer frei definierbare Kürzel; in den
+  Studienmaterialien bereits am Ende der Grundschrift eingeführt)
+  (TODO: noch nicht implementiert)
+
+Lässt man die Größenangabe weg, wird die Normalgröße des Konsonanten
+verwendet (2 für ganzstufige, 1 für halbstufige Zeichen).
+
+Bei Punkten gibt es keine Größe.
+
+
+Beispiele:
+
+* `1t` = T in i-Position = ist
+* `3t` = T in a-Position = hatte
+* `k4` = 2-stufiges K in Grundstellung = klein
+* `1k4` = 2-stufiges K in i-Position = rück
+* `k1` = halbstufiges K = x
+* `ei g m4` = Eigentum (2-stufiges M = -tum)
+* `ei g 1m4 e r` = Eigentümer (2-stufiges M, halbe Stufe tiefer =
+  -tüm)
+* `.` = Punkt auf Grundlinie = der
+* `+2.` = Punkt Viertelstufe über der Grundlinie = der, aber besser zu erkennen
+* `@*0` = Punktschleife im UZS = endlich
+* `1@0` = Punktschleife gegen UZS in i-Position = für
+* `@1` = halbstufige Schleife gegen UZS auf Grundlinie = gegen
+* `3@2` = ganzstufige Schleife gegen UZS in a-Position = statt
+
+
+### Konsonant-Varianten
+
+„Breite“ Varianten einiger Konsonanten werden durch Verdopplung
+gekennzeichnet:
+
+* `dd` = „breites D“ (oder oben offener weiter Bogen) = durch
+* `nn` = „breites N“ (oder unten offener weiter Bogen) = uns
+* `rr` = „breites R“ (weite Welle) = nur
+* `mm` = „breites M“ (nach links vorgezogener Anstrich) = muss
+
+
+Mit nachgestelltem `*` erhält man Schreibvarianten von einigen
+Konsonantzeichen:
+
+* `h*`, `m*`, `s*`: betonte Fußschleife, z.B. für Herr, mehr, sicher
+  (FIXME: „h0“ vs „h*“ noch nicht zufriedenstellend gelöst)
+* `mm*` = breites M mit betonter Fußschleife = musst
+* `w*`, `w*4`: W mit eingerolltem Fuß (in „offizieller“ Aufbauschrift
+  nur `w*4` = während)
+* `w**4` = wärts (unten spitze Variante des 2-stufigen W)
+* `r*` = „flaches R“ (Tilde) = ungefähr
+* `d*` = d mit schmaler Verbindung, wird nur intern verwendet für
+  Kürzel „dich“
+
+
+Verbesserte Darstellung von Zeichen mit E-Anstrich:
+
+* `en` = N mit Anstrich = schmaler Bogen für den, nicht, man (Anstrich
+  ist etwas kürzer als normales E, damit der Bogen halbkreisförmig
+  wird)
+* `ent` = halbstufiges ND mit Anstrich für ent- (Anstrich ist etwas
+  kürzer als normales E)
+
+
+### Symbole für Vokale, Vor- und Nachsilben
+
+
+### Durchstreichungen
+
+
+### Beispiele für Wörter in Aufbauschrift
 
 
 ## Texte in Stiefocode
@@ -137,18 +267,14 @@ wahrscheinlich besser als Pixel.
 
 Folgende Satzzeichen stehen als Codes zur Verfügung:
 
-* `.` markiert Satzende durch ein Kreuzchen
-* `,` keine grafische Darstellung
+* `..` markiert Satzende durch ein Kreuzchen und `spc2`-Abstand
+* `,` keine grafische Darstellung, `spc2`-Abstand einfügen
 
-Ein Komma wird in Stiefo üblicherweise durch den `spc2`-Abstand
-dargestellt. Der Parser für Klartext-Dateien übersetzt Kommas
-entsprechend in den Stiefocode `,  spc2` und Punkte in `.  spc2`.
-
-Hinweis: Die Stiefo-Materialien stellen den Punkt durch den
+Hinweis: Die Stiefo-Materialien stellen den Punkt nur durch den
 längeren `spc1`-Abstand dar.
 
 FIXME: Symboldarstellung und Abstände sollten konfigurierbar sein (in
-symbols.py und render.py, nicht in parse.py).
+symbols.py und render.py)
 
 
 Weitere Satzzeichen sind nicht Teil des Stiefocodes, sondern werden

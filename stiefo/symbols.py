@@ -944,7 +944,7 @@ glyphs = {
     'qu': glyph_qu,  # halbstufiges F
     'g': glyph_g,
     'h': glyph_h,
-    'h*': lambda dl, dr: glyph_h(dl, dr, runder=False),  # war h0
+    'h*': lambda dl, dr: glyph_h(dl, dr, runder=False),  # war h0  FIXME: anderen Code finden, damit h* betonte Fußschleife analog m*, s*
     'th': glyph_th,  # halbstufiges H
     'j': glyph_j,
     'j4': glyph_j_2stuf,
@@ -982,6 +982,7 @@ glyphs = {
     'ch4': glyph_ch_2stuf,
     'nd': glyph_nd,
     'tsch': glyph_tsch,  # halbstufiges ND
+    'nd1': glyph_tsch,
     'ent': glyph_ent,  # halbstufiges ND mit Anstrich
     'ng':       glyph_ng,
     'cht':      glyph_cht,

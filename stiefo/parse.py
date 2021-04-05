@@ -180,8 +180,8 @@ def convert_text(text, wordlists):
     :return: a tuple (stiefo_text, unknown_words)
     """
     pct = {
-        '.': ['.', 'spc2'],
-        ',': [',', 'spc2'],
+        '.': ['.', 'spc2'],  # FIXME: Punkt jetzt .., Abstand in render.py
+        ',': [',', 'spc2'],  # FIXME: Abstand jetzt in render.py
         '<br>': '§',
 
         '!': ['~!', 'spc2'],
