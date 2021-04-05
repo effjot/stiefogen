@@ -442,7 +442,7 @@ def SplitStiefoWord(st):
             w.append('c')
         if pz in ('i', 'ü') and z in ('b', 'f', 'k', 'm', 'p', 'r', 'z',
                                       'cht', 'ng', 'nk', 'st'):
-            w[-1] = 'I'
+            w[-1] = 'I'  #FIXME: k/f/r/w/etc I nd vs. m/s i nd
         if pz in ('i', 'ü') and z in ('ch'):  # evtl. 'sp'
             w[-1] = 'ii'
         w.append(z)

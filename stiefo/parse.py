@@ -174,7 +174,7 @@ def convert_text(text, wordlists):
         '?,': ['~?', ',', 'spc2'],
     }
 
-    quotes = ['"', "'", '«', '‹', '<', '>', '›', '»']
+    quotes = ['"', "'", '«', '‹', '<', '>', '›', '»', '„', '“']
     for ch in quotes:
         pct['.'+ch] = ['.', '~'+ch, 'spc2']
         pct[','+ch] = ['~'+ch, ',', 'spc2']
@@ -201,7 +201,6 @@ def convert_text(text, wordlists):
             lst.append(x)
         else:
             lst.extend(x)
-
 
     def convert_blk(blk):
         text = blk.replace('\n', ' <br> ')  # Zeilenenden erhalten
@@ -269,7 +268,6 @@ def convert_text(text, wordlists):
     return words, unknown
 
 
-
 def list_to_text(l):
     lines = []
     line = ""
@@ -278,7 +276,7 @@ def list_to_text(l):
             lines.append(line)
             line = ""
         if line:
-            line += " \u00A0 "
+            line += " \u00A0 "  # space, no-break-space, space
         line += w
         if w == "§":
             lines.append(line)
@@ -288,9 +286,11 @@ def list_to_text(l):
     return "\n".join(lines)
 
 
-
 def text_to_list(txt):
-    return re.split(' \u00A0 |\n|  +| *\\| *', txt)
+    """Split string into list of Stiefo codes for single words and interpunction.
+       Words/interpunction are separated by at least 2 spaces (incl. no-break-spaces),
+       a newline, or 1 or more spaces followed by a backslash."""
+    return re.split(r'[\u00A0 ]{2,}|\n| *\\', txt)
 
 
 # -----------------------------------------------

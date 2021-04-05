@@ -29,9 +29,9 @@ def render_screen(words):
 
 class print_renderer:
     def __init__(self, printer, painter):
-        self.h = stiefoHeightPrint
         self.printer = printer
         self.painter = painter
+        self.h = stiefoHeightPrint  # base unit of vertical and horizontal space
         self.pageRect = printer.pageRect(QtPrintSupport.QPrinter.DevicePixel)
         self.x0 = int(self.pageRect.left())
         self.y0 = int(self.pageRect.top() + 3 * self.h)
@@ -92,7 +92,7 @@ class print_renderer:
         self.px = self.px + 0.5*self.h
 
     def draw_curve(self, crv):
-        for w,c,_ in crv:
+        for w, c, _ in crv:
             cc = [(self.px + x * self.sx, self.py - y * self.sy) for x, y in c]
             pp = QtGui.QPainterPath()
             pp.moveTo(*cc[0])
@@ -108,29 +108,35 @@ class print_renderer:
     def advance(self, d):
         self.px = self.px + d
 
-    # render items are tuples:  (cmd, width, data)
-    # cmd:
-    #      ('text', width, literal text)
-    #      ('curve', width, stiefo curve points)
-    #      ('space', width, None)
-    #      ('period', width, None)
-    #      ('line', 0, None)   line break
-    #      ('page', 0, None)   page break
+    # render items are tuples:  (command_code, width_pixels, data, line_breaking)
+    # commands:
+    #      ('text', width, literal text)   render in normal font
+    #      ('curve', width, curve points)  render as Stiefo outlines
+    #      ('space', width, None)          horizontal space
+    #      ('period', width, None)         period (full stop) mark
+    #      ('line', 0, None)               line break
+    #      ('page', 0, None)               page break
+    # line_breaking:
+    #      0   normal line breaking: new line before and after this command allowed
+    #      -1  no line break between this and previous command (e.g. interpunction)
+    #      +1  no line break between this and next command (opening quotes)
+
     def prepare(self, words):
+        """Build list of render commands from Stiefo-Code words"""
+        short = 100  # FIXME use symbol widths instead of pixels
         res = []
         for word in words:
-            short = 100
-            if word.startswith('~~'):
+            if word.startswith('~~'):  # literal text, esp. for opening quotes
                 word = word[2:]
                 w = self.measure_str(word)
-                if (w < short):
+                if (w < short):  # keep short text, i.e. quotes, connected to next word
                     res.append(('text', w, word, +1))
                 else:
                     res.append(('text', w, word, 0))
-            elif word.startswith('~'):
+            elif word.startswith('~'):  # literal text elsewhere, including after word
                 word = word[1:]
                 w = self.measure_str(word)
-                if (w < short):
+                if (w < short):  # keep short text (closing quotes, interpunction) connected to previous word
                     res.append(('text', w, word, -1))
                 else:
                     res.append(('text', w, word, 0))
@@ -152,19 +158,20 @@ class print_renderer:
                     w = 0
                     for dw, _, _ in crv:
                         w += dw
-                    res.append(('curve', w*self.sx, crv, 0))
+                    res.append(('curve', w * self.sx, crv, 0))
 
+        ## redistribute widths (required space) for protecting against line breaking
         spcreq = [w for _, w, _, _ in res]
         d = 0
         for i in range(len(res) - 1, -1, -1):
-            _, w, _, z = res[i]
-            if z == 0:
+            _, w, _, line_breaking = res[i]
+            if line_breaking == 0:
                 spcreq[i] += d
                 d = 0
-            elif z == -1:
+            elif line_breaking == -1:
                 spcreq[i] += d
-                d += w
-            elif z == 1:
+                d += w  # add this command's width to previous command space requirement
+            elif line_breaking == 1:
                 spcreq[i] += spcreq[i + 1]
                 d = 0
 
@@ -172,22 +179,26 @@ class print_renderer:
         return res
 
     def render(self, cmds):
-        flag = False
-        for cmd, w, data, spc in cmds:
-            if (cmd == 'curve' or cmd == 'period') and flag:
-                if self.px > self.x0: self.advance(self.h*0.5)
+        """Process render commands in list cmds"""
+        after_curve = False
+        for cmd, w, data, spcreq in cmds:
+            ## Put horizontal space between curves (Stiefo outlines)
+            if (cmd == 'curve' or cmd == 'period') and after_curve:
+                if self.px > self.x0: self.advance(self.h * 0.5)
 
-            if self.px + spc + 3*self.h > self.x1:
+            ## Line breaks if command doesn't fit on line, based on space required to
+            ## keep commands with line_breaking != 0 connected
+            if self.px + spcreq + 3*self.h > self.x1:
                 if cmd != 'period': self.line_break()
             if self.py > self.y1:
                 self.new_page()
 
-            flag = False
+            after_curve = False
             if cmd == 'text':
                 self.draw_text(data)
             elif cmd == 'curve':
                 self.draw_curve(data)
-                flag = True
+                after_curve = True
             elif cmd == 'space':
                 if self.px > self.x0: self.advance(w)
             elif cmd == 'period':
