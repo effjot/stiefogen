@@ -43,9 +43,11 @@ vokal_formen = {
     'ei': (2, 1, du),
     'eu': (2, 2, du),
     'oi': (2, 2, du),
-    '/': (1, 2, de - 0.2),  # Aufstriche (be, auf, un)
+    '/': (1, 2, de - 0.2),  # Aufstriche (be, auf, un), Aufbauschrift 1 und 2
     '//': (2, 2, du - 0.4),
-    '|': (None, None, None)  # beliebiger horiz. Abstand  TODO: vielleicht auch vert.?
+    '|': (None, None, de)  # beliebiger horizontaler Abstand; wenn keine Zahl angegeben,
+                           # dann halbweiter Abstand (beliebiger vert. Abstand kann
+                           # durch Positionierung Konsonant erreicht werden)
 }
 
 
@@ -165,7 +167,7 @@ kuerzel_AS1 = {
 
 
 kuerzel_AS2 = {
-    'auch': '2@^0', 'ich': '1@^0', 'ander': '3@^0', 'dich': '1d* | @^00',  # 3. Lernabschnitt
+    'auch': '2@^0', 'ich': '1@^0', 'ander': '3@^0', 'dich': '1d* |0 @^00',  # 3. Lernabschnitt
     'möglich': '4@*0', 'möglichkeit': '4@*0 keit',  # 4. Lernabschnitt
     'nämlich': 'n e@ @*0', 'natürlich': 'n |0.25 ++3@*0', 'namentlich': '3en e@ @*0',
     'sonder': '2@1 o', 'sonderlich': '2@1 u @^*00',  # 6. Lernabschnitt
@@ -1151,7 +1153,7 @@ def SplitStiefoWord(st):
             if l[0] != '|':
                 x.append(vokal_formen[l])
             else:
-                stretch = float(l[1:]) if len(l) > 1 else 0
+                stretch = float(l[1:]) if len(l) > 1 else vokal_formen['|'][2]
                 x.append((stretch, 0, stretch))
             k = False
         elif l in praefix_formen:
