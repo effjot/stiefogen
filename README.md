@@ -1,14 +1,20 @@
 # stiefogen – ein Stiefo-Generator
 
-Python-Programm, das mithilfe von PyQT5 Textdateien in
-Stiefo-Grundschrift als PDF übersetzt.
+Python-Programm, das mithilfe von PyQt5 Textdateien in
+Stiefo-Grundschrift als PDF oder auf dem Bildschirm übersetzt.
 
 Entwickelt von Andreas Hofer, mit Beiträgen von [Andreas Martin](https://github.com/AndreasMartin72) und [Florian Jenn](https://github.com/effjot)
+
+Hinweis: Wer nur an der Grundschrift interessiert ist, bitte den
+Branch `grundschrift` verfolgen, dort wird zur Zeit auch die
+Dokumentation überarbeitet.  Im Branch `aufbauschrift-2` wird die
+Umsetzung der Aufbauschrift 2 verbessert, ist aber noch nicht
+abgeschlossen.
 
 
 ## Kurze Anleitung
 
-Benötigt: python3 und pyqt5
+Benötigt: Python3 und PyQt5
 
 Das Programm bietet 2 Modi:
 
@@ -31,8 +37,8 @@ unbekannten Wörter werden als Ergebnis mit zurückgegeben und sollten
 
 ## nächste Ziele
 
- * Aufbauschrift
- * von PyQt4 auf PyQt5 umstellen
+ * Dokumentation verbessern/erweitern
+ * Aufbauschrift überarbeiten
  * Ausgabe als SVG?
 
 
@@ -50,6 +56,14 @@ Ein/Ausgabe in Datein.
 
 # stiefogen – a Stiefo shorthand generator
 
-Python program that uses PyQT5 to transcribe plain text into Stiefo Grundschrift (as PDF).
+Python program that uses PyQt5 to transcribe plain text into Stiefo
+Grundschrift (as PDF or on screen).
 
 Developed by Andreas Hofer, with additions by Andreas Martin [Andreas Martin](https://github.com/AndreasMartin72) and [Florian Jenn](https://github.com/effjot)
+
+Please note: if you are only interested in “Grundschrift” (basic
+level), please have a look at branch `grundschrift`, where
+documentation is currently being improved.  Branch `aufbauschrift-2`
+is a rework/update of “Aufbauschrift 2” (advanced level 2), but not
+yet finished.
+
