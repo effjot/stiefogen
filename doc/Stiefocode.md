@@ -97,6 +97,7 @@ Stiefocode für einzelne Wörter kann zu Texten kombiniert werden,
 indem man sie mit mind. 2 Leerzeichen oder geschützte Leerzeichen
 (non-break-space, Unicode 0x00a0) voneinander trennt.
 
+
 ### wörtliche Texte in Langschrift
 
 Mit `~` können beliebige Texte in Langschrift eingefügt werden.
@@ -141,7 +142,7 @@ Folgende Satzzeichen stehen als Codes zur Verfügung:
 
 Ein Komma wird in Stiefo üblicherweise durch den `spc2`-Abstand
 dargestellt. Der Parser für Klartext-Dateien übersetzt Kommas
-entsprechend in den Stiefocode `,  spc2` und Punkte in `.  spc2`.
+entsprechend in den Stiefocode `,  spc2` und Punkte in `.  spc2`.
 
 Hinweis: Die Stiefo-Materialien stellen den Punkt durch den
 längeren `spc1`-Abstand dar.
@@ -153,9 +154,9 @@ symbols.py und render.py, nicht in parse.py).
 Weitere Satzzeichen sind nicht Teil des Stiefocodes, sondern werden
 vom Parser folgendermaßen in Stiefocode umgesetzt:
 
-* ? → `~?  spc2`
-* ! → `~!  spc2`
-* : → `~:  spc2`
-* ; → `~;  spc2`
+* ? → `~?  spc2`
+* ! → `~!  spc2`
+* : → `~:  spc2`
+* ; → `~;  spc2`
 * öffnendes Anführungszeichen („ » « › ‹ " ') → `~~„`
 * schließendes Anführungszeichen (“ » « › ‹ " ') → `~“`
