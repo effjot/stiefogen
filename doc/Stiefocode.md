@@ -78,7 +78,7 @@ Vokal-Varianten:
   `r`, `z`, `cht`, `ng`, `nk`, `st` sowie am Wortanfang und Wortende
   automatisch gesetzt; kann bei bestimmten Verbindungen mit `nd`
   (z.B. Wind, Kind) sinnvoll sein
-* `ii` für etwas engere Verbindung; wird bei `ch` automatisch gesetzt;
+* `i0` für etwas engere Verbindung; wird bei `ch` automatisch gesetzt;
   kann auch bei `sp` ggf. sinnvoll sein
 
 
@@ -212,13 +212,120 @@ Verbesserte Darstellung von Zeichen mit E-Anstrich:
   kürzer als normales E)
 
 
-### Symbole für Vokale, Vor- und Nachsilben
+### Symbole für Vokale und Vorsilben
+
+Die normalen Vokale werden um Varianten mit angepasstem Abstand für
+bestimmte Situationen ergänzt:
+
+* `a0` schmaler/steiler, für Nachsilben _-schaft_, _-bar_, _-fach_,
+  _-haft_
+* `A` breiter/flacher, z.B. für _mittelbar_
+* `e0` schmaler, für _aber_, _über_, Vorsilben _er_/_mit_/_an_
+* `e@` sehr schmale Verbindung, um Punktschleife (_-lich_) anzuhängen
+* `/`, `//` sind technisch zwar Vokale, dienen aber zur Darstellung von
+  Vorsilben mit Aufstrich, s.u.
+
+Zur sauberen Darstellung bestimmter Verbindungen kann mit `|` eine
+beliebig weite Verbindung eingefügt werden. Die Weite wird durch eine
+direkt an `|` anschließende Zahl (mit Dezimal_punkt_) angegeben.  Ohne
+Zahl wird ein E-Abstand verwendet.  Beispiele: `j |0 1dd` = jedoch,
+`4dd |0.1 nd` = Deutschland.
+
+
+Es gibt drei Arten von durch Anstriche dergestellen Vorsilben:
+
+* `_` = normaler Anstrich: beginnt auf Linie (Höhe Fußpunkt folgender
+  Konsonant), steigt zum Kopf des Konsonanten an
+* `-` = waagerechter Anstrich: beginnt auf Höhe Kopf des folgenden
+  Konsonanten, verläuft waagerecht zum Kopf des Konsonanten
+* `/` = Aufstrich, beginnt 1 Stufe unterhalb der Linie, für _auf_,
+  _be-_, _un-_; darf auch im Wort verwendet werden
+
+Durch Verdoppelung erhält man die weiten Varianten.
+
+Die Höhe _muss_ durch eine vorangestellte Zahl angegeben werden.  Die
+Skala ist die gleiche wie beim vertikalen Versatz von Konsonanten.
+
+Beispiele:
+
+* `2__ g e b` = zugeben
+* `1- p o t` = Import
+* `0//` = auf
+* `0d /` = un-
 
 
 ### Durchstreichungen
 
+Einige Nachsilben werden mit Durchstreichung dargestellt.  Dazu können
+beliebige Stiefocodes (außer weitere Durchstreichung) in geschweifte
+Klammern gesetzt werden, um die Durchstreichung zu schreiben:
 
-### Beispiele für Wörter in Aufbauschrift
+* `m {a}` = mehrfach
+* `e {a s} b` = ebenfalls
+* `g au {a0} b` = glaubhaft
+
+Der Stiefogenerator erkennt, ob ein Vokal oder Konsonant vorausgeht
+und setzt Durchstreichungen von Vokalen in die Mitte der Verbindung
+und Durchstreichungen von Konsonanten auf den Konsonanten.  Oft ist
+es aber notwendig, die Position auf die jeweiligen Buchstaben
+abzustimmen.  Dazu in runden Klammern den x- und y-Versatz (mit
+Dezimal_punkt_) getrennt durch Komma (keine Leerzeichen) angeben:
+
+* `l e b {a}(-0.4,0)` = lebhaft
+* `p ü f {a r keit}(-0.25,0)` = prüfbar
+
+Durchstreichungen lassen sich auch für Punktierungen (Unterscheidung
+e/ä, u/au in der Grundschrift) und Unter-/Überstreichungen verwenden:
+
+* `h au {--2.} s` = Haus (AU mit Punkt gekennzeichnet)
+* `r a nk {+4-} e n` = ranken (NK durch Überstreichung gekennzeichnet)
+
+
+### Vordefinierte Kürzel-Codes
+
+Damit man nicht immer die zum Teil recht unübersichtlichen Stiefocodes
+schreiben muss, sind die gängigen, in den Stiefomaterialen vorgestellten
+Kürzel in symbol.py als Codes definiert.
+
+Beispiele für Vorsilben:
+
+* `zu` = `2__`
+* `mit` = `1_`
+* `aus` = `2--`
+* `ver` = `2@0`
+* `über` = `1b`
+* `voll` = `2-- @^*00 i`
+
+Beispiele für Nachsilben:
+
+* `ung` = `u`
+* `ig` = `I`
+* `igkeit` = `ei`
+* `schaft` = `a0`
+* `lich` = `e0 @*0`
+* `los` = `|0.25 @^*00`
+* `schaftlich` = `|0.25 ++3@*0`
+
+Beispiele für Kürzel, die für ganze Wörter bzw. Wortstämme stehen:
+
+* `hab` = `3h`
+* `gehab` = `3- h`
+* `muss` = `mm`
+* `müsst` = `1mm*`
+* `oder` = `1rr`
+* `sonst` = `1@2`
+* `als` = `-4-` (waagr. Strich in A-Position, etwas tiefer gesetzt)
+
+Durchstreichungen brauchen oft einen fein abgestimmten Versatz, der
+nicht automatisch errechnet werden kann.  Darum sind hier viele Wörter
+vorformuliert, z.B.: 
+
+* `einfach` = `ein {a0}(0,-0.25)`
+* `bar` = `{a0 r}(-0.5,0)`
+* `dankbar` = `3ng {a r}(0.5,0)`
+* `unmittelbar` = `un 1l {|1.3 +3r}(-0.15,-0.25)` (das A beginnt etwas
+  tiefer, damit man die Durchstreichung besser erkennen kann)
+
 
 
 ## Texte in Stiefocode
