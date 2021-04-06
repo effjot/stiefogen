@@ -1149,6 +1149,7 @@ def SplitStiefoWord(st):
     x = []  # zerlegtes Wort
     k = False
     for l in w:
+        l_without_adj, l_adj = get_y_adjust(l)
         if l in vokal_formen or l[0] == '|':
             if not x:
                 x.append('_')  # Anstrich für Vokal am Wortanfang
@@ -1165,6 +1166,12 @@ def SplitStiefoWord(st):
             x.append(praefix_formen[l][2])  # Vokaltupel
             y_word_offset += praefix_formen[l][1] - y_baseline  # Vorsilbe bestimmt vert. Versatz
             k = False
+        elif l_without_adj in praefix_formen:  # FIXME: Behandlung vorangestelltes +/- (yadjust) verbessern (Code wiederholt)
+            assert not x, "Praefix nicht am Wortanfang! w={} l={} x={}".format(w, l, x)
+            x.append(praefix_formen[l_without_adj][0])  # Typ (Anstrich, waagr. Strich, Aufstrich)
+            x.append(praefix_formen[l_without_adj][2])  # Vokaltupel
+            y_word_offset += praefix_formen[l_without_adj][1] + l_adj - y_baseline  # Vorsilbe bestimmt vert. Versatz, zustätzl. Feinanpassung
+            k = False
         elif l == '!':
             x.append(l)
         else:
@@ -1173,7 +1180,7 @@ def SplitStiefoWord(st):
                 x.append((0, 0, dkv))
             x.append(l)
             k = True
-    if not k and l not in praefix_formen_allein_ohne_endezeichen:
+    if not k and (l not in praefix_formen_allein_ohne_endezeichen and l_without_adj not in  praefix_formen_allein_ohne_endezeichen):
         x.append('=')  # Wort endet mit Vokal
     return (x, y_word_offset, disjointed_code, disjointed_adjust)
 
