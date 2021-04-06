@@ -24,7 +24,6 @@ d_extra = 0.4  # Zuschlag für etwas weitere Verbindung für bestimmte Konsonant
 vokal_formen = {
     'e': (1, 0, de),
     'ä': (1, 0, de),
-    'ae': (1, 0, de),
     'e0': (1, 0, 0.5 * de),  # etwas schmaler, für aber, über, Vorsilben er/mit/an
     'e@': (0, 0, 0.05),  # für Verbindungen mit -lich (außer W-lich F-lich, usw.)
     'u': (2, 0, du),
@@ -95,7 +94,7 @@ vorsilben_AS1 = {
     'dis': '1d', 'da': '3d', 'dar': '3d |0.75',  # 2. Lernabschnitt
     'er': '2_', 'mit': '1_', 'an': '3_',  # 3. Lernabschnitt
     'zu': '2__', 'vor': '1__', 'ein': '3__',  # 4. Lernabschnitt
-    'unter': '2nd', 'über': '1nd',  # 6. Lernabschnitt
+    'unter': '2nd', 'über': '1b',  # 6. Lernabschnitt
     'ab': '3b',  # (Anleitung Selbststudium S. 10-1)
     'ge': '2-', 'aus': '2--',  # 7. Lernabschnitt
     'ver': '2@0', 'für': '1@0', 'nach': '3@0',  # 8. Lernabschnitt
@@ -183,9 +182,12 @@ kuerzel_AS2 = {
     'einfach': 'ein {a0}(0,-0.25)', 'mehrfach': 'm {a}(-0.4,0) r',
     'ebenfalls': 'e {a s} b',
     'prüfbar': 'p ü f {a r}(-0.25,0)', 'nachprüfbar': 'nach p ü f {a r}(-0.25,0)',
-    'dankbar': 'd a nk {a r}(0,0)',
+    'dankbar': '3ng {a r}(0.5,0)',  # im 11. Abschnitt noch 'd a nk {a r}(0,0)'
     'nachbar': '+3@0 {a0 r}(0.4,-0.25)', 'nachbarschaft': '+3@0 {a0 r schaft}(0.4,-0.25)',
-    'mittelbar': '1l {A r}(-0.1,0)', 'unmittelbar': 'un 1l {A r}(-0.1,0)',  # (Belegstelle "unmittelbar" erst in Text 12)
+    'mittelbar': 'mit l {A r}(-0.15,0)',
+    'unmittelbar': 'un 1l {|1.3 +3r}(-0.15,-0.25)',  # feinabgestimmt: A beginnt etwas tiefer,
+        # damit klarer erkennbar; einfacher: 'un 1l {A r}(-0.1,0)';
+        # Belegstelle "unmittelbar" erst in Text 12)
     'unendlich': 'un 2@*0', 'unendlichkeit': 'uen 2@*0 keit',  # (kein Beleg; Ergänzung FJ)
     'muss': 'mm', 'musst': 'mm*',  # 14. Lernabschnitt
     'müss': '1mm', 'müsst': '1mm*',
@@ -1246,6 +1248,9 @@ def stiefoWortZuKurve(w):
                 disjointed_outline_offset = (x - ea/2 if ea > 0 else x + ea/2, y)
             if i + 1 == i_disjointed:   # am Konsonant
                 disjointed_outline_offset = (x, y)
+                if not disjointed_adj:
+                    disjointed_adj = (-0.25,0)  # Standard-Versatz, damit Durchstreichung
+                                                # nicht direkt am Fußpunkt beginnt
 
         gs = shiftToPos(g, x, y, slant)  # Bezier-Punkte an die Stiftposition verschieben
         x += w  # Stift hinter Glyph setzen
