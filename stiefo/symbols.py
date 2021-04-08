@@ -152,7 +152,7 @@ kuerzel_AS1 = {
     'ist': '1t', 'von': '1f',
     'wir': '1w', 'hab': '3h', 'hast': '3h', 'hat': '3h', 'gehab': '3- h',
     'und': '2nd', 'sind': '1nd',  # 6. Lernabschnitt
-    'unter': '2nd e0', 'über': '1nd e0', 'aber': '3nd e0',
+    'unter': '2nd e0', 'über': '1b e0', 'aber': '3nd e0',
     'werd': '2c', 'wird': '1c', 'wirst': '1c', 'war': '3c',
     'würde': '1c e@',  # (Anleitung Selbststudium S. 10-1)
     'wurd': '2c u', 'word': '1c u', 'geword': '1c u',
@@ -186,14 +186,17 @@ kuerzel_AS2 = {
     'nachbar': '+3@0 {a0 r}(0.4,-0.25)', 'nachbarschaft': '+3@0 {a0 r schaft}(0.4,-0.25)',
     'mittelbar': 'mit l {A r}(-0.15,0)',
     'unmittelbar': 'un 1l {|1.3 +3r}(-0.15,-0.25)',  # feinabgestimmt: A beginnt etwas tiefer,
-        # damit klarer erkennbar; einfacher: 'un 1l {A r}(-0.1,0)';
+        # damit klarer erkennbar. Einfachere Variante: 'un 1l {A r}(-0.1,0)';
         # Belegstelle "unmittelbar" erst in Text 12)
     'unendlich': 'un 2@*0', 'unendlichkeit': 'uen 2@*0 keit',  # (kein Beleg; Ergänzung FJ)
     'muss': 'mm', 'musst': 'mm*',  # 14. Lernabschnitt
     'müss': '1mm', 'müsst': '1mm*',
+    'gut': '2g', 'groß': '1g', 'ganz': '3g', 'größ': '4g',  # 17. Lernabschnitt
+    'gütlich': '2g |0 @*', 'gänzlich': '3g |0 @*',
+    'hier': '1h', 'häufig': '4h', 'her': '2h*',  # Schreibweise mit betonter Fußschleife nur im Anhang
     'jedoch': 'j |0 1dd',  # 18. Lernabschnitt
-    # TODO: 'dennoch': '2en „enger Abstand“ 1nn',  # 24. Lernabschnitt, Bsp. 2
-    'als': '-4-',  # „als“ etwas tiefer, sie Aufbau2, S. 17
+    'dennoch': 'en {noch}(1.4,0)',  # enger Abstand, siehe 24. Lernabschnitt, Bsp. 2
+    'als': '-4-',  # „als“ etwas tiefer, siehe Aufbau2, S. 17
     'pro': '2--', 'bei': '4--',
     'darauf': '0d //',
     'hätte': '2t', 'hatte': '3t', 'heute': '4t',
@@ -659,6 +662,18 @@ def glyph_h(dl, dr, runder = True):
     return (0.2, shift(b + m + e, 0.2))
 
 
+def glyph_h_var(dl, dr):
+    """Variant glyph H with emphasised foot loop"""
+    assert not dl, 'Glyph “H var” only allowed at beginning of word.'
+    y1 = 0.3  # height of top of foot loop (control point for curved bottom part in untenEingelegt at 0.25)
+    w, b_m = glyph_h(False, False, runder=True)
+    if not dr:
+        e = [(-0.2, 0), (-0.2, y1), (w - 0.02, y1)]  # w - 0.02 to stop at curved downstroke
+    else:
+        e = [(-0.2, 0.04), (-0.2, y1 - 0.1), (w - 0.1, y1), (w + 0.1, y1 + 0.06)]
+    return (w, b_m + e)
+
+
 def glyph_z(dl, dr):
     b = obenGewoelbt(dl)
     m = [(0, 0.5)]
@@ -912,6 +927,9 @@ def glyph_punkt(dl, dr):
     return (0.1, b + m + e)
 
 
+## "Vokal-Glyphen" = Vokalzeichen, die sich nicht als einfache Verbindungslinie
+## zeichnen lassen: waagr. Strich (Präfix), -heit (Verbindungslinie mit Punktschleife)
+
 def glyph_waagr_strich(l, naechster_kons):
 #    print("waagr_strich l={}, nk={}.".format(l, naechster_kons))
     if not naechster_kons or naechster_kons == '=':
@@ -946,7 +964,8 @@ glyphs = {
     'qu': glyph_qu,  # halbstufiges F
     'g': glyph_g,
     'h': glyph_h,
-    'h*': lambda dl, dr: glyph_h(dl, dr, runder=False),  # war h0  FIXME: anderen Code finden, damit h* betonte Fußschleife analog m*, s*
+    'h^': lambda dl, dr: glyph_h(dl, dr, runder=False),  # war h0  FIXME: anderes Zeichen finden?
+    'h*': glyph_h_var,
     'th': glyph_th,  # halbstufiges H
     'j': glyph_j,
     'j4': glyph_j_2stuf,

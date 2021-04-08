@@ -112,6 +112,7 @@ Folgende Symbole für Konsonanten und Kürzel kommen hinzu:
 * `@` Schleife gegen Uhrzeigersinn (UZS)
 * `@*` Schleife im Uhrzeigersinn (FIXME: besseres Codezeichen finden)
 
+
 ### vertikaler Versatz und Größe von Konsonantensymbolen
 
 Konsonantensymbole können vertikal verschoben und in unterschiedlichen
@@ -183,32 +184,34 @@ Beispiele:
 „Breite“ Varianten einiger Konsonanten werden durch Verdopplung
 gekennzeichnet:
 
-* `dd` = „breites D“ (oder oben offener weiter Bogen) = durch
-* `nn` = „breites N“ (oder unten offener weiter Bogen) = uns
-* `rr` = „breites R“ (weite Welle) = nur
-* `mm` = „breites M“ (nach links vorgezogener Anstrich) = muss
+* `dd` = „breites D“ (oder oben offener weiter Bogen) = _durch_
+* `nn` = „breites N“ (oder unten offener weiter Bogen) = _uns_
+* `rr` = „breites R“ (weite Welle) = _nur_
+* `mm` = „breites M“ (nach links vorgezogener Anstrich) = _muss_
 
 
 Mit nachgestelltem `*` erhält man Schreibvarianten von einigen
 Konsonantzeichen:
 
-* `h*`, `m*`, `s*`: betonte Fußschleife, z.B. für Herr, mehr, sicher
-  (FIXME: „h0“ vs „h*“ noch nicht zufriedenstellend gelöst)
-* `mm*` = breites M mit betonter Fußschleife = musst
+* `h*`, `m*`, `s*`: betonte Fußschleife, z.B. für _Herr_, _mehr_, _sicher_
+* `mm*` = breites M mit betonter Fußschleife = _musst_
 * `w*`, `w*4`: W mit eingerolltem Fuß (in „offizieller“ Aufbauschrift
-  nur `w*4` = während)
-* `w**4` = wärts (unten spitze Variante des 2-stufigen W)
-* `r*` = „flaches R“ (Tilde) = ungefähr
+  nur `w*4` = _während_)
+* `w**4` = _-wärts_ (unten spitze Variante des 2-stufigen W)
+* `r*` = „flaches R“ (Tilde) = _ungefähr_
 * `d*` = d mit schmaler Verbindung, wird nur intern verwendet für
-  Kürzel „dich“
+  Kürzel _dich_
+* `h^` = etwas steileres, weniger weit nach links auslaufendes H, damit
+  in Kombinationen wie `3d h` (_daher_) der Fuß des H nicht in den
+  Aufstrich läuft
 
 
 Verbesserte Darstellung von Zeichen mit E-Anstrich:
 
-* `en` = N mit Anstrich = schmaler Bogen für den, nicht, man (Anstrich
-  ist etwas kürzer als normales E, damit der Bogen halbkreisförmig
-  wird)
-* `ent` = halbstufiges ND mit Anstrich für ent- (Anstrich ist etwas
+* `en` = N mit Anstrich = schmaler Bogen für _den_, _nicht_, _man_
+  (Anstrich ist etwas kürzer als normales E, damit der Bogen
+  halbkreisförmig wird)
+* `ent` = halbstufiges ND mit Anstrich für _ent-_ (Anstrich ist etwas
   kürzer als normales E)
 
 
@@ -228,8 +231,8 @@ bestimmte Situationen ergänzt:
 Zur sauberen Darstellung bestimmter Verbindungen kann mit `|` eine
 beliebig weite Verbindung eingefügt werden. Die Weite wird durch eine
 direkt an `|` anschließende Zahl (mit Dezimal_punkt_) angegeben.  Ohne
-Zahl wird ein E-Abstand verwendet.  Beispiele: `j |0 1dd` = jedoch,
-`4dd |0.1 nd` = Deutschland.
+Zahl wird ein E-Abstand verwendet.  Beispiele: `j |0 1dd` = _jedoch_,
+`4dd |0.1 nd` = _Deutschland_.
 
 
 Es gibt drei Arten von durch Anstriche dergestellen Vorsilben:
@@ -248,10 +251,10 @@ Skala ist die gleiche wie beim vertikalen Versatz von Konsonanten.
 
 Beispiele:
 
-* `2__ g e b` = zugeben
-* `1- p o t` = Import
-* `0//` = auf
-* `0d /` = un-
+* `2__ g e b` = _zugeben_
+* `1- p o t` = _Import_
+* `0//` = _auf_
+* `0d /` = _un-_
 
 
 ### Durchstreichungen

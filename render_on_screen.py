@@ -21,4 +21,5 @@ import stiefo
 #stiefo.render_screen(['s e r', 's', 's*'])
 #stiefo.render_screen(['t e t', '3@^0', 'ander', 'ich', 'ein ander'])
 #stiefo.render_screen(['voll', 's i n voll', 'voll k o m', 'voll z i {a0 r}(-0.5,0)', 'nach u @^*00 i z i barkeit'])
-stiefo.render_screen(['s i n los', 'h a m los', 'b ei sp i l los', 'los g e', 'los l a s'])
+#stiefo.render_screen(['s i n los', 'h a m los', 'b ei sp i l los', 'los g e', 'los l a s'])
+stiefo.render_screen(['h', 'h*', 'h* e r', 'gänzlich'])
