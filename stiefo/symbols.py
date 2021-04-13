@@ -72,7 +72,7 @@ praefix_formen = {
     '1__': ("_", 1, vokal_formen['u']),
     '2__': ("_", 2, vokal_formen['u']),
     '3__': ("_", 3, vokal_formen['u']),
-    '0-': ('-', 0, (1, 0, -0.75 * de)),  # TODO: nötig?
+    '0-': ('-', 0, (1, 0, -0.75 * de)),  # TODO: bessere Lösung zur Kennzeichnung von nicht-trivialen Vokalformen finden
     '1-': ("-", 1, (1, 0, -0.75 * de)),
     '2-': ("-", 2, (1, 0, -0.75 * de)),
     '3-': ("-", 3, (1, 0, -(di + d_extra))),
@@ -118,6 +118,7 @@ vorsilben_AS2 = {
     'deutsch': '4dd |0',  # 9. Lernabschnitt
     'euro': '4rr |0',  # 10. Lernabschnitt
     'voll': '2-- @^*00 i', 'los': '@00 o',  # 11. Lernabschnitt
+    'einheit': '3__ @h^ ei',  # als Vorsilbe, damit „Einheiten“ möglich
     'in': '1-', 'inter': '1-', 'trans': '3-',
     'pro': '1--', 'bei': '3--',
     'be': '0/', 'un': '0d /', 'darauf': '0d //',
@@ -131,6 +132,7 @@ nachsilben_AS2 = {
     'möglich': '4@*0', 'möglichkeit': '4@*0 keit',  # 4. Lernabschnitt
     'voll': 'u @^*00',  # 11. Lernabschnitt
     'los': '|0.25 @^00 o',
+    'heit': 'e@ @h ei', 'heitlich': 'e@ @h ei @*0',  # (Belegstelle heitlich erst in Text 25)
     'bar': '{a0 r}(-0.5,0)',  # aber für viele Wörter Anpassung a/a0 und Versatz nötig!
     'barkeit': '{a0 r keit}(-0.5,0)',  # (Belegstelle erst in Text 18)
     'gleich': 'ch4',  # 27. Lernabschnitt
@@ -178,6 +180,7 @@ kuerzel_AS2 = {
     'nur': '2rr', 'oder': '1rr', 'europa': '4rr',  # 10. Lernabschnitt
     'deutschland': '4dd |0.1 nd',
     'voll': '2-- @^*00',  # 11. Lernabschnitt
+    'einheitlich': 'ein @h^ ei +2@*00',  # FIXME übler Hack zur vertikalen Ausrichtung lich-Scheife; nächster Konsonant (z.B. einheitlichst) muss mit -2 korrigiert werden
     'lebhaft': 'l e b {a}(-0.4,0)',
     'einfach': 'ein {a0}(0,-0.25)', 'mehrfach': 'm {a}(-0.4,0) r',
     'ebenfalls': 'e {a s} b',
@@ -953,14 +956,19 @@ def glyph_waagr_strich(l, naechster_kons):
     return (l, (b + m + e))
 
 
-def glyph_heit_schleife(dl, dr):
-    assert dr, 'Glyph “heit loop” must be followed by a vowel.'
-    x0, y0 = 0.4, 0.15
-    b = [(0, 0)] if not dl else [(0.75*x0, 0.75*y0), (x0, y0)]
-    m = shift(scale(kreis_auf(dl, dr), 0.1, 0.15), x0, y0)
-    e = [(x0 + 0.2, y0 + 0.1)]
-    return [0.3, (b + m + e)]
-    #TODO: Variante fur „Einheit“: bei 0,0 mit Schleife beginnen
+def glyph_heit_schleife(dl, dr, anstrich=True):
+    """Schleife für Nachsilbe -heit
+
+       Anstrich=True im Normalfall (kurzer aufsteigender Strich vor
+       der Schleife); False für Kombination mit Vorsilbe ein- (Beginn
+       direkt mit Schleife auf halber Stufe Höhe)."""
+    assert dl, 'Glyph „heit_schleife“ muss nach einem Buchstaben stehen.'
+    assert dr, 'Glyph „heit_schleife“ muss von einem Vokal (ei) gefolgt werden.'
+    x1, y1 = (0.4, 0.15) if anstrich else (0, 0.5)
+    b = [(0.75*x1, 0.75*y1), (x1, y1)] if anstrich else [(x1, y1)] * 2
+    m = shift(scale(kreis_auf(dl, dr), 0.1, 0.15), x1, y1)
+    e = [(x1 + 0.2, y1 + 0.1)]
+    return [0.3 if anstrich else 0, (b + m + e)]
 
 
 ### Lookup Konsonanten -> Glyph-Funktionen
@@ -1030,16 +1038,17 @@ glyphs = {
     #FIXME: unterschiedliche Symbole für Scheife UZS, GUZS (@ und O?)
     '@0': glyph_punktschleife_geg_uzs,
     '@': glyph_punktschleife_geg_uzs,  # Abkürzung
-    '@00': lambda dl, dr: glyph_punktschleife_geg_uzs(dl, dr, schmal = True),
+    '@00': lambda dl, dr: glyph_punktschleife_geg_uzs(dl, dr, schmal=True),
     '@^0': glyph_punktschleife_geg_uzs_anstrich,
     '@^': glyph_punktschleife_geg_uzs_anstrich,  # Abkürzung
-    '@^00': lambda dl, dr: glyph_punktschleife_geg_uzs_anstrich(dl, dr, schmal = True),
+    '@^00': lambda dl, dr: glyph_punktschleife_geg_uzs_anstrich(dl, dr, schmal=True),
     '@h': glyph_heit_schleife,
+    '@h^': lambda dl, dr: glyph_heit_schleife(dl, dr, anstrich=False),
     '@*0': glyph_punktschleife_im_uzs,
     '@*': glyph_punktschleife_im_uzs,  # Abkürzung
-    '@*00': lambda dl, dr: glyph_punktschleife_im_uzs(dl, dr, schmal = True),
+    '@*00': lambda dl, dr: glyph_punktschleife_im_uzs(dl, dr, schmal=True),
     '@^*0': glyph_punktschleife_im_uzs_anstrich,
-    '@^*00': lambda dl, dr: glyph_punktschleife_im_uzs_anstrich(dl, dr, schmal = True),
+    '@^*00': lambda dl, dr: glyph_punktschleife_im_uzs_anstrich(dl, dr, schmal=True),
     '@1': glyph_schleife_halbstuf_geg_uzs,
     '@2': glyph_schleife_1stuf_geg_uzs,
     'r*': glyph_r_var,
