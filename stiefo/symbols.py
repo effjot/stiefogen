@@ -853,6 +853,7 @@ def glyph_punktschleife_im_uzs(dl, dr, schmal = False):
         m = m[:-2]
     return [0.25 if schmal else 0.4, m]
 
+
 def glyph_punktschleife_im_uzs_anstrich(dl, dr, schmal = False):
     w, g = glyph_punktschleife_geg_uzs_anstrich(dl, dr, schmal)
     return [w, scale(g, 1, -1, 0)]
@@ -952,6 +953,16 @@ def glyph_waagr_strich(l, naechster_kons):
     return (l, (b + m + e))
 
 
+def glyph_heit_schleife(dl, dr):
+    assert dr, 'Glyph “heit loop” must be followed by a vowel.'
+    x0, y0 = 0.4, 0.15
+    b = [(0, 0)] if not dl else [(0.75*x0, 0.75*y0), (x0, y0)]
+    m = shift(scale(kreis_auf(dl, dr), 0.1, 0.15), x0, y0)
+    e = [(x0 + 0.2, y0 + 0.1)]
+    return [0.3, (b + m + e)]
+    #TODO: Variante fur „Einheit“: bei 0,0 mit Schleife beginnen
+
+
 ### Lookup Konsonanten -> Glyph-Funktionen
 
 glyphs = {
@@ -1023,13 +1034,14 @@ glyphs = {
     '@^0': glyph_punktschleife_geg_uzs_anstrich,
     '@^': glyph_punktschleife_geg_uzs_anstrich,  # Abkürzung
     '@^00': lambda dl, dr: glyph_punktschleife_geg_uzs_anstrich(dl, dr, schmal = True),
+    '@h': glyph_heit_schleife,
     '@*0': glyph_punktschleife_im_uzs,
     '@*': glyph_punktschleife_im_uzs,  # Abkürzung
     '@*00': lambda dl, dr: glyph_punktschleife_im_uzs(dl, dr, schmal = True),
     '@^*0': glyph_punktschleife_im_uzs_anstrich,
     '@^*00': lambda dl, dr: glyph_punktschleife_im_uzs_anstrich(dl, dr, schmal = True),
     '@1': glyph_schleife_halbstuf_geg_uzs,
-    '@2':   glyph_schleife_1stuf_geg_uzs,
+    '@2': glyph_schleife_1stuf_geg_uzs,
     'r*': glyph_r_var,
     'rr': glyph_r_weit,
     '.': glyph_punkt,
