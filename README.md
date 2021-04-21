@@ -1,7 +1,7 @@
 # stiefogen – ein Stiefo-Generator
 
 Python-Programm, das mithilfe von PyQt5 Textdateien in
-Stiefo-Grundschrift als PDF oder auf dem Bildschirm übersetzt.
+Stiefo-Grundschrift (Aufbauschrift noch experimentell) als PDF oder auf dem Bildschirm übersetzt.
 
 Entwickelt von Andreas Hofer, mit Beiträgen von [Andreas Martin](https://github.com/AndreasMartin72) und [Florian Jenn](https://github.com/effjot)
 
@@ -21,7 +21,7 @@ Das Programm bietet 2 Modi:
  * `stiefo.render_screen(words)`: Bildschirmausgabe in einem interakiven Fenster,
    in dem man Text eingeben und die Kurven und Stützpunkte sehen kann. `words`
    ist eine Liste von Strings. Jeder String ist ein Wort, in dem die einzelnen
-   Buchstaben durch Leerzeichen getrennt sind: `["ei n", "t e st"]`.
+   Buchstaben durch Leerzeichen getrennt sind (Stiefocode): `["ei n", "t e st"]`.
    Beispieldatei: `render_on_screen.py`
 
  * `stiefo.render_pdf(words, filename, papersize)`: Ausgabe als PDF.
@@ -39,7 +39,8 @@ unbekannten Wörter werden als Ergebnis mit zurückgegeben und sollten
 
  * Dokumentation verbessern/erweitern
  * Aufbauschrift überarbeiten
- * Ausgabe als SVG?
+ * Ausgabe als SVG
+ * Parser/Lexer für Stiefocode
 
 
 ## Aufbau des Programms
