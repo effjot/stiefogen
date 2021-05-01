@@ -158,7 +158,7 @@ kuerzel_AS1 = {
     'ist': '1t', 'von': '1f',
     'wir': '1w', 'hab': '3h', 'hast': '3h', 'hat': '3h', 'gehab': '3- h',
     'und': '2nd', 'sind': '1nd',  # 6. Lernabschnitt
-    'unter': '2nd e0', 'über': '1b e0', 'aber': '3nd e0',
+    'unter': '2nd e0', 'über': '1b e0', 'aber': '3b e0',
     'werd': '2c', 'wird': '1c', 'wirst': '1c', 'war': '3c',
     'würde': '1c e@',  # (Anleitung Selbststudium S. 10-1)
     'wurd': '2c u', 'word': '1c u', 'geword': '1c u',
@@ -203,6 +203,8 @@ kuerzel_AS2 = {
     'mehr': '2m*', 'muss': 'mm', 'musst': 'mm*',  # 14. Lernabschnitt
     'müss': '1mm', 'müsst': '1mm*',
     'sehr': '2s*', 'sicher': '1s*', 'sicherlich': '1s* lich*', 'sicherheit': '1s* heit*',
+    'bereit': '2b', 'bis': '1b', 'bin': '1b',  # 15. Lernabschnitt
+    'übrig': '1b i', 'überzeug': '1b eu', 'überdies': 'über d',
     'gut': '2g', 'groß': '1g', 'ganz': '3g', 'größ': '4g',  # 17. Lernabschnitt
     'gütlich': '2g |0 @*', 'gänzlich': '3g |0 @*',
     'hier': '1h', 'häufig': '4h', 'her': '2h*',  # Schreibweise mit betonter Fußschleife nur im Anhang
