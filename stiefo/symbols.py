@@ -40,6 +40,7 @@ vokal_formen = {
     'ö': (1, 2, de + 0.3),
     'oe': (1, 2, de + 0.3),
     'ei': (2, 1, du),
+    '+ei': (2, 1.25, du),  # Ausgleich für vert. Versatz bei *-Konsonant + heit
     'eu': (2, 2, du),
     'oi': (2, 2, du),
     '/': (1, 2, de - 0.2),  # Aufstriche (be, auf, un), Aufbauschrift 1 und 2
@@ -61,6 +62,7 @@ vokal_formen.update({  # Aufbauschrift 1, 5. Lernabschnitt
     'igkeit': vokal_formen['ei'],
     'schaft': vokal_formen['a0']
 })
+# TODO: „Nachsilbe“ für Prozentzahlen
 
 
 praefix_formen = {
@@ -119,9 +121,9 @@ vorsilben_AS2 = {
     'euro': '4rr |0',  # 10. Lernabschnitt
     'voll': '2-- @^*00 i', 'los': '@00 o',  # 11. Lernabschnitt
     'einheit': '3__ @h^ ei',  # als Vorsilbe, damit „Einheiten“ möglich
-    'in': '1-', 'inter': '1-', 'trans': '3-',
-    'pro': '1--', 'bei': '3--',
-    'be': '0/', 'un': '0d /', 'darauf': '0d //',
+    'pro': '1--', 'be': '0/', 'un': '0d /', # 12. Lernabschnitt
+    'in': '1-', 'inter': '1-', 'trans': '3-', 'bei': '3--',   # 13. Lernabschnitt
+    'darauf': '0d //',
     'fort': '1t'
 }
 
@@ -133,8 +135,10 @@ nachsilben_AS2 = {
     'voll': 'u @^*00',  # 11. Lernabschnitt
     'los': '|0.25 @^00 o',
     'heit': 'e@ @h ei', 'heitlich': 'e@ @h ei @*0',  # (Belegstelle heitlich erst in Text 25)
+    'heit*': 'e0 -2@h^ +ei',  # korrigierter vert. Versatz für *-Konsonanten
     'bar': '{a0 r}(-0.5,0)',  # aber für viele Wörter Anpassung a/a0 und Versatz nötig!
     'barkeit': '{a0 r keit}(-0.5,0)',  # (Belegstelle erst in Text 18)
+    'nis': 'I s',  # 14. Lernabschnitt
     'gleich': 'ch4',  # 27. Lernabschnitt
     'rechn': 'ch3',  # Anhang
     'alich': '|0.25 ++3@*0', 'schaftlich': '|0.25 ++3@*0'
@@ -159,7 +163,7 @@ kuerzel_AS1 = {
     'würde': '1c e@',  # (Anleitung Selbststudium S. 10-1)
     'wurd': '2c u', 'word': '1c u', 'geword': '1c u',
     'es': '+2-', 'sie': '-2-',  # 7. Lernabschnitt
-    'aus': '++2--', 'so': '--2--',
+    'aus': '++2--', 'so': '--2--',  # etwas über/unter der Grundlinie
     'endlich': '2@*0', 'für': '1@0',  # 8. Lernabschnitt
     'durch': '2dd', 'doch': '1dd',  # 9. Lernabschnitt
     'uns': '2nn', 'noch': '1nn',
@@ -191,16 +195,19 @@ kuerzel_AS2 = {
     'unmittelbar': 'un 1l {|1.3 +3r}(-0.15,-0.25)',  # feinabgestimmt: A beginnt etwas tiefer,
         # damit klarer erkennbar. Einfachere Variante: 'un 1l {A r}(-0.1,0)';
         # Belegstelle "unmittelbar" erst in Text 12)
-    'unendlich': 'un 2@*0', 'unendlichkeit': 'uen 2@*0 keit',  # (kein Beleg; Ergänzung FJ)
-    'muss': 'mm', 'musst': 'mm*',  # 14. Lernabschnitt
+    'unendlich': 'un 2@*0', 'unendlichkeit': 'un 2@*0 keit',  # (kein Beleg; Ergänzung FJ)
+    'pro': '2--',  # 12. Lernabschnitt ("pro" auf der Grundlinie, "aus" etwas darüber)
+    'außerordentlich': '++2__ --2@*00',  # 13. Lernabschnitt
+    'als': '-4-',  # „als“ etwas tiefer, siehe Bsp. Aufbauschift 2, S. 17
+    'sofort': 'ot', 'bei': '4--',
+    'mehr': '2m*', 'muss': 'mm', 'musst': 'mm*',  # 14. Lernabschnitt
     'müss': '1mm', 'müsst': '1mm*',
+    'sehr': '2s*', 'sicher': '1s*', 'sicherlich': '1s* lich*', 'sicherheit': '1s* heit*',
     'gut': '2g', 'groß': '1g', 'ganz': '3g', 'größ': '4g',  # 17. Lernabschnitt
     'gütlich': '2g |0 @*', 'gänzlich': '3g |0 @*',
     'hier': '1h', 'häufig': '4h', 'her': '2h*',  # Schreibweise mit betonter Fußschleife nur im Anhang
     'jedoch': 'j |0 1dd',  # 18. Lernabschnitt
     'dennoch': 'en {noch}(1.4,0)',  # enger Abstand, siehe 24. Lernabschnitt, Bsp. 2
-    'als': '-4-',  # „als“ etwas tiefer, siehe Aufbau2, S. 17
-    'pro': '2--', 'bei': '4--',
     'darauf': '0d //',
     'hätte': '2t', 'hatte': '3t', 'heute': '4t',
     'gewissenhaft': 'ge w i {a0}(-0.3,0) s', 'nachvollziehbar': 'nach u @^*00 i z i bar'  # keine Belegstellen
