@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import doctest
 import re
 
 __all__ = ['convert_text', 'wortZuStiefo', 'list_to_text', 'text_to_list']
@@ -11,7 +10,7 @@ __all__ = ['convert_text', 'wortZuStiefo', 'list_to_text', 'text_to_list']
 
 def splitText(text):
     """
-    Zerlegt einen Text in Worte und interpunktion.
+    Zerlegt einen Text in Worte und Interpunktion.
 
     >>> splitText("20'000 Meilen unter dem Meer")
     ["20'000", 'Meilen', 'unter', 'dem', 'Meer']
@@ -27,7 +26,22 @@ def splitText(text):
     # words = re.split(r"\s+|(\{[!\"$].*?[!\"$]\})", text)
 
 
+## Ersetzungsmuster (Regex) für wortZuStiefo()
+## FIXME: sinnvolle Codierung Präfixe; z.Zt. müssen Codes genau 1 Buchstaben lang sein
 regeln = [
+    ## Aufbauschrift
+    # Vorsilben am Wortanfang
+    (r"\bmit", "1"),
+    (r"\ber", "2"),
+    (r"\ban'", "3"),  # Vorsilbe „an“ wenn danach Trennzeichen (Apostroph)
+    (r"\ban([^dgkt])", r"3\1"),  # oder wenn kein N-Dipthong; nicht-Apostroph-Zeichen muss bei Ersetzung wiederhergestellt werden ("\1")
+    (r"\bvor", "4"),
+    (r"\bzu", "5"),
+    (r"\bein", "6"),
+    (r"\baus'", "7"),
+    (r"\baus([^cpt])", r"7\1"),  # analog Vorsilbe „an“
+
+    ## Grundschrift:
     ('sch', 'Z'),
     ('cht', 'X'),
     ('ch', 'C'),
@@ -100,16 +114,16 @@ regeln = [
     ("'", ''),
     (' ', ''),
     ('\u00a0', ''),
-    ('H', 'h'),
+    ('H', 'h')
 ]
 
 
 def wortZuStiefo(w):
     """
-    Konvertiert ein Wort in Normaltext mit Hilfe von ein paar Regeln in das Stiefo-interne Format.
+    Konvertiert ein Wort in Normaltext mit Hilfe von ein paar Regeln in das interne Format „Stiefocode“.
 
     >>> [wortZuStiefo(w) for w in "Waschbär Bauer an'gekommen angst Schlüssel'loch nichtig Geschichte".split()]
-    ['w a sch b ä r', 'b au e r', 'a n g e k o m e n', 'a ng st', 'sch l ü s e l l o ch', 'n i cht i g', 'g e sch i cht e']
+    ['w a sch b ä r', 'b au e r', 'an g e k o m e n', 'a ng st', 'sch l ü s e l l o ch', 'n i cht i g', 'g e sch i cht e']
     >>> [wortZuStiefo(w) for w in "Der Esel und die Ziege".split()]
     ['d e r', 'e s e l', 'u nd', 'd i', 'z i g e']
     >>> [wortZuStiefo(w) for w in "Freund möchte stelle verletzt andern'tags führen".split()]
@@ -117,9 +131,14 @@ def wortZuStiefo(w):
     >>> [wortZuStiefo(w) for w in "Ruhe Wehe wiehern stehen Höhe gehören daher hohen".split()]
     ['r u h e', 'w e h e', 'w i h e r n', 'st e h e n', 'h ö h e', 'g e h ö r e n', 'd a h e r', 'h o h e n']
     >>> [wortZuStiefo(w) for w in "Hexe quälen".split()]
-    ['h e ks e', 'kw ä l e n']
+    ['h e x e', 'q ä l e n']
     >>> wortZuStiefo("nach'teil")
     'n a ch t ei l'
+    >>> [wortZuStiefo(w) for w in "Angebot An'gebot Anlage an'treffen aus'treten Ausgang".split()]
+    ['a ng e b o t', 'an g e b o t', 'an l a g e', 'an t r e f e n', 'aus t r e t e n', 'aus g a ng']
+
+    # Test für Grundschrift: >>> [wortZuStiefo(w) for w in "Hexe quälen".split()]
+    # ['h e ks e', 'kw ä l e n']
     """
     # alles Kleinbuchstaben, gleich von Anfang an.
     s = w.lower()
@@ -136,7 +155,14 @@ def wortZuStiefo(w):
             break
         s = s2
 
-    v = {'Z': 'sch',
+    v = {'1': 'mit',
+         '2': 'er',
+         '3': 'an',
+         '4': 'vor',
+         '5': 'zu',
+         '6': 'ein',
+         '7': 'aus',
+         'Z': 'sch',
          'C': 'ch',
          'D': 'nd',
          'G': 'ng',
@@ -149,8 +175,8 @@ def wortZuStiefo(w):
          'N': 'nt',
          'K': 'nk',
          'U': 'au',
-         'x': 'k s',
-         'q': 'k w',
+         #'x': 'k s',  #Grundschrift
+         #'q': 'k w',
     }
     s = s.replace('c', '')  # Vokalzeichen, entfernen falls explizit vorhanden
     return ' '.join(((v[x] if x in v else x) for x in s))
@@ -158,14 +184,14 @@ def wortZuStiefo(w):
 
 def convert_text(text, wordlists):
     """
-    Converts a text into stiefo code.
+    Converts a text into Stiefocode.
     :param text: the text to convert
     :param wordlists: a list of dictionaries with known words
     :return: a tuple (stiefo_text, unknown_words)
     """
     pct = {
-        '.': ['.', 'spc2'],
-        ',': [',', 'spc2'],
+        '.': ['.', 'spc2'],  # FIXME: Punkt jetzt .., Abstand in render.py
+        ',': [',', 'spc2'],  # FIXME: Abstand jetzt in render.py
         '<br>': '§',
 
         '!': ['~!', 'spc2'],
@@ -272,7 +298,6 @@ def convert_text(text, wordlists):
     return words, unknown
 
 
-
 def list_to_text(l):
     lines = []
     line = ""
@@ -291,13 +316,10 @@ def list_to_text(l):
     return "\n".join(lines)
 
 
-
 def text_to_list(txt):
-    return re.split(' \u00A0 |\n|  +| *\\| *', txt)
+    return re.split(' \u00A0 |\n|  +', txt)
 
-
-# -----------------------------------------------
 
 if __name__ == '__main__':
-    print(doctest.testmod())
-
+    import doctest
+    doctest.testmod()

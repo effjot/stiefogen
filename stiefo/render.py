@@ -10,12 +10,13 @@ import stiefo
 
 
 stiefoHeightPrint = 30
-stiefoHeightScreen = 50
+stiefoHeightScreen = 75
 
-zeichneHilfslinien = False
+zeichneHilfslinien = True
+text_y_offset = 0.1 * stiefoHeightPrint
 
 
-def render_pdf(words, filename, papersize = QtPrintSupport.QPrinter.A4):
+def render_pdf(words, filename, papersize=QtPrintSupport.QPrinter.A4):
     app = QtWidgets.QApplication(sys.argv)
     window = BezierDrawer(words, filename, papersize)
     window.show()
@@ -24,7 +25,7 @@ def render_pdf(words, filename, papersize = QtPrintSupport.QPrinter.A4):
 
 def render_screen(words):
     app = QtWidgets.QApplication(sys.argv)
-    window = BezierDrawer(words, [])
+    window = BezierDrawer(words, [], None)
     window.show()
     sys.exit(app.exec_())
 
@@ -32,6 +33,7 @@ def render_screen(words):
 class print_renderer:
     def __init__(self, printer, painter):
         self.h = stiefoHeightPrint
+        self.word_space = 0.5 * self.h
         self.printer = printer
         self.painter = painter
         self.pageRect = printer.pageRect(QtPrintSupport.QPrinter.DevicePixel)
@@ -48,7 +50,7 @@ class print_renderer:
         self.pgNr = 1
         self.sx = self.h
         self.sy = self.h
-        self.px, self.py = self.x0, self.y0
+        self.px, self.py = self.x0 + self.word_space, self.y0
         self.lineatur(self.pgNr)
 
     def lineatur(self, pgnr = None):
@@ -66,7 +68,7 @@ class print_renderer:
             self.painter.drawText((self.x1 - self.x0)/2, self.y1 + 100, str(pgnr))
 
     def line_break(self):
-        self.px = self.x0
+        self.px = self.x0 + self.word_space
         self.py += 4*self.h
 
     def new_page(self):
@@ -81,7 +83,7 @@ class print_renderer:
 
     def draw_text(self, word):
         self.painter.setPen(self.blackPen)
-        self.painter.drawText(self.px, self.py, "" + word + " ")
+        self.painter.drawText(self.px, self.py - text_y_offset, "" + word + " ")
         fontMetrics = self.painter.fontMetrics()
         w = fontMetrics.width(word + " ")
         self.px += w
@@ -94,7 +96,16 @@ class print_renderer:
         self.px = self.px + 0.5*self.h
 
     def draw_curve(self, crv):
-        for w,c,_ in crv:
+        for w, c, _, outline_offset in crv:
+            # Kurve verschieben (Startpunkt anpassen)
+            dx = 0
+            dy = 0
+            if outline_offset:
+                dx = outline_offset[0] * self.sx
+                dy = outline_offset[1] * self.sy
+                self.px += dx - self.word_space
+                self.py -= dy
+
             cc = [(self.px + x * self.sx, self.py - y * self.sy) for x, y in c]
             pp = QtGui.QPainterPath()
             pp.moveTo(*cc[0])
@@ -137,14 +148,17 @@ class print_renderer:
                 else:
                     res.append(('text', w, word, 0))
             else:
-                if word == ',':
+                if word == '':
                     pass
+                elif word == '&':
+                    res.append(('space', -0.4*self.h, None, 0))
                 elif word == 'spc1':
                     res.append(('space', 10.7*self.h, None, 0))
-                elif word == 'spc2':
+                elif word == ',' or word == 'spc2':
                     res.append(('space', 5*self.h, None, 0))
-                elif word == '.':
+                elif word == '..':
                     res.append(('period', 0.5*self.h, None, -1))
+                    res.append(('space', 5*self.h, None, 0))
                 elif word == '§§':
                     res.append(('page', 0, None, 0))
                 elif word == '§':
@@ -152,8 +166,8 @@ class print_renderer:
                 else:
                     crv = stiefo.stiefoWortZuKurve(word)
                     w = 0
-                    for dw, _, _ in crv:
-                        w += dw
+                    for dw, _, _, _ in crv:
+                        w += dw  # FIXME: was mit disjointed?!
                     res.append(('curve', w*self.sx, crv, 0))
 
         spcreq = [w for _, w, _, _ in res]
@@ -177,7 +191,7 @@ class print_renderer:
         flag = False
         for cmd, w, data, spc in cmds:
             if (cmd == 'curve' or cmd == 'period') and flag:
-                if self.px > self.x0: self.advance(self.h*0.5)
+                if self.px > self.x0: self.advance(self.word_space)
 
             if self.px + spc + 3*self.h > self.x1:
                 if cmd != 'period': self.line_break()
@@ -222,8 +236,11 @@ class BezierDrawer(QtWidgets.QMainWindow):
             self.ui.drawing_area.update_text(self.screenWords)
         else:  # PDF erzeugen (passiert in paintEvent)
             self.filename = filename
-            self.papersize = papersize
             self.drawOnScreen = False
+        if papersize:
+            self.papersize = papersize
+        else:
+            self.papersize = QtPrintSupport.QPrinter.A4
 
     def paintEvent(self, e):
         if (self.drawOnScreen):
@@ -274,14 +291,15 @@ class DrawingArea(QtWidgets.QFrame):
 
     def doDrawing(self, qp, ww, wh):
         h = self.stiefoHeight
+        word_space = h
         sl = stiefo.slant
         hmargin = 8
         vmargin = 4
         sx = h*1
         sy = h
-        sl = math.sin( 15 * math.pi/180 )  # s.a. symbols.py
+        sl = stiefo.slant
 
-        x0 = hmargin
+        x0 = hmargin + word_space
         y0 = vmargin + 3*h
         x1 = ww - hmargin
         y1 = wh - vmargin
@@ -308,17 +326,20 @@ class DrawingArea(QtWidgets.QFrame):
 
         px, py = hmargin, vmargin + 3*h  # start position for drawing
         for word in self.screenWords:
-
-            if stiefo.isword(word):
-	        # TODO
-		# In c und p sind die Informationen um ein Wort in einem
-		# Strich zu zeichnen ohne den Stift "abzuheben".
-		# Ein Wort kann aber aus mehreren Teilen bestehen, daher muss hier
-		# noch ein Mechanismus her, der damit umgehen kann...
-                for w, c, p in stiefo.stiefoWortZuKurve(word):
+            if stiefo.isword(word) and word not in (',', '..'):
+                for w, c, p, outline_offset in stiefo.stiefoWortZuKurve(word):
                     w = w * sx  # Wortlänge
 
-                    # Zeilenumbruch
+                    # Kurve verschieben (Startpunkt anpassen)
+                    dx = 0
+                    dy = 0
+                    if outline_offset:
+                        dx = outline_offset[0] * sx
+                        dy = outline_offset[1] * sy
+                        px += dx - word_space
+                        py -= dy
+
+                    # Zeilenumbruch  TODO: Offset vs Zeilenumbruch?!
                     if px + w > ww:
                         px = hmargin
                         py += 4*h
@@ -363,11 +384,12 @@ class DrawingArea(QtWidgets.QFrame):
                     qp.drawPath(pp)
 
                     # Neue Zeichenposition berechnen
-                    px = px + w + h
+                    px = px + w + word_space
+                    py += dy  # Offset rückgängig machen
             else:
                 if (word == ','):
                     px = px + 2.5*h
-                elif (word == '.'):
+                elif (word == '..'):
                     px = px + 5*h
                 elif word == '§':
                     px = 10
@@ -376,6 +398,6 @@ class DrawingArea(QtWidgets.QFrame):
                     qp.setPen(blackPen)
                     qp.setFont(font)
                     fontMetrics = qp.fontMetrics()
-                    qp.drawText(px, py, word)
+                    qp.drawText(px, py - text_y_offset, word)
                     w = fontMetrics.width(word)
                     px += w
