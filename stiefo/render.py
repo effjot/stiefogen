@@ -14,16 +14,16 @@ zeichneHilfslinien = True
 text_y_offset = 0.1 * stiefoHeightPrint
 
 
-def render_pdf(words, filename):
+def render_pdf(words, filename, papersize = QtGui.QPrinter.A4):
     app = QtGui.QApplication(sys.argv)
-    window = BezierDrawer(words, filename)
+    window = BezierDrawer(words, filename, papersize)
     window.show()
     sys.exit(app.exec_())
 
 
 def render_screen(words):
     app = QtGui.QApplication(sys.argv)
-    window = BezierDrawer(words, [])
+    window = BezierDrawer(words, [], None)
     window.show()
     sys.exit(app.exec_())
 
@@ -216,7 +216,7 @@ class print_renderer:
 
 
 class BezierDrawer(QtGui.QMainWindow):
-    def __init__(self, stiefoWords, filename, parent=None):
+    def __init__(self, stiefoWords, filename, papersize, parent=None):
         super(BezierDrawer, self).__init__()
         QtGui.QWidget.__init__(self, parent)
         self.ui = stiefo.Ui_stiefo_curves()
@@ -237,6 +237,10 @@ class BezierDrawer(QtGui.QMainWindow):
         else:  # PDF erzeugen (passiert in paintEvent)
             self.filename = filename
             self.drawOnScreen = False
+        if papersize:
+            self.papersize = papersize
+        else:
+            self.papersize = QtGui.QPrinter.A4
 
     def paintEvent(self, e):
         if (self.drawOnScreen):
@@ -245,8 +249,8 @@ class BezierDrawer(QtGui.QMainWindow):
             printer = QtGui.QPrinter()
             printer.setOutputFileName(self.filename)
             printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
+            printer.setPaperSize(self.papersize)
             printer.setResolution(300)
-            printer.setPaperSize(QtGui.QPrinter.A4)
 
             painter = QtGui.QPainter()
             painter.begin(printer)

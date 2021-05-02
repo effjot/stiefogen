@@ -1,6 +1,8 @@
 import os
 import stiefo
 
+from PyQt4 import QtGui, QtCore
+
 
 filenamebase = "Schildbuerger"
 
@@ -24,4 +26,4 @@ st = stiefo.list_to_text(stiefoWords)
 with open(filenamebase + '.sti', "w", encoding="utf-8") as f:
     f.write(st)
 
-stiefo.render_pdf(stiefoWords, filenamebase + ".pdf")
+stiefo.render_pdf(stiefoWords, filenamebase + ".pdf", papersize = QtGui.QPrinter.A5)
