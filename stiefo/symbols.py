@@ -123,8 +123,9 @@ vorsilben_AS2 = {
     'einheit': '3__ @h^ ei',  # als Vorsilbe, damit „Einheiten“ möglich
     'pro': '1--', 'be': '0/', 'un': '0d /', # 12. Lernabschnitt
     'in': '1-', 'inter': '1-', 'trans': '3-', 'bei': '3--',   # 13. Lernabschnitt
-    'darauf': '0d //',
-    'fort': '1t'
+    'fort': '1t',  # 20. Lernabschnitt
+        'digital': '0t a l',  # Ergänzung FJ
+    'darauf': '0d //'  # Anhang; Belegstelle Text 26
 }
 
 
@@ -199,7 +200,7 @@ kuerzel_AS2 = {
     'pro': '2--',  # 12. Lernabschnitt ("pro" auf der Grundlinie, "aus" etwas darüber)
     'außerordentlich': '++2__ --2@*00',  # 13. Lernabschnitt
     'als': '-4-',  # „als“ etwas tiefer, siehe Bsp. Aufbauschift 2, S. 17
-    'sofort': 'ot', 'bei': '4--',
+    'sofort': 'o t', 'bei': '4--',
     'mehr': '2m*', 'muss': 'mm', 'musst': 'mm*',  # 14. Lernabschnitt
     'müss': '1mm', 'müsst': '1mm*',
     'sehr': '2s*', 'sicher': '1s*', 'sicherlich': '1s* lich*', 'sicherheit': '1s* heit*',
@@ -210,7 +211,11 @@ kuerzel_AS2 = {
     'gütlich': '2g |0 @*', 'gänzlich': '3g |0 @*',
     'hier': '1h', 'häufig': '4h', 'her': '2h*',  # Schreibweise mit betonter Fußschleife nur im Anhang
     'jedoch': 'j |0 1dd',  # 18. Lernabschnitt
-    'hätte': '2t', 'hatte': '3t', 'heute': '4t',  # 20. Lernabschnitt
+    'ungefähr': '2r*', 'immer': '1r*', 'zwar': '3r*', 'euer': '4r*',  # 20. Lernabschnitt
+        # Anpassungen FJ:
+            'euro': '4r*', 'gar': '3r*',  # statt "zwar"
+            'digital': '0t a l',  # 2 Halbstufen tief wegen 2 i in "digital"
+    'hätte': '2t', 'hatte': '3t', 'heute': '4t',
     'dennoch': 'en {noch}(1.4,0)',  # enger Abstand, siehe 24. Lernabschnitt, Bsp. 2
     'darauf': '0d //',  # Anhang; Belegstelle Text 26
     'gewissenhaft': 'ge w i {a0}(-0.3,0) s', 'nachvollziehbar': 'nach u @^*00 i z i bar'  # keine Belegstellen
