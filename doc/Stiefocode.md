@@ -43,7 +43,10 @@ Codes sind alle klein geschrieben.
 * `z`
 
 (TODO: Unterscheidung nd/nt, f/v usw. durch Strich darüber könnte bei
-Bedarf implementiert werden)
+Bedarf implementiert werden, z.B. durch nachgestelltes `=`)
+
+(TODO: Markierung vor Großschreibung durch Strich darunter könnte bei
+Bedarf implementiert werden, z.B. durch nachgestelltes `_`)
 
 (TODO: Codes für die 3-stufigen frei wählbaren Kürzel? z.B. mit
 Großbuchstaben für 3-stufige Version der ganzstufigen Konsonanten und
@@ -111,6 +114,9 @@ Folgende Symbole für Konsonanten und Kürzel kommen hinzu:
 * `.` Punkt
 * `@` Schleife gegen Uhrzeigersinn (UZS)
 * `@*` Schleife im Uhrzeigersinn (FIXME: besseres Codezeichen finden)
+* `@h`, `@h^` Schleifen gegen UZS für Nachsilbe „-heit“; Kombination mit Vokal `ei`.
+   FIXME: ist intern eine häßliche und unpraktische Lösung, ähnlich wie waagr. Anstrich `-`.
+   → Bearbeitung Glyphen und Vokale muss überarbeitet werden.
 
 
 ### vertikaler Versatz und Größe von Konsonantensymbolen
@@ -140,7 +146,7 @@ symbols.py):
 * `+`: Achtelstufe höher
 * `++`: Viertelstufe höher
 
-(FIXME: nachgestellte Symbole oder Versatz mit Komma wären wohl
+(FIXME: nachgestellte Symbole oder Versatz mit Dezimalzahl wären wohl
 eleganter)
 
 
@@ -355,9 +361,11 @@ Abstand (entspricht Breite des Vokals e) gesetzt.
 Für zusätzliche Abstände gibt es die Befehle
 
 * `spc1`: ungefähr 10 halbweite Abstände
-* `spc2`: ungefähr 5 halbweite Abstände
+* `spc2`: ungefähr 5 halbweite Abstände (FIXME: andersrum wäre logischer)
+* `&`: Wortabstand verringern, wenn Wörter zerlegt geschrieben werden.
+       Kann auch wiederholt werden für engeren Abstand.
+       Bsp.: `l i nk  &  &  h e nd e r` (Linkshänder)
 
-FIXME: andersrum wäre logischer
 
 Ein neue Zeile kann mit `§` erzwungen werden, eine neue Seite mit `§§`.
 
