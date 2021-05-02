@@ -167,8 +167,6 @@ class print_renderer:
                     for dw, _, _, _ in crv:
                         w += dw  # FIXME: was mit disjointed?!
                     res.append(('curve', w*self.sx, crv, 0))
-                    #print('prepare: word={}, w={}'.format(word, w))
-
 
         spcreq = [w for _, w, _, _ in res]
         d = 0
@@ -326,7 +324,6 @@ class DrawingArea(QtGui.QFrame):
         for word in self.screenWords:
             if stiefo.isword(word) and word not in (',', '..'):
                 for w, c, p, outline_offset in stiefo.stiefoWortZuKurve(word):
-#                    print(">>>", w,c,p,outline_offset)
                     w = w * sx  # Wortlänge
 
                     # Kurve verschieben (Startpunkt anpassen)
@@ -376,9 +373,7 @@ class DrawingArea(QtGui.QFrame):
                     # Wort als Bezier-Pfad zeichnen
                     pp = QtGui.QPainterPath()
                     pp.moveTo(*cc[0])  # "unpacking argument list"
-                    #print("cubic start: cc=", cc)
                     for i in range(1, len(cc), 3):
-                        #print("cubic: i={} -> {} {} {}".format(i, cc[i], cc[i + 1], cc[i + 2]))
                         pp.cubicTo(*(cc[i] + cc[i + 1] + cc[i + 2]))  # 2 Kontrollpunkte,
                                                          # gefolgt von 1 Endpunkt
                     qp.setPen(bluePen)
