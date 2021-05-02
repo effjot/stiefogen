@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import doctest
 import math
 import re
 
@@ -9,7 +8,7 @@ import re
 #### Einstellungen zum Schriftstil
 
 ## Schrägstellung (s.a. render.py)
-slant = math.sin(20 * math.pi/180)
+slant = math.sin(20 * math.pi / 180)
 
 ## Effektive Abstände (horizontale) für Vokale und Vorsilben
 de = 1.1  # e, ä, a, ö
@@ -959,7 +958,6 @@ def glyph_punkt(dl, dr):
 ## zeichnen lassen: waagr. Strich (Präfix), -heit (Verbindungslinie mit Punktschleife)
 
 def glyph_waagr_strich(l, naechster_kons):
-#    print("waagr_strich l={}, nk={}.".format(l, naechster_kons))
     if not naechster_kons or naechster_kons == '=':
         y0 = 0
         e = []
@@ -1120,19 +1118,29 @@ def get_y_adjust(s):
 
 
 def SplitStiefoWord(st):
-    """Zerlege das Wort st in Vokale und Konsonanten, und bestimme vertikalen Versatz.
+    """Zerlege das Wort st in Vokale und Konsonanten, bestimme vertikalen Versatz
+       und abgesetzte Teile.
+
     Vokale werden als (dx, dy, ea) ausgegeben, wobei
     dy die Werte -1, 0, +1, +2 haben kann für i, e, a, ö Stufen.
     dx hat die Werte 0, 1, 2 für Konsonantenverbindung, e, u.
     ea ist der effektive Abstand horizontal, der für diesen Vokal verwendet wird.
     '_' und '=' werden am Anfang und Ende angefügt, wenn das
     Wort mit einem Vokal anfängt oder aufhört.
+    Liefert ein Tupel aus: Liste der Vokale und Konsonanten, vertikaler Versatz,
+    Liste der Vokale und Konsanten für abgesetzten Teil (Durchstreichung),
+    Ausrichtung des abgesetzten Teils.
+
     >>> SplitStiefoWord("b e r n")
-    ['b', (1, 0, 1.2), 'r', (0, 0, 0.6), 'n']
+    (['b', (1, 0, 1.1), 'r', (0, 0, 0.5), 'n'], 2, None, None)
     >>> SplitStiefoWord("e r d e")
-    ['_', (1, 0, 1.2), 'r', (0, 0, 0.6), 'd', (1, 0, 1.2), '=']
+    (['_', (1, 0, 1.1), 'r', (0, 0, 0.5), 'd', (1, 0, 1.1), '='], 2, None, None)
     >>> SplitStiefoWord("n a t i o n")
-    ['n', (1, 1, 1.2), 't', (1, -1, 0.2), 'c', (2, -1, 3), 'n']
+    (['n', (1, 1, 1.1), 't', (1, -1, 0.3), 'c', (2, -1, 2.8), 'n'], 2, None, None)
+    >>> SplitStiefoWord("e {a s} b")
+    (['_', (1, 0, 1.1), '!', 'b'], 2, 'a s', None)
+    >>> SplitStiefoWord("ein {a0}(0,-0.25)")
+    (['_', (2, 0, 2.8), '!', '='], 3, 'a0', (0.0, -0.25))
     """
 
     # vertikaler Versatz des Worts (auf Grundlinie beginnen)
@@ -1173,7 +1181,6 @@ def SplitStiefoWord(st):
         st_tokenised = re.sub(r'\{(.+)\}(\(.*\))?', '!', st_tokenised)
         if adjust_str:
             disjointed_adjust = tuple(map(float, adjust_str[1:-1].split(',')))
-            #print("adjust_str={}, tuple={}".format(adjust_str, disjointed_adjust))
         else:
             disjointed_adjust = None
     else:
@@ -1187,7 +1194,6 @@ def SplitStiefoWord(st):
     pv = False  # vorhergehender Vokal
     pfx2 = None  # zweites Token von zusammengesetzter Vorsilbe
     for z in st_tokenised.split(' '): #(st.split(' ')):
-        #print("z = {}, pz={}, pv={}".format(z, pz, pv))
         if z == '!':
             w.append(z)
             continue
@@ -1264,7 +1270,6 @@ def stiefoWortZuKurve(w):
     disjointed_outline_offset = None
 
     ll, y_word_offset, disjointed, disjointed_adj = SplitStiefoWord(w)
-    #print("stiefoWortZuKurve: w={}, ll={}, y_w_off={}, disj={}".format(w, ll, y_word_offset,disjointed))
 
     ll = [None] + ll + [None]
     if disjointed:
@@ -1275,9 +1280,7 @@ def stiefoWortZuKurve(w):
     y = (y_word_offset - y_baseline) * conv_y_step
     xpos = [slanted(x, y)]  # Stift-Positionen (Startpunkt und nach jedem Buchstaben)
 
-    #print("start xpos={}, x={}, y={}".format(xpos, x, y))
     for i in range(0, len(ll) - 2, 2):
-        #print("  i={}".format(i))
         dl = ll[i]      # Vokal vor dem aktuellen Konsonant
         k = ll[i + 1]   # aktueller Konsonant (Glyph)
         dr = ll[i + 2]  # Vokal nach Konsonant
@@ -1289,7 +1292,7 @@ def stiefoWortZuKurve(w):
             k_level = int(k[0])
             k = k[1:]
         y_offset = (k_level + k_adj - y_baseline) * conv_y_step
-        #print("  k={} k_level={}, k_adj={}, y_offset={}".format(k, k_level, k_adj, y_offset))
+
         assert k in glyphs, 'Unknown glyph: [{}]'.format(k)
         glFunc = glyphs[k]
         if k != '-':
@@ -1347,4 +1350,5 @@ def stiefoWortZuKurve(w):
 
 
 if __name__ == '__main__':
-    print(doctest.testmod())
+    import doctest
+    doctest.testmod()
