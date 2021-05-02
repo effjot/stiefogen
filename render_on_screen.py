@@ -16,6 +16,9 @@ import stiefo
 #stiefo.render_screen(['selbstverständlich', 'staatlich', 'stattlich', 'selb'])
 #stiefo.render_screen(['w', 'w*', 'w4', 'w*4', 'ei g m4', 'ei g 1m4 e r', 'm4 s i cht',
 #                      'w4 lich*', '1z4', '1f4 ei', 'zu 1k4', 'vor {w**4}'])
+stiefo.render_screen(['bund', 'ober', 'gleich', 'viel ei', 'viel fach',
+                      'ver e@ gleich {A r}(0.125,0)', 'letzt lich*',
+                      'wesen lich*', 'ei g tüm lich*', 'um s i cht', 'trotz'])
 #stiefo.render_screen(['m e t', 'm', 'm*', 'm* e r', 'm* {a0}(0,0.3)',
 #                      't u r 1mm', 'mm'])
 #stiefo.render_screen(['s e r', 's', 's*'])
@@ -26,4 +29,5 @@ import stiefo
 #stiefo.render_screen(['außerordentlich', 'mehr', 'sicher', '1s* lich', 'm* heit*', '1s* heit*'])
 #stiefo.render_screen(['bereit', 'bis', 'bin', 'übrig', 'aber', 'überzeug', 'überdies'])
 #stiefo.render_screen(['fest', 'vom', 'fast', 'freund'])
-stiefo.render_screen(['ungefähr', 'immer', 'zwar', 'euer', 'sofort', 'fort s e z ung', 'digital', 'digital i s i r', 'digital a z ei g'])
+#stiefo.render_screen(['ungefähr', 'immer', 'zwar', 'euer', 'sofort', 'fort s e z ung', 'digital', 'digital i s i r', 'digital a z ei g'])
+#stiefo.render_screen(['all', 'allzu', 'allein', 'allgemein', 'allerdings'])

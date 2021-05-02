@@ -347,6 +347,7 @@ indem man sie mit mind. 2 Leerzeichen oder geschützte Leerzeichen
 ### wörtliche Texte in Langschrift
 
 Mit `~` können beliebige Texte in Langschrift eingefügt werden.
+Das Ende des Texts wird durch doppeltes Leerzeichen markiert.
 Beispiel:
 
     ~Ein Text der in Langschrift („normale“ Schriftart) erscheint

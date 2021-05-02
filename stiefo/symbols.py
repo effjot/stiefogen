@@ -127,6 +127,10 @@ vorsilben_AS2 = {
     'in': '1-', 'inter': '1-', 'trans': '3-', 'bei': '3--',   # 13. Lernabschnitt
     'fort': '1t',  # 20. Lernabschnitt
         'digital': '0t a l',  # Ergänzung FJ
+    'bund': '2b4', 'ober': '1b4', 'gleich': '2ch4', 'viel': '1f4',  # 27. Lernabschnitt
+    'klein': '2k4', 'rück': '1k4', 'letzt': '2l4',
+    'um': '2m4', 'wesen': '2w4', 'wieder': '1w4', 'wider': '1w4',  # 28. Lernabschnitt
+    'zer': '2z4', 'trotz': '1z4',
     'darauf': '0d //'  # Anhang; Belegstelle Text 26
 }
 
@@ -139,10 +143,12 @@ nachsilben_AS2 = {
     'los': '|0.25 @^00 o',
     'heit': 'e@ @h ei', 'heitlich': 'e@ @h ei @*0',  # (Belegstelle heitlich erst in Text 25)
     'heit*': 'e0 -2@h^ +ei',  # korrigierter vert. Versatz für *-Konsonanten
-    'bar': '{a0 r}(-0.5,0)',  # aber für viele Wörter Anpassung a/a0 und Versatz nötig!
+    'haft': '{a}', 'fach': '{a}',  # aber für viele Wörter Anpassung a/a0 und Versatz nötig!
+    'bar': '{a0 r}',  # aber für viele Wörter Anpassung a/a0 und Versatz nötig!
     'barkeit': '{a0 r keit}(-0.5,0)',  # (Belegstelle erst in Text 18)
     'nis': 'I s',  # 14. Lernabschnitt
     'gleich': 'ch4',  # 27. Lernabschnitt
+    'tum': 'm4', 'tüm': 'ü m4',  # 28. Lernabschnitt
     'rechn': 'ch3',  # Anhang
     'alich': '|0.25 ++3@*0', 'schaftlich': '|0.25 ++3@*0'
 }
@@ -181,7 +187,7 @@ kuerzel_AS2 = {
     'allzu': '3@1 u', 'allerdings': '3@1 i ng',  # 5. Lernabschnitt
     'sonder': '2@1 o', 'sonderlich': '2@1 u @^*00',  # 6. Lernabschnitt
     'selbst': 'selb', 'selbständig': 'selb i',  # 7. Lernabschnitt
-    'selbstverständlich': 'selb |0 @*00', 'sonstig': 'sonst i',
+    'selbstverständlich': 'selb e@ @*00', 'sonstig': 'sonst i',
     'staatlich': 'stat e@ @*0', 'stattlich': 'stat |0 @*00',  # Anhang
     'status': 'stat u s',
     'kein': '3nn',  # 9. Lernabschnitt
@@ -1314,8 +1320,8 @@ def stiefoWortZuKurve(w):
             if i + 1 == i_disjointed:   # am Konsonant
                 disjointed_outline_offset = (x, y)
                 if not disjointed_adj:
-                    disjointed_adj = (-0.25,0)  # Standard-Versatz, damit Durchstreichung
-                                                # nicht direkt am Fußpunkt beginnt
+                    disjointed_adj = (-0.25, 0)  # Standard-Versatz, damit Durchstreichung
+                                                 # nicht direkt am Fußpunkt beginnt
 
         gs = shiftToPos(g, x, y, slant)  # Bezier-Punkte an die Stiftposition verschieben
         x += w  # Stift hinter Glyph setzen
