@@ -24,4 +24,5 @@ import stiefo
 #stiefo.render_screen(['s i n los', 'h a m los', 'b ei sp i l los', 'los g e', 'los l a s'])
 #stiefo.render_screen(['ge l e g heit', 'k I nd heit', 'f heit', 'einheit'])
 #stiefo.render_screen(['außerordentlich', 'mehr', 'sicher', '1s* lich', 'm* heit*', '1s* heit*'])
-stiefo.render_screen(['bereit', 'bis', 'bin', 'übrig', 'aber', 'überzeug', 'überdies'])
+#stiefo.render_screen(['bereit', 'bis', 'bin', 'übrig', 'aber', 'überzeug', 'überdies'])
+stiefo.render_screen(['fest', 'vom', 'fast', 'freund'])

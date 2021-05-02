@@ -155,7 +155,7 @@ kuerzel_AS1 = {
     'dem': '2m', 'mich': '1m', 'mir': '1m', 'mein': '3m',
     'den': '2en', 'nicht': '1en', 'man': '3en',
     'dies': '1d',  # 2. Lernabschnitt
-    'ist': '1t', 'von': '1f',
+    'ist': '1t', 'von': '1f', 'davon': 'da i f',
     'wir': '1w', 'hab': '3h', 'hast': '3h', 'hat': '3h', 'gehab': '3- h',
     'und': '2nd', 'sind': '1nd',  # 6. Lernabschnitt
     'unter': '2nd e0', 'über': '1b e0', 'aber': '3b e0',
@@ -205,13 +205,14 @@ kuerzel_AS2 = {
     'sehr': '2s*', 'sicher': '1s*', 'sicherlich': '1s* lich*', 'sicherheit': '1s* heit*',
     'bereit': '2b', 'bis': '1b', 'bin': '1b',  # 15. Lernabschnitt
     'übrig': '1b i', 'überzeug': '1b eu', 'überdies': 'über d',
+    'fest': '2f', 'vom': '1f', 'fast': '3f', 'freund': '4f',  # 16. Lernabschnitt
     'gut': '2g', 'groß': '1g', 'ganz': '3g', 'größ': '4g',  # 17. Lernabschnitt
     'gütlich': '2g |0 @*', 'gänzlich': '3g |0 @*',
     'hier': '1h', 'häufig': '4h', 'her': '2h*',  # Schreibweise mit betonter Fußschleife nur im Anhang
     'jedoch': 'j |0 1dd',  # 18. Lernabschnitt
+    'hätte': '2t', 'hatte': '3t', 'heute': '4t',  # 20. Lernabschnitt
     'dennoch': 'en {noch}(1.4,0)',  # enger Abstand, siehe 24. Lernabschnitt, Bsp. 2
-    'darauf': '0d //',
-    'hätte': '2t', 'hatte': '3t', 'heute': '4t',
+    'darauf': '0d //',  # Anhang; Belegstelle Text 26
     'gewissenhaft': 'ge w i {a0}(-0.3,0) s', 'nachvollziehbar': 'nach u @^*00 i z i bar'  # keine Belegstellen
 }
 
