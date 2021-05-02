@@ -1,7 +1,7 @@
-.b  ~ab  §
-.b e  ~aber  §
-.b u t  ~absolut  §
-.all a m  ~allgemein  §
-selbst lich  ~selbstverständlich  §
-,,viel ei  ~vielleicht  §
+ab  ~3b = ab [AS1 6] §
+aber  ~3b e0 = aber [AS1 6] §
+ab u t  ~3b u t = absolut [AS2 Anh] §
+allgemein  ~3@2 a m = allgemein (tatsächlich mit A statt EI) [AS2 5] §
+selbst lich  ~selbstverständlich §
+viel ei  ~vielleicht  §
 wesen lich  ~wesentlich  §

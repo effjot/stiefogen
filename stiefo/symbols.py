@@ -116,12 +116,14 @@ nachsilben_AS1 = {
 
 
 vorsilben_AS2 = {
+    'will': '1@1', 'woll': '1@1', 'all': '3@1',  # 5. Lernabschnitt
+    'allein': '3@1 ei', 'allgemein': '3@1 a m',  # allgemein tatsächl. mit A
     'selb': '2@2', 'sonst': '1@2', 'stat': '3@2',  # 7. Lernabschnitt
     'deutsch': '4dd |0',  # 9. Lernabschnitt
     'euro': '4rr |0',  # 10. Lernabschnitt
     'voll': '2-- @^*00 i', 'los': '@00 o',  # 11. Lernabschnitt
     'einheit': '3__ @h^ ei',  # als Vorsilbe, damit „Einheiten“ möglich
-    'pro': '1--', 'be': '0/', 'un': '0d /', # 12. Lernabschnitt
+    'pro': '1--', 'be': '0/', 'un': '0d /',  # 12. Lernabschnitt
     'in': '1-', 'inter': '1-', 'trans': '3-', 'bei': '3--',   # 13. Lernabschnitt
     'fort': '1t',  # 20. Lernabschnitt
         'digital': '0t a l',  # Ergänzung FJ
@@ -176,6 +178,7 @@ kuerzel_AS2 = {
     'auch': '2@^0', 'ich': '1@^0', 'ander': '3@^0', 'dich': '1d* |0 @^00',  # 3. Lernabschnitt
     'möglich': '4@*0', 'möglichkeit': '4@*0 keit',  # 4. Lernabschnitt
     'nämlich': 'n e@ @*0', 'natürlich': 'n |0.25 ++3@*0', 'namentlich': '3en e@ @*0',
+    'allzu': '3@1 u', 'allerdings': '3@1 i ng',  # 5. Lernabschnitt
     'sonder': '2@1 o', 'sonderlich': '2@1 u @^*00',  # 6. Lernabschnitt
     'selbst': 'selb', 'selbständig': 'selb i',  # 7. Lernabschnitt
     'selbstverständlich': 'selb |0 @*00', 'sonstig': 'sonst i',
