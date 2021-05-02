@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import sys, math
+import sys
+from PyQt5 import QtCore, QtGui, QtWidgets, QtPrintSupport
+from PyQt5.QtCore import Qt
 
-from PyQt4 import QtGui, QtCore
 import stiefo
 
 
@@ -14,15 +15,15 @@ zeichneHilfslinien = True
 text_y_offset = 0.1 * stiefoHeightPrint
 
 
-def render_pdf(words, filename, papersize = QtGui.QPrinter.A4):
-    app = QtGui.QApplication(sys.argv)
+def render_pdf(words, filename, papersize=QtPrintSupport.QPrinter.A4):
+    app = QtWidgets.QApplication(sys.argv)
     window = BezierDrawer(words, filename, papersize)
     window.show()
     sys.exit(app.exec_())
 
 
 def render_screen(words):
-    app = QtGui.QApplication(sys.argv)
+    app = QtWidgets.QApplication(sys.argv)
     window = BezierDrawer(words, [], None)
     window.show()
     sys.exit(app.exec_())
@@ -34,7 +35,7 @@ class print_renderer:
         self.word_space = 0.5 * self.h
         self.printer = printer
         self.painter = painter
-        self.pageRect = printer.pageRect(QtGui.QPrinter.DevicePixel)
+        self.pageRect = printer.pageRect(QtPrintSupport.QPrinter.DevicePixel)
         self.x0 = int(self.pageRect.left())
         self.y0 = int(self.pageRect.top() + 3 * self.h)
         self.x1 = int(self.pageRect.right() - 200)
@@ -43,7 +44,7 @@ class print_renderer:
         self.l1Pen = QtGui.QPen(QtGui.QColor(100, 100, 100))
         self.l2Pen = QtGui.QPen(QtGui.QColor(180, 180, 180))
         self.blackPen = QtGui.QPen(QtCore.Qt.black, 4,
-                                  join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
+                                   join=QtCore.Qt.RoundJoin, cap=QtCore.Qt.RoundCap)
         self.font = QtGui.QFont("Arial", self.h * 72/300 * 1.6)
         self.pgNr = 1
         self.sx = self.h
@@ -215,15 +216,13 @@ class print_renderer:
         pass
 
 
-class BezierDrawer(QtGui.QMainWindow):
-    def __init__(self, stiefoWords, filename, papersize, parent=None):
-        super(BezierDrawer, self).__init__()
-        QtGui.QWidget.__init__(self, parent)
+class BezierDrawer(QtWidgets.QMainWindow):
+    def __init__(self, stiefoWords, filename, papersize):
+        super().__init__()
         self.ui = stiefo.Ui_stiefo_curves()
         self.ui.setupUi(self)
 
-        QtCore.QObject.connect(self.ui.button_update, QtCore.SIGNAL("clicked()"),
-                               self.update_text)
+        self.ui.button_update.clicked.connect(self.update_text)
 
         if stiefoWords:
             self.screenWords = stiefoWords
@@ -240,15 +239,15 @@ class BezierDrawer(QtGui.QMainWindow):
         if papersize:
             self.papersize = papersize
         else:
-            self.papersize = QtGui.QPrinter.A4
+            self.papersize = QtPrintSupport.QPrinter.A4
 
     def paintEvent(self, e):
         if (self.drawOnScreen):
             pass
         else:
-            printer = QtGui.QPrinter()
+            printer = QtPrintSupport.QPrinter()
             printer.setOutputFileName(self.filename)
-            printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
+            printer.setOutputFormat(QtPrintSupport.QPrinter.PdfFormat)
             printer.setPaperSize(self.papersize)
             printer.setResolution(300)
 
@@ -266,9 +265,9 @@ class BezierDrawer(QtGui.QMainWindow):
         self.ui.drawing_area.update_text(self.screenWords)
 
 
-class DrawingArea(QtGui.QFrame):
+class DrawingArea(QtWidgets.QFrame):
     def __init__(self, parent):
-        super(DrawingArea, self).__init__()
+        super().__init__()
         self.screenWords = []
         self.stiefoHeight = stiefoHeightScreen
         self.showBezierPoints = True

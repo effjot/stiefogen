@@ -1,5 +1,6 @@
 import stiefo
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtPrintSupport
+
 
 filenamebase = "Aufbauschrift2_Text17"
 
@@ -8,4 +9,4 @@ with open(filenamebase + '.txt', "r", encoding="utf-8") as f:
 
 st = stiefo.text_to_list(text)
 
-stiefo.render_pdf(st, filenamebase + ".pdf", papersize = QtGui.QPrinter.A4)
+stiefo.render_pdf(st, filenamebase + ".pdf", papersize = QtPrintSupport.QPrinter.A4)
