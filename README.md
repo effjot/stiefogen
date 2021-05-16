@@ -22,7 +22,7 @@ Das Programm bietet 2 Modi:
    in dem man Stiefocode eingeben und die Kurven und Stützpunkte sehen kann. `words`
    ist eine Liste von Strings. Jeder String ist ein Wort in Stiefocode, in dem die einzelnen
    Buchstaben durch Leerzeichen getrennt sind: `["ei n", "t e st"]`.  Der Stiefocode
-   wird in `[doc/Stiefocode.md]` erklärt.
+   wird in [doc/Stiefocode.md](doc/Stiefocode.md) erklärt.
    Beispieldatei: `render_on_screen.py`
 
  * `stiefo.render_pdf(words, filename, papersize)`: Ausgabe von Stiefocode als PDF.
