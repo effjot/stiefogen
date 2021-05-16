@@ -7,9 +7,9 @@ Entwickelt von Andreas Hofer, mit Beiträgen von [Andreas Martin](https://github
 
 Hinweis: Wer nur an der Grundschrift interessiert ist, bitte den
 Branch `grundschrift` verfolgen, dort wird zur Zeit auch die
-Dokumentation überarbeitet.  Im Branch `aufbauschrift-2` wird die
-Umsetzung der Aufbauschrift 2 verbessert, ist aber noch nicht
-abgeschlossen.
+Dokumentation überarbeitet.  Im Branch `master` (früher
+`aufbauschrift-2`) wird die Umsetzung der Aufbauschrift 2 verbessert,
+ist aber noch nicht abgeschlossen.
 
 
 ## Kurze Anleitung
@@ -19,18 +19,19 @@ Benötigt: Python3 und PyQt5
 Das Programm bietet 2 Modi:
 
  * `stiefo.render_screen(words)`: Bildschirmausgabe in einem interakiven Fenster,
-   in dem man Text eingeben und die Kurven und Stützpunkte sehen kann. `words`
-   ist eine Liste von Strings. Jeder String ist ein Wort, in dem die einzelnen
-   Buchstaben durch Leerzeichen getrennt sind (Stiefocode): `["ei n", "t e st"]`.
+   in dem man Stiefocode eingeben und die Kurven und Stützpunkte sehen kann. `words`
+   ist eine Liste von Strings. Jeder String ist ein Wort in Stiefocode, in dem die einzelnen
+   Buchstaben durch Leerzeichen getrennt sind: `["ei n", "t e st"]`.  Der Stiefocode
+   wird in `[doc/Stiefocode.md]` erklärt.
    Beispieldatei: `render_on_screen.py`
 
- * `stiefo.render_pdf(words, filename, papersize)`: Ausgabe als PDF.
+ * `stiefo.render_pdf(words, filename, papersize)`: Ausgabe von Stiefocode als PDF.
    Beispieldatei (einschließlich Aufbereitung der Klartext-Datei): `schildbuerger.py`
 
 Die Aufbereitung von „normalen“ Textdateien („Klartext“) wird von den
 Funktionen in `parse.py` erledigt (siehe Beispiel in
-`schildbuerger.py`), wobei zur Unterstützung der korrekten Aufrennung
-der Worte in Stiefo-Buchstaben eine Wortliste genutzt werden kann. Die
+`schildbuerger.py`), wobei zur Unterstützung der korrekten Auftrennung
+der Wörter in Stiefo-Buchstaben eine Wortliste genutzt werden kann. Die
 unbekannten Wörter werden als Ergebnis mit zurückgegeben und sollten
 überprüft und ggf. in die Wortliste eingebaut werden.
 
